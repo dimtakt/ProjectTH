@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00. MainGame">
+      <UniqueIdentifier>{5a46ec0f-0fa8-4d32-bc56-536b674190bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj">
+      <UniqueIdentifier>{10449cff-5f82-46e2-bf44-b47c62a08982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\00. Player">
+      <UniqueIdentifier>{88d87d1f-5185-4a23-9742-640691bc4fa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\01. Bullet">
+      <UniqueIdentifier>{ee8a5edb-f230-4c87-921f-984b54db0786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\01. Bullet\00. PlayerBullet">
+      <UniqueIdentifier>{5e1644d6-1b8c-4c2e-8a8d-1f79745b585c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\01. Bullet\01. EnemyBullet">
+      <UniqueIdentifier>{1977c024-eeda-48fd-9e63-6e4d35bf0323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\02. Monster">
+      <UniqueIdentifier>{6703ed93-ec4e-42fb-93c2-acc9d4242491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene">
+      <UniqueIdentifier>{98a71091-14d2-4b68-b0ab-142e71f770b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design">
+      <UniqueIdentifier>{4527079c-1150-4556-bbbb-66b0e7ecc99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\00. AbstractFactory">
+      <UniqueIdentifier>{3e990d74-6eae-4720-a94d-554d1b34ef7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\01. CCollisionMgr">
+      <UniqueIdentifier>{63cdf345-02c8-4076-86cf-4d523cbdb54c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\02. ObjMgr">
+      <UniqueIdentifier>{35d44f62-cf64-4963-bfea-3445d2e719ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\03. Item">
+      <UniqueIdentifier>{a78089e4-26f8-4f99-8967-c6e1770f94d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\04. Tile">
+      <UniqueIdentifier>{39e2074b-df5b-4875-9c71-105330734a04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\03. TileCollisionMgr">
+      <UniqueIdentifier>{66dfc652-db50-4aad-b3c4-626748217860}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\04. KeyMgr">
+      <UniqueIdentifier>{8912ab2d-e509-4383-ba7f-b10e8f745bac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\05. CameraMgr">
+      <UniqueIdentifier>{b679a764-3212-4985-9da8-f3e5ba843089}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\06. BmpMgr">
+      <UniqueIdentifier>{749247c6-a58a-4eb2-90bc-b1a076482158}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\07. SceneMgr">
+      <UniqueIdentifier>{2aadd00c-ee09-4f32-87c1-0925733f2319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\08. TileMgr">
+      <UniqueIdentifier>{51db3f48-70e2-45a6-9d6c-df2936fa6662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\06. BmpMgr\MyBmp">
+      <UniqueIdentifier>{27541465-5670-401a-8722-a380a109c825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\00. Logo">
+      <UniqueIdentifier>{6277d384-0ace-4b4d-b913-8de48e8aefd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\06. BmpMgr\SpritePropertyMgr">
+      <UniqueIdentifier>{c6de44a6-deef-477a-b971-456189ce8144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\01. Stage1">
+      <UniqueIdentifier>{6313af2b-20e6-4010-9174-1e08ecfa05d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\01. Stage1\1_01">
+      <UniqueIdentifier>{6ba883ab-9c5a-4b57-956a-8b0dd5bb921e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LunaNights.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainGame.h">
+      <Filter>00. MainGame</Filter>
+    </ClInclude>
+    <ClInclude Include="CObj.h">
+      <Filter>01. Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="CAbstractFactory.h">
+      <Filter>03. Design\00. AbstractFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollisionMgr.h">
+      <Filter>03. Design\01. CCollisionMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjMgr.h">
+      <Filter>03. Design\02. ObjMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CTileCollisionMgr.h">
+      <Filter>03. Design\03. TileCollisionMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CKeyMgr.h">
+      <Filter>03. Design\04. KeyMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CCameraMgr.h">
+      <Filter>03. Design\05. CameraMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CMyBmp.h">
+      <Filter>03. Design\06. BmpMgr\MyBmp</Filter>
+    </ClInclude>
+    <ClInclude Include="CBmpMgr.h">
+      <Filter>03. Design\06. BmpMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneMgr.h">
+      <Filter>03. Design\07. SceneMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CScene.h">
+      <Filter>02. Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CLogo.h">
+      <Filter>02. Scene\00. Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>01. Obj\00. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpritePropertyMgr.h">
+      <Filter>03. Design\06. BmpMgr\SpritePropertyMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CStage1_01.h">
+      <Filter>02. Scene\01. Stage1\1_01</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LunaNights.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainGame.cpp">
+      <Filter>00. MainGame</Filter>
+    </ClCompile>
+    <ClCompile Include="CObj.cpp">
+      <Filter>01. Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollisionMgr.cpp">
+      <Filter>03. Design\01. CCollisionMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjMgr.cpp">
+      <Filter>03. Design\02. ObjMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CTileCollisionMgr.cpp">
+      <Filter>03. Design\03. TileCollisionMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CKeyMgr.cpp">
+      <Filter>03. Design\04. KeyMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CCameraMgr.cpp">
+      <Filter>03. Design\05. CameraMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CMyBmp.cpp">
+      <Filter>03. Design\06. BmpMgr\MyBmp</Filter>
+    </ClCompile>
+    <ClCompile Include="CBmpMgr.cpp">
+      <Filter>03. Design\06. BmpMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneMgr.cpp">
+      <Filter>03. Design\07. SceneMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CLogo.cpp">
+      <Filter>02. Scene\00. Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="CScene.cpp">
+      <Filter>02. Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>01. Obj\00. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpritePropertyMgr.cpp">
+      <Filter>03. Design\06. BmpMgr\SpritePropertyMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CStage1_01.cpp">
+      <Filter>02. Scene\01. Stage1\1_01</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LunaNights.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="LunaNights.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
