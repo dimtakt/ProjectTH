@@ -28,8 +28,9 @@ void CStage1_01::Initialize()
 	// 이후 몬스터나 타일 등의 생성 및 이미지 불러오기는 여기에..
 	//..
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/TempBG.bmp", L"STAGE1_01_BG");
-
-
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
+	
+	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
 }
 
 void CStage1_01::Update()

@@ -88,6 +88,9 @@
     <Filter Include="02. Scene\01. Stage1\1_01">
       <UniqueIdentifier>{6ba883ab-9c5a-4b57-956a-8b0dd5bb921e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Scene\T. Edit">
+      <UniqueIdentifier>{559222c5-b9f4-49eb-8aaf-59f5d068f7b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -156,6 +159,15 @@
     <ClInclude Include="CStage1_01.h">
       <Filter>02. Scene\01. Stage1\1_01</Filter>
     </ClInclude>
+    <ClInclude Include="CTile.h">
+      <Filter>01. Obj\04. Tile</Filter>
+    </ClInclude>
+    <ClInclude Include="CTileMgr.h">
+      <Filter>03. Design\08. TileMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CEdit.h">
+      <Filter>02. Scene\T. Edit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -208,6 +220,15 @@
     </ClCompile>
     <ClCompile Include="CStage1_01.cpp">
       <Filter>02. Scene\01. Stage1\1_01</Filter>
+    </ClCompile>
+    <ClCompile Include="CTile.cpp">
+      <Filter>01. Obj\04. Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="CTileMgr.cpp">
+      <Filter>03. Design\08. TileMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CEdit.cpp">
+      <Filter>02. Scene\T. Edit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

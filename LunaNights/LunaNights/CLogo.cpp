@@ -27,6 +27,11 @@ void CLogo::Update()
 		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_01);
 		return;
 	}
+	else if (CKeyMgr::Get_Instance()->Key_Down('E'))
+	{
+		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_EDIT);
+		return;
+	}
 }
 
 void CLogo::Late_Update()

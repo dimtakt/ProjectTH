@@ -139,6 +139,7 @@
     <ClInclude Include="CBmpMgr.h" />
     <ClInclude Include="CCameraMgr.h" />
     <ClInclude Include="CCollisionMgr.h" />
+    <ClInclude Include="CEdit.h" />
     <ClInclude Include="CKeyMgr.h" />
     <ClInclude Include="CLogo.h" />
     <ClInclude Include="CMainGame.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="CSceneMgr.h" />
     <ClInclude Include="CSpritePropertyMgr.h" />
     <ClInclude Include="CStage1_01.h" />
+    <ClInclude Include="CTile.h" />
     <ClInclude Include="CTileCollisionMgr.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="framework.h" />
@@ -157,11 +159,13 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="CTileMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CBmpMgr.cpp" />
     <ClCompile Include="CCameraMgr.cpp" />
     <ClCompile Include="CCollisionMgr.cpp" />
+    <ClCompile Include="CEdit.cpp" />
     <ClCompile Include="CKeyMgr.cpp" />
     <ClCompile Include="CLogo.cpp" />
     <ClCompile Include="CMainGame.cpp" />
@@ -173,6 +177,7 @@
     <ClCompile Include="CSceneMgr.cpp" />
     <ClCompile Include="CSpritePropertyMgr.cpp" />
     <ClCompile Include="CStage1_01.cpp" />
+    <ClCompile Include="CTile.cpp" />
     <ClCompile Include="CTileCollisionMgr.cpp" />
     <ClCompile Include="LunaNights.cpp" />
     <ClCompile Include="pch.cpp">
@@ -181,6 +186,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CTileMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunaNights.rc" />

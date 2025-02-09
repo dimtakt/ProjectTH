@@ -7,11 +7,23 @@
 #define			WINCX			1280
 #define			WINCY			720
 
+
 // #define			TILEX			30
 // #define			TILEY			20
 
 // #define			TILECX			64
 // #define			TILECY			64
+
+
+#define			TILECX			34			// 타일 하나의 크기를 의미
+#define			TILECY			34			// 타일 하나의 크기를 의미
+
+#define			TILESIZERATIO	2			// 스프라이트를 출력시킬 배율을 의미
+
+#define			TILEX			ceil(WINCX / (TILECX / TILESIZERATIO))	// 창 내에 보여질 타일의 갯수를 의미
+#define			TILEY			ceil(WINCY / (TILECX / TILESIZERATIO))	// 창 내에 보여질 타일의 갯수를 의미
+																		// 나중에 ceil(WINCX / (TILECX * TILESIZERATIO)) 로 수정해야함.
+
 
 #define			PURE			= 0 
 
@@ -50,6 +62,7 @@ enum OBJ_ID		{	OBJ_PLAYER,
 					OBJ_ITEM,
 					OBJ_TILE,
 					OBJ_UI,
+
 					OBJ_END
 				};
 
@@ -57,7 +70,7 @@ enum OBJ_ID		{	OBJ_PLAYER,
 
 // 오브젝트의 상태를 나타내는 열거형
 enum OBJ_STATE	{	// IDLE, 이동, 이동시작, 이동중정지, 이동중방향전환, 앉기
-					OBJST_IDLE, OBJST_RUN, OBJ_RUNSTART, OBJ_RUNEND, OBJ_RUNCHANGE, OBJST_DOWN,
+					OBJST_IDLE, OBJST_RUN, OBJST_RUNSTART, OBJST_RUNEND, OBJST_RUNCHANGE, OBJST_DOWN,
 					// 점프, 착지중, 활공
 					OBJST_JUMP, OBJST_FALL, OBJST_GLIDE,
 					
@@ -80,6 +93,7 @@ enum RENDERID	{	RENDER_PRIORITY,				// 가장 우선순위 높게 렌더링
 					RENDER_TILE_BACKGROUND,			// 배경 (타일)
 					REDNER_FRONT_BACKGROUND,		// 배경 (타일 뒤의 나무와 같은, 배경보단 위의 이미지)
 					RENDER_BACKGROUND,				// 배경	(하늘과 같은, 제일 뒤쪽의 이미지)
+
 					RENDER_END
 				};
 
@@ -171,7 +185,31 @@ public:
 	const TCHAR* m_pString;
 };
 
+struct DeleteObj
+{
+	template<typename T>
+	void operator()(T& Temp)
+	{
+		if (Temp)
+		{
+			delete Temp;
+			Temp = nullptr;
+		}
+	}
+};
 
+struct DeleteMap
+{
+	template<typename T>
+	void operator()(T& MyPair)
+	{
+		if (MyPair.second)
+		{
+			delete MyPair.second;
+			MyPair.second = nullptr;
+		}
+	}
+};
 
 #pragma endregion
 

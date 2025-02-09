@@ -31,9 +31,9 @@ void CSceneMgr::Scene_Change(SCENEID eScene)
 			m_pScene = new CStage1_01;
 			break;
 
-		//case SC_EDIT:
-		//	m_pScene = new CEdit;
-		//	break;
+		case SC_EDIT:
+			m_pScene = new CEdit;
+			break;
 
 		//case SC_STAGE:
 		//	m_pScene = new CStage;

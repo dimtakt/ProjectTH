@@ -21,6 +21,8 @@ private:
 	void Camera_Offset();
 	void Motion_Change();
 
+	void LoadImages();
+
 private:
 	//POINT m_tPosin;
 
@@ -33,6 +35,7 @@ private:
 	OBJ_STATE m_ePreState;
 
 	DWORD m_dwTime;
+	DWORD m_dwStateChangeTime;
 
 
 

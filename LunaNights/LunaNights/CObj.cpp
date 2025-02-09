@@ -38,17 +38,17 @@ void CObj::Update_Rect2X()
 
 void CObj::Update_Rect_UpStand()
 {
-	m_tRect.left = static_cast<LONG>(m_tInfo.fX - (m_tInfo.fCX * 0.5f));
-	m_tRect.top = static_cast<LONG>(m_tInfo.fY - (m_tInfo.fCY * 1.0f));
-	m_tRect.right = static_cast<LONG>(m_tInfo.fX + (m_tInfo.fCX * 0.5f));
-	m_tRect.bottom = static_cast<LONG>(m_tInfo.fY + (m_tInfo.fCY * 0.0f));
+	m_tRect.left	= static_cast<LONG>(m_tInfo.fX - (m_tInfo.fCX * 0.5f));
+	m_tRect.top		= static_cast<LONG>(m_tInfo.fY - (m_tInfo.fCY * 1.0f));
+	m_tRect.right	= static_cast<LONG>(m_tInfo.fX + (m_tInfo.fCX * 0.5f));
+	m_tRect.bottom	= static_cast<LONG>(m_tInfo.fY + (m_tInfo.fCY * 0.0f));
 }
 void CObj::Update_Rect_UpStand2X()
 {
-	m_tRect.left = static_cast<LONG>(m_tInfo.fX - (m_tInfo.fCX * 1.0f));
-	m_tRect.top = static_cast<LONG>(m_tInfo.fY - (m_tInfo.fCY * 2.0f));
-	m_tRect.right = static_cast<LONG>(m_tInfo.fX + (m_tInfo.fCX * 1.0f));
-	m_tRect.bottom = static_cast<LONG>(m_tInfo.fY + (m_tInfo.fCY * 0.0f));
+	m_tRect.left	= static_cast<LONG>(m_tInfo.fX - (m_tInfo.fCX * 1.0f));
+	m_tRect.top		= static_cast<LONG>(m_tInfo.fY - (m_tInfo.fCY * 2.0f));
+	m_tRect.right	= static_cast<LONG>(m_tInfo.fX + (m_tInfo.fCX * 1.0f));
+	m_tRect.bottom	= static_cast<LONG>(m_tInfo.fY + (m_tInfo.fCY * 0.0f));
 }
 
 void CObj::Move_Frame()

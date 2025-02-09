@@ -2,6 +2,8 @@
 #include "CCameraMgr.h"
 #include "CObj.h"
 
+#include "CKeyMgr.h"
+
 CCameraMgr* CCameraMgr::m_pInstance = nullptr;
 
 
@@ -31,6 +33,20 @@ void CCameraMgr::Update_CameraPos()	// Update가 아니라 Update_CameraPos 이런식으
 		m_fCameraX = m_pTarget->Get_Info()->fX;
 		m_fCameraY = m_pTarget->Get_Info()->fY;
 	}
+
+#pragma region Camera Test Code with WASD
+
+	//int iCameraSpeed = 5.f;	// Temp Value for Test
+	//if (CKeyMgr::Get_Instance()->Key_Pressing('W'))
+	//	m_fCameraY -= iCameraSpeed;
+	//if (CKeyMgr::Get_Instance()->Key_Pressing('S'))
+	//	m_fCameraY += iCameraSpeed;
+	//if (CKeyMgr::Get_Instance()->Key_Pressing('A'))
+	//	m_fCameraX -= iCameraSpeed;
+	//if (CKeyMgr::Get_Instance()->Key_Pressing('D'))
+	//	m_fCameraX += iCameraSpeed;
+
+#pragma endregion
 
 	CCameraMgr::CalcDiff();
 }

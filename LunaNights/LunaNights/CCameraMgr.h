@@ -25,6 +25,13 @@ public:
 	}
 	void Set_Target(CObj* _pTarget) { m_pTarget = _pTarget; }
 
+	// 카메라 자체의 좌표를 받아오는 함수
+	void Get_CameraPos(float& _rX, float& _rY)
+	{
+		_rX = m_fCameraX;
+		_rY = m_fCameraY;
+	}
+
 	// 최종적으로 렌더시킬 좌표를 받아오는 함수.
 	void Get_RenderPos(int& _rX, int& _rY) 
 	{

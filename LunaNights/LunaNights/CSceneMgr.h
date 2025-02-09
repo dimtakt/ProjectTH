@@ -7,10 +7,12 @@
 #include "CLogo.h"
 #include "CStage1_01.h"
 
+#include "CEdit.h"
+
 class CSceneMgr
 {
 public:
-	enum SCENEID { SC_LOGO, SC_STAGE1_01, SC_END };
+	enum SCENEID { SC_LOGO, SC_STAGE1_01, SC_EDIT, SC_END };
 
 private:
 	CSceneMgr();
