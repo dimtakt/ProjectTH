@@ -2,6 +2,7 @@
 #include "CTileMgr.h"
 #include "CAbstractFactory.h"
 #include "CCameraMgr.h"
+#include "CSpritePropertyMgr.h"
 
 CTileMgr* CTileMgr::m_pInstance = nullptr;
 
@@ -69,10 +70,6 @@ void CTileMgr::Render(HDC hDC)
 
 	int iTmp = 0;
 
-	// 이부분 면밀히 볼 것
-
-	// 아마 스크롤의 경우에는 기본값이 0, 0인 반면에
-	// 카메라의  경우에는 기본값이 WINCX / 2, WINCY / 2 라서 생기는 문제같음
 	for (int i = fOutY; i < iMaxY; ++i)
 	{
 		for (int j = fOutX; j < iMaxX; ++j)
@@ -82,6 +79,7 @@ void CTileMgr::Render(HDC hDC)
 			if (0 > iIndex || (size_t)iIndex >= m_vecTile.size())
 				continue;
 
+			//m_vecTile[iIndex]->Update_Rect2X(); // ksta
 			m_vecTile[iIndex]->Render(hDC);
 
 			iTmp++;
@@ -104,8 +102,6 @@ void CTileMgr::Release()
 	m_vecTile.shrink_to_fit();
 }
 
-// 왜 0, 0을 찍었는데, 인식은 9, 5가 찍히는거지
-// 인자로 들어오는 마우스의 좌표가 지랄이남. 또 스크롤이랑 카메라의 중앙점 기준 차이 문제인 듯
 void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 {
 	int	x = ptMouse.x / (TILECX * TILESIZERATIO) ;
@@ -177,6 +173,8 @@ void CTileMgr::Load_Tile()
 		CObj* pTile = CAbstractFactory<CTile>::Create(tInfo.fX, tInfo.fY);
 		dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
 		dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
+		dynamic_cast<CTile*>(pTile)->Update_Rect2X();
+		dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front"));
 
 		m_vecTile.push_back(pTile);
 	}

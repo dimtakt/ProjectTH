@@ -20,9 +20,8 @@
 
 #define			TILESIZERATIO	2			// 스프라이트를 출력시킬 배율을 의미
 
-#define			TILEX			ceil(WINCX / (TILECX / TILESIZERATIO))	// 창 내에 보여질 타일의 갯수를 의미
-#define			TILEY			ceil(WINCY / (TILECX / TILESIZERATIO))	// 창 내에 보여질 타일의 갯수를 의미
-																		// 나중에 ceil(WINCX / (TILECX * TILESIZERATIO)) 로 수정해야함.
+#define			TILEX			ceil(WINCX / (TILECX / TILESIZERATIO))	// 만들 타일의 갯수를 의미 ksta
+#define			TILEY			ceil(WINCY / (TILECX / TILESIZERATIO))	// 만들 타일의 갯수를 의미 ksta
 
 
 #define			PURE			= 0 

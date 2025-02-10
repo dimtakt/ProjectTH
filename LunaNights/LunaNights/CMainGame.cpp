@@ -7,7 +7,7 @@
 #include "CCameraMgr.h"
 #include "CBmpMgr.h"
 #include "CSceneMgr.h"
-//#include "CTileMgr.h"
+#include "CTileMgr.h"
 
 CMainGame::CMainGame() :
 	m_dwTime(GetTickCount()),
@@ -78,7 +78,7 @@ void CMainGame::Render()
 
 	CSceneMgr::Get_Instance()->Render(hBackDC);
 
-	BitBlt(m_DC, 0, 0, WINCX, WINCY, hBackDC, 0, 0, SRCCOPY);
+	BitBlt(m_DC, 0, 0, WINCX, WINCY, hBackDC, 0, 0, SRCCOPY); // kstaModify
 }
 
 void CMainGame::Release()
@@ -94,7 +94,7 @@ void CMainGame::Release()
 
 	CKeyMgr::Destroy_Instance();
 	//CLineMgr::Destroy_Instance();
-	//CTileMgr::Destroy_Instance();
+	CTileMgr::Destroy_Instance();
 
 	CSceneMgr::Destroy_Instance();
 	CObjMgr::Destroy_Instance();

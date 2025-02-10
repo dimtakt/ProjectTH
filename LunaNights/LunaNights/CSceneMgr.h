@@ -26,6 +26,9 @@ public:
 	void		Release();
 
 public:
+	SCENEID		Get_CurScene() { return m_eCurScene; }
+
+public:
 	static CSceneMgr* Get_Instance()
 	{
 		if (!m_pInstance)

@@ -4,6 +4,8 @@
 #include "CKeyMgr.h"
 #include "CSceneMgr.h"
 #include "CPlayer.h"
+#include "CTileMgr.h"
+#include "CSpritePropertyMgr.h"
 
 
 #include "CCameraMgr.h"
@@ -28,9 +30,14 @@ void CStage1_01::Initialize()
 	// 이후 몬스터나 타일 등의 생성 및 이미지 불러오기는 여기에..
 	//..
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/TempBG.bmp", L"STAGE1_01_BG");
+
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
+	FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
 	
 	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
+
+	CTileMgr::Get_Instance()->Load_Tile();
 }
 
 void CStage1_01::Update()
@@ -51,6 +58,7 @@ void CStage1_01::Render(HDC _DC)
 	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG");
 	BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
 
+	CTileMgr::Get_Instance()->Render(_DC); // 중복되지 않나 //?
 	CObjMgr::Get_Instance()->Render(_DC);
 }
 

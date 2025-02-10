@@ -16,5 +16,9 @@ public:
 
 private:
     void Key_Input();
+    void LoadImages();
+
+private:
+    unsigned int iSelectedTileIndex;
 };
 
