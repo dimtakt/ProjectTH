@@ -29,7 +29,7 @@ void CTileMgr::Initialize()
 			CObj* pTile = CAbstractFactory<CTile>::Create(fX, fY);
 			m_vecTile.push_back(pTile);
 			
-			std::cout << "[INFO][CTileMgr::Initialize] Generateed Tile Position : " << fX << ", " << fY << std::endl;
+			std::cout << "[INFO][CTileMgr::Initialize] Generated Tile Position : " << fX << ", " << fY << std::endl;
 		}
 	}
 
@@ -42,9 +42,6 @@ void CTileMgr::Update()
 {
 	for (auto& pTile : m_vecTile)
 		pTile->Update();
-
-	//
-	std::cout << "[INFO][CTileMgr::Update] m_vecTile[0] Rect : Left(" << m_vecTile[0]->Get_Rect()->left << "), Top(" << m_vecTile[0]->Get_Rect()->right << ")" << std::endl;
 }
 
 void CTileMgr::Late_Update()
@@ -59,18 +56,23 @@ void CTileMgr::Render(HDC hDC)
 	float fOutX, fOutY;
 	CCameraMgr::Get_Instance()->Get_CameraPos(fOutX, fOutY);
 
-	fOutX /= (TILECX * TILESIZERATIO);		// 지금 화면이 몇 칸 만큼 더 갔는가 가 되어야 함
-	fOutY /= (TILECY * TILESIZERATIO);		// 지금 화면이 몇 칸 만큼 더 갔는가 가 되어야 함
+	// 렌더 스타트의 타일단위 좌표
+	fOutX = (fOutX - (WINCX / 2)) / (TILECX * TILESIZERATIO);
+	fOutY = (fOutY - (WINCY / 2)) / (TILECY * TILESIZERATIO);
 
-	int	iMaxX = fOutX + (WINCX / (TILECX * TILESIZERATIO)); //+ 2; // 화면의 크기에 맞춰서 생길 타일의 최대 칸수를 의미
-	int	iMaxY = fOutY + (WINCY / (TILECY * TILESIZERATIO)); //+ 2; // 화면의 크기에 맞춰서 생길 타일의 최대 칸수를 의미
+	// 렌더 끝의 타일단위 좌표
+	int	iMaxX = fOutX + (WINCX / (TILECX * TILESIZERATIO)) + 2;
+	int	iMaxY = fOutY + (WINCY / (TILECY * TILESIZERATIO)) + 2;
 
+
+
+
+	int iTmp = 0;
 
 	// 이부분 면밀히 볼 것
 
 	// 아마 스크롤의 경우에는 기본값이 0, 0인 반면에
 	// 카메라의  경우에는 기본값이 WINCX / 2, WINCY / 2 라서 생기는 문제같음
-	// 일단 잘래.. 
 	for (int i = fOutY; i < iMaxY; ++i)
 	{
 		for (int j = fOutX; j < iMaxX; ++j)
@@ -81,10 +83,18 @@ void CTileMgr::Render(HDC hDC)
 				continue;
 
 			m_vecTile[iIndex]->Render(hDC);
+
+			iTmp++;
 		}
 	}
 
-	std::cout << "[INFO][CTileMgr::Render] Tile Vector Size : " << m_vecTile.size() << std::endl;
+#pragma region Debug Log for Tile Range & Amount Check
+	
+	std::cout << "[INFO][CTileMgr::Render] Tile Render Range (Tiled Size) : X (" << (int)fOutX << ", " << iMaxX << "), Y(" << (int)fOutY << ", " << iMaxY << ")" << std::endl;
+	std::cout << "[INFO][CTileMgr::Render] Tile Render Amount : " << iTmp << " / " << m_vecTile.size() << "(Tile Amount)" << std::endl;
+
+#pragma endregion
+
 }
 
 void CTileMgr::Release()
@@ -94,10 +104,12 @@ void CTileMgr::Release()
 	m_vecTile.shrink_to_fit();
 }
 
+// 왜 0, 0을 찍었는데, 인식은 9, 5가 찍히는거지
+// 인자로 들어오는 마우스의 좌표가 지랄이남. 또 스크롤이랑 카메라의 중앙점 기준 차이 문제인 듯
 void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 {
-	int	x = ptMouse.x / TILECX;
-	int	y = ptMouse.y / TILECY;
+	int	x = ptMouse.x / (TILECX * TILESIZERATIO) ;
+	int	y = ptMouse.y / (TILECY * TILESIZERATIO) ;
 
 	int		iIndex = y * TILEX + x;
 
@@ -107,6 +119,7 @@ void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 	dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_DrawID(_iDrawID);
 	dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_Option(_iOption);
 
+	std::cout << "[INFO][CTileMgr::Picking_Tile] Picked Pos : " << x << ", " << y << std::endl;
 }
 
 void CTileMgr::Save_Tile()

@@ -65,7 +65,7 @@ void CTile::Render(HDC hDC)
 						TILECY,
 						RGB(255, 0, 255));
 
-	std::cout << "[INFO][CTile::Render] Tile Generateed on.. : " << iOutX << ", " << iOutY << " (Size : " << TILECX * 2 << ", " << TILECY * 2 << ")" << std::endl;
+	//std::cout << "[INFO][CTile::Render] Tile Generated on.. : " << iOutX << ", " << iOutY << " (Size : " << TILECX * 2 << ", " << TILECY * 2 << ")" << std::endl;
 
 		
 }

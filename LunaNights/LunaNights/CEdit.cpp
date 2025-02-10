@@ -84,6 +84,9 @@ void CEdit::Key_Input()
 
 		float fTmpX, fTmpY;
 		CCameraMgr::Get_Instance()->Get_CameraPos(fTmpX, fTmpY);
+		fTmpX = fTmpX - (WINCX / 2);
+		fTmpY = fTmpY - (WINCY / 2);
+
 		POINT	ptCalcedMouse{ ptMouse.x + fTmpX, ptMouse.y + fTmpY };
 
 		//ptMouse.x -= (int)CScrollMgr::Get_Instance()->Get_ScrollX();
