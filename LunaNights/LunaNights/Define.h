@@ -20,8 +20,8 @@
 
 #define			TILESIZERATIO	2			// 스프라이트를 출력시킬 배율을 의미
 
-#define			TILEX			ceil(WINCX / (TILECX / TILESIZERATIO))	// 만들 타일의 갯수를 의미 ksta
-#define			TILEY			ceil(WINCY / (TILECX / TILESIZERATIO))	// 만들 타일의 갯수를 의미 ksta
+#define			TILEX			20	// 만들 타일의 갯수를 의미 ksta
+#define			TILEY			12 // ceil(WINCY / (TILECX / TILESIZERATIO))	// 만들 타일의 갯수를 의미 ksta
 
 
 #define			PURE			= 0 
@@ -146,8 +146,15 @@ typedef struct tagFrameProperty
 }FRAME_PROP;
 
 
-
-
+// 충돌의 위치 기준이 되는 각각의,
+// 좌상 우상 좌하 우하 좌표를 담는 구조체
+typedef struct tagCollisionPoint
+{
+	POINT ptLUp;
+	POINT ptRUp;
+	POINT ptLDown;
+	POINT ptRDown;
+}COL_POINT;
 
 #pragma endregion
 

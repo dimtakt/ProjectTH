@@ -60,36 +60,36 @@ void CTileMgr::Render(HDC hDC)
 	// 렌더 스타트의 타일단위 좌표
 	fOutX = (fOutX - (WINCX / 2)) / (TILECX * TILESIZERATIO);
 	fOutY = (fOutY - (WINCY / 2)) / (TILECY * TILESIZERATIO);
-
-	// 렌더 끝의 타일단위 좌표
-	int	iMaxX = fOutX + (WINCX / (TILECX * TILESIZERATIO)) + 2;
-	int	iMaxY = fOutY + (WINCY / (TILECY * TILESIZERATIO)) + 2;
-
-
-
-
+	
 	int iTmp = 0;
 
-	for (int i = fOutY; i < iMaxY; ++i)
-	{
-		for (int j = fOutX; j < iMaxX; ++j)
-		{
-			int	iIndex = i * (TILEX) + j; // ksta
+	int iMaxX = (fOutX + (WINCX / (TILECX * TILESIZERATIO))) + 2;
+	int iMaxY = (fOutY + (WINCY / (TILECY * TILESIZERATIO))) + 2;
 
-			if (0 > iIndex || (size_t)iIndex >= m_vecTile.size())
+	for (int i = (int)fOutY; i < iMaxY; i++)
+	{
+		for (int j = (int)fOutX; j < iMaxX; j++)
+		{
+			if (i < 0 || i >= TILEY) continue;
+			if (j < 0 || j >= TILEX) continue;
+
+			int iIndex = i * TILEX + j;
+			if ((size_t)iIndex >= m_vecTile.size())
 				continue;
 
-			//m_vecTile[iIndex]->Update_Rect2X(); // ksta
 			m_vecTile[iIndex]->Render(hDC);
-
 			iTmp++;
 		}
 	}
 
+	//for (auto& pTile : m_vecTile)
+	//	pTile->Render(hDC);
+
 #pragma region Debug Log for Tile Range & Amount Check
 	
-	std::cout << "[INFO][CTileMgr::Render] Tile Render Range (Tiled Size) : X (" << (int)fOutX << ", " << iMaxX << "), Y(" << (int)fOutY << ", " << iMaxY << ")" << std::endl;
-	std::cout << "[INFO][CTileMgr::Render] Tile Render Amount : " << iTmp << " / " << m_vecTile.size() << "(Tile Amount)" << std::endl;
+	//std::cout << "[INFO][CTileMgr::Render] Start X, Y and End X, Y : (" << fOutX << ", " << iMaxX << "), (" << fOutY << ", " << iMaxY << ")" << std::endl;
+	//std::cout << "[INFO][CTileMgr::Render] Tile Render Range (Tiled Size) : X (" << (int)fOutX << ", " << iMaxX << "), Y(" << (int)fOutY << ", " << iMaxY << ")" << std::endl;
+	//std::cout << "[INFO][CTileMgr::Render] Tile Render Amount : " << iTmp << " / " << m_vecTile.size() << "(Tile Amount)" << std::endl;
 
 #pragma endregion
 
