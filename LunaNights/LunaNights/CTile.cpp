@@ -18,8 +18,8 @@ CTile::~CTile()
 
 void CTile::Initialize()
 {
-	m_tInfo.fCX = TILECX;
-	m_tInfo.fCY = TILECY;
+	m_tInfo.fCX = TILECX * TILESIZERATIO;
+	m_tInfo.fCY = TILECY * TILESIZERATIO;
 	m_tPropertyName = L"BG_Front";
 	m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front");	// 타일의 정보를 받아옴
 	Set_FrameProperty(m_tFramePropCur);	// m_tFrame 에 방금 받아온 정보를 반영
@@ -109,7 +109,7 @@ void CTile::Render(HDC hDC)
 
 	//std::cout << "[INFO][CTile::Render] Tile Generated on.. : " << iOutX << ", " << iOutY << " (Size : " << TILECX * 2 << ", " << TILECY * 2 << ")" << std::endl;
 
-		
+	std::cout << "[INFO][CTile::Render] Generated TIle Info : " << m_tInfo.fX << ", " << m_tInfo.fY << " (Size : " << m_tInfo.fCX << ", " << m_tInfo.fCY << ")" << std::endl;
 }
 
 void CTile::Release()

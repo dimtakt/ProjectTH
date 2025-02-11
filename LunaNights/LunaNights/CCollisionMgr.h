@@ -9,7 +9,7 @@ public:
 	static void	Collision_Rect(std::list<CObj*> DstList, std::list<CObj*> SrcList);
 	
 	// 사각 충돌이 확인될 시 Dst에 의해 Src가 밀려나는 함수
-	// 칼날 간 간격을 띄우는 데에 사용해야 할 듯
+	// 칼날 간 간격을 띄우는 데에 사용해야 할 듯, 아니야, 그건 원 충돌로 하는 편이 낫지 않을까
 	static void	Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> SrcList);
 	
 	// 충돌 여부를 반환 및 겹치는 사각의 크기를 확인 가능한 함수

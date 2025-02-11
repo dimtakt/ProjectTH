@@ -43,9 +43,6 @@
     <Filter Include="03. Design\00. AbstractFactory">
       <UniqueIdentifier>{3e990d74-6eae-4720-a94d-554d1b34ef7f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Design\01. CCollisionMgr">
-      <UniqueIdentifier>{63cdf345-02c8-4076-86cf-4d523cbdb54c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Design\02. ObjMgr">
       <UniqueIdentifier>{35d44f62-cf64-4963-bfea-3445d2e719ca}</UniqueIdentifier>
     </Filter>
@@ -91,6 +88,9 @@
     <Filter Include="02. Scene\T. Edit">
       <UniqueIdentifier>{559222c5-b9f4-49eb-8aaf-59f5d068f7b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Design\01. CollisionMgr">
+      <UniqueIdentifier>{63cdf345-02c8-4076-86cf-4d523cbdb54c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -121,7 +121,7 @@
       <Filter>03. Design\00. AbstractFactory</Filter>
     </ClInclude>
     <ClInclude Include="CCollisionMgr.h">
-      <Filter>03. Design\01. CCollisionMgr</Filter>
+      <Filter>03. Design\01. CollisionMgr</Filter>
     </ClInclude>
     <ClInclude Include="CObjMgr.h">
       <Filter>03. Design\02. ObjMgr</Filter>
@@ -183,7 +183,7 @@
       <Filter>01. Obj</Filter>
     </ClCompile>
     <ClCompile Include="CCollisionMgr.cpp">
-      <Filter>03. Design\01. CCollisionMgr</Filter>
+      <Filter>03. Design\01. CollisionMgr</Filter>
     </ClCompile>
     <ClCompile Include="CObjMgr.cpp">
       <Filter>03. Design\02. ObjMgr</Filter>

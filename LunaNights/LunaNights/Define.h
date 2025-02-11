@@ -154,6 +154,8 @@ typedef struct tagCollisionPoint
 	POINT ptRUp;
 	POINT ptLDown;
 	POINT ptRDown;
+	bool isHasCollide = true;	// 타일 콜라이더를 구성하는 점이 5개가 필요할 때만 사용
+
 }COL_POINT;
 
 #pragma endregion

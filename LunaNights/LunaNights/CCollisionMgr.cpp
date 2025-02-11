@@ -80,7 +80,7 @@ bool CCollisionMgr::Check_Rect(CObj* pDst, CObj* pSrc, float* pX, float* pY)
 
 		return true;
 	}
-
+	
 	return false;
 }
 
