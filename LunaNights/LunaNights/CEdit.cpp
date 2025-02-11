@@ -47,6 +47,20 @@ void CEdit::Late_Update()
 void CEdit::Render(HDC _DC)
 {
 	CTileMgr::Get_Instance()->Render(_DC);
+
+	for (int i = 0; i < TILEX; i++)
+		for (int j = 0; j < TILEY; j++)
+		{
+			POINT ptLUp{ i * (TILECX * TILESIZERATIO), j * (TILECY * TILESIZERATIO) };
+			POINT ptRDown{ (i + 1) * (TILECX * TILESIZERATIO) - 1, (j + 1) * (TILECY * TILESIZERATIO) - 1};
+			
+			//Rectangle(_DC, ptLUp.x, ptLUp.y, ptRDown.x, ptRDown.y);
+			MoveToEx(_DC, ptLUp.x, ptLUp.y, nullptr);
+			LineTo(_DC, ptLUp.x, ptRDown.y);
+			LineTo(_DC, ptRDown.x, ptRDown.y);
+			LineTo(_DC, ptRDown.x, ptLUp.y);
+			LineTo(_DC, ptLUp.x, ptLUp.y);
+		}
 }
 
 void CEdit::Release()
