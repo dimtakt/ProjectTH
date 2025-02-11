@@ -34,21 +34,23 @@ void CStage1_01::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
 	FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
-	
-	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
 
 	CTileMgr::Get_Instance()->Initialize();
 	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front");
+	
+	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
 	// CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision.dat", L"Collision_Tile");	// 콜라이더 데이터
 }
 
 void CStage1_01::Update()
 {
+	CTileMgr::Get_Instance()->Update();
 	CObjMgr::Get_Instance()->Update();
 }
 
 void CStage1_01::Late_Update()
 {
+	CTileMgr::Get_Instance()->Late_Update();
 	CObjMgr::Get_Instance()->Late_Update();
 }
 

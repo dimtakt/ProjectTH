@@ -28,7 +28,7 @@ void CTile::Initialize()
 
 int CTile::Update()
 {
-	__super::Update_Rect2X();
+	__super::Update_Rect();
 	//__super::Update_Rect();
 
 	return 0;
@@ -108,9 +108,9 @@ void CTile::Render(HDC hDC)
 	//			TILECX, TILECY,
 	//			SRCCOPY);
 
-	std::cout << "[INFO][CTile::Render] Tile Generated on.. : " << iOutX << ", " << iOutY << " (Size : " << TILECX * 2 << ", " << TILECY * 2 << ")" << std::endl;
 
-	std::cout << "[INFO][CTile::Render] Generated TIle Info : " << m_tInfo.fX << ", " << m_tInfo.fY << " (Size : " << m_tInfo.fCX << ", " << m_tInfo.fCY << ")" << std::endl;
+	//std::cout << "[INFO][CTile::Render] Tile Generated on.. : " << iOutX << ", " << iOutY << " (Size : " << TILECX * 2 << ", " << TILECY * 2 << ")" << std::endl;
+	//std::cout << "[INFO][CTile::Render] Generated TIle Info : " << m_tInfo.fX << ", " << m_tInfo.fY << " (Size : " << m_tInfo.fCX << ", " << m_tInfo.fCY << ")" << std::endl;
 }
 
 void CTile::Release()

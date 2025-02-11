@@ -34,9 +34,9 @@ void CEdit::Initialize()
 
 void CEdit::Update()
 {
-	CTileMgr::Get_Instance()->Update();
-
 	Key_Input();
+
+	CTileMgr::Get_Instance()->Update();
 }
 
 void CEdit::Late_Update()

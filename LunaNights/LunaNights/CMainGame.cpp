@@ -76,7 +76,6 @@ void CMainGame::Render()
 
 	HDC	hBackDC = CBmpMgr::Get_Instance()->Find_Image(L"Back");
 
-
 	CSceneMgr::Get_Instance()->Render(hBackDC);
 
 	BitBlt(m_DC, 0, 0, WINCX, WINCY, hBackDC, 0, 0, SRCCOPY); // kstaModify
