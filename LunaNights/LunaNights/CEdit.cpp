@@ -53,6 +53,8 @@ void CEdit::Render(HDC _DC)
 		{
 			POINT ptLUp{ i * (TILECX * TILESIZERATIO), j * (TILECY * TILESIZERATIO) };
 			POINT ptRDown{ (i + 1) * (TILECX * TILESIZERATIO) - 1, (j + 1) * (TILECY * TILESIZERATIO) - 1};
+			CCameraMgr::Get_Instance()->Get_RenderPos(ptLUp.x, ptLUp.y);
+			CCameraMgr::Get_Instance()->Get_RenderPos(ptRDown.x, ptRDown.y);
 			
 			//Rectangle(_DC, ptLUp.x, ptLUp.y, ptRDown.x, ptRDown.y);
 			MoveToEx(_DC, ptLUp.x, ptLUp.y, nullptr);

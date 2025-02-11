@@ -10,7 +10,8 @@ void CTileCollisionMgr::Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::lis
 	{
 		for (auto& _Obj : _ObjList)
 		{
-
+			if (Check_Collision_Tile2Obj(_Obj, _Tile, nullptr, nullptr))
+				std::cout << "[INFO][CTileCollisionMgr::Collision_Tile2Obj] Collision Detected (Tile Pos : " << _Tile->Get_Info()->fX << ", " << _Tile->Get_Info()->fY << ")" << std::endl;
 
 			// if 충돌하면
 			// 플레이어 좌표를 이전으로 돌림
@@ -27,7 +28,8 @@ bool CTileCollisionMgr::Check_Collision_Tile2Obj(CObj* _pTile, CObj* _pObj, floa
 
 	unsigned int iTileID = dynamic_cast<CTile*>(_pTile)->Get_DrawID();	// 이걸로 콜라이더의 생김새를 판별
 	COL_POINT tTilePoint = GetColPoint(tTileInfo, iTileID);
-
+	
+	// 계산의 편의성을 위해 배열에 담음
 	POINT tTilePoints[4] = { tTilePoint.ptLUp, tTilePoint.ptRUp, tTilePoint.ptLDown, tTilePoint.ptRDown };
 	POINT tObjPoints[4] = { tObjInfo.fX - tObjInfo.fCX * 0.5f,
 							tObjInfo.fX + tObjInfo.fCX * 0.5f,

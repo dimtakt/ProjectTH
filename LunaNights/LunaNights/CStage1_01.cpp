@@ -37,6 +37,7 @@ void CStage1_01::Initialize()
 	
 	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
 
+	CTileMgr::Get_Instance()->Initialize();
 	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front");
 	// CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision.dat", L"Collision_Tile");	// 콜라이더 데이터
 }

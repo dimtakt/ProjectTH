@@ -78,6 +78,9 @@ protected:
 	//float		m_fDistance;
 	bool		m_isStretch;
 
+	bool		m_isFlying;
+	bool		m_isJumping;
+
 	const TCHAR* m_pFrameKey;
 
 	std::map<TCHAR, FRAME_PROP> m_mapFrameProp;

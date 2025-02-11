@@ -29,6 +29,7 @@ void CMainGame::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/Back.bmp", L"Back");
 
 	CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_LOGO);
+	
 
 
 #ifdef _DEBUG

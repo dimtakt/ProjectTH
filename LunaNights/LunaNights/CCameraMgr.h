@@ -38,6 +38,11 @@ public:
 		_rX = _rX - static_cast<int>(m_fDiffX);
 		_rY = _rY - static_cast<int>(m_fDiffY);
 	}
+	void Get_RenderPos(LONG& _rX, LONG& _rY)
+	{
+		_rX = _rX - static_cast<int>(m_fDiffX);
+		_rY = _rY - static_cast<int>(m_fDiffY);
+	}
 
 public:
 	static CCameraMgr*	Get_Instance()

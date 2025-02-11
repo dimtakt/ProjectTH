@@ -32,7 +32,7 @@ void CPlayer::Initialize()
 	m_tInfo = { 100.f, WINCY / 2.f + 100.f, 64.f, 64.f };
 	m_fSpeed = 6.f;
 	m_fAngle = 0.f;
-	m_isJump = false;
+	m_isJumping = false;
 	m_fTime = 0.f;
 	m_fJumpSpeed = 20.f;
 

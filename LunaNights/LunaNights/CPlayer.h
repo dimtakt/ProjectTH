@@ -29,8 +29,6 @@ private:
 	float m_fJumpSpeed;
 	float m_fTime;
 	
-	bool m_isJump;
-	
 	OBJ_STATE m_eCurState;
 	OBJ_STATE m_ePreState;
 

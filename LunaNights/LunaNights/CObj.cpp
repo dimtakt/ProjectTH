@@ -10,7 +10,9 @@ CObj::CObj() :
 	m_isDead(false),
 	m_fAngle(0.f),
 	m_isStretch(false),
-	m_pFrameKey(nullptr)
+	m_pFrameKey(nullptr),
+	m_isJumping(false),
+	m_isFlying(false)
 {
 	ZeroMemory(&m_tInfo, sizeof(INFO));
 	ZeroMemory(&m_tRect, sizeof(RECT));
