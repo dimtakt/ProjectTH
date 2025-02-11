@@ -92,7 +92,7 @@ void CEdit::Key_Input()
 
 	// 좌클 시 선택된 인덱스의 타일을 칠함
 	// 우클 시 선택된 인덱스의 타일을 0으로 되돌림
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_LBUTTON))
+	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_LBUTTON))
 	{
 		POINT	ptMouse{};
 		GetCursorPos(&ptMouse);
@@ -107,7 +107,7 @@ void CEdit::Key_Input()
 
 		CTileMgr::Get_Instance()->Picking_Tile(ptCalcedMouse, iSelectedTileIndex, 0);
 	}
-	else if (CKeyMgr::Get_Instance()->Key_Down(VK_RBUTTON))
+	else if (CKeyMgr::Get_Instance()->Key_Pressing(VK_RBUTTON))
 	{
 		POINT	ptMouse{};
 		GetCursorPos(&ptMouse);
@@ -158,15 +158,27 @@ void CEdit::Key_Input()
 
 		if (iInfo == IDYES)
 		{
-			iEditMode = (iEditMode >= 1) ? 0 : iEditMode + 1;
+			if (iEditMode == 0)
+			{
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile.dat");
+				CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision.dat", L"Collision_Tile");
+				iEditMode = 1;
+			}
+			else
+			{
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision.dat");
+				CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile.dat", L"BG_Front");
+				iEditMode = 0;
+			}
+
 			std::cout << "[INFO][CEdit::Key_Input] Current EditMode is " << iEditMode << "!" << std::endl;
 
 			iSelectedTileIndex = 0;
 			std::cout << "[INFO][CEdit::Key_Input] Current Selected Tile Index : " << iSelectedTileIndex << std::endl;
 
-			if (iEditMode = 0)
+			if (iEditMode == 0)
 				CTileMgr::Get_Instance()->Set_PropName(L"BG_Front");
-			else if (iEditMode = 1)
+			else if (iEditMode == 1)
 				CTileMgr::Get_Instance()->Set_PropName(L"Collision_Tile");
 		}
 	}
