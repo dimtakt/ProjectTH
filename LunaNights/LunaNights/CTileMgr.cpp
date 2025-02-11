@@ -34,6 +34,7 @@ void CTileMgr::Initialize()
 		}
 	}
 
+	m_tPropertyName = L"BG_Front";
 
 	std::cout << "[INFO][CTileMgr::Initialize] Initialize Complete!" << std::endl;
 
@@ -77,6 +78,8 @@ void CTileMgr::Render(HDC hDC)
 			if ((size_t)iIndex >= m_vecTile.size())
 				continue;
 
+			dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_PropName(m_tPropertyName);
+			dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName));
 			m_vecTile[iIndex]->Render(hDC);
 			iTmp++;
 		}
@@ -118,9 +121,9 @@ void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 	std::cout << "[INFO][CTileMgr::Picking_Tile] Picked Pos : " << x << ", " << y << std::endl;
 }
 
-void CTileMgr::Save_Tile()
+void CTileMgr::Save_Tile(const TCHAR* _dataFileName)
 {
-	HANDLE	hFile = CreateFile(L"../Data/Tile.dat", GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE	hFile = CreateFile(_dataFileName, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (INVALID_HANDLE_VALUE == hFile)
 		return;
@@ -143,9 +146,9 @@ void CTileMgr::Save_Tile()
 	MessageBox(g_hWnd, L"Tile Save", L"¼º°ø", MB_OK);
 }
 
-void CTileMgr::Load_Tile()
+void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName)
 {
-	HANDLE	hFile = CreateFile(L"../Data/Tile.dat",
+	HANDLE	hFile = CreateFile(_dataFileName,
 		GENERIC_READ,
 		NULL, NULL,
 		OPEN_EXISTING,
@@ -174,7 +177,7 @@ void CTileMgr::Load_Tile()
 		dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
 		dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
 		dynamic_cast<CTile*>(pTile)->Update_Rect2X();
-		dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front"));
+		dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(_propertyName));
 
 		m_vecTile.push_back(pTile);
 	}

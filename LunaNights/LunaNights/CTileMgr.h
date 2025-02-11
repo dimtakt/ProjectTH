@@ -17,8 +17,11 @@ public:
 
 public:
 	void		Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption);
-	void		Save_Tile();
-	void		Load_Tile();
+	void		Save_Tile(const TCHAR* _dataFileName);
+	void		Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName);
+
+	void		Set_PropName(const TCHAR* _propertyName) { m_tPropertyName = _propertyName; } // 렌더 내에서 반영하는 코드 짜야함
+
 public:
 	static CTileMgr* Get_Instance()
 	{
@@ -41,5 +44,6 @@ public:
 private:
 	static CTileMgr*		m_pInstance;
 	std::vector<CObj*>		m_vecTile;
+	const TCHAR* m_tPropertyName;
 };
 

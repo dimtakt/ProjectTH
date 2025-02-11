@@ -20,5 +20,7 @@ private:
 
 private:
     unsigned int iSelectedTileIndex;
+    TCHAR tTileName;
+    int iEditMode;
 };
 

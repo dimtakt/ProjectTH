@@ -15,18 +15,19 @@ CTile::~CTile()
 	Release();
 }
 
+
 void CTile::Initialize()
 {
 	m_tInfo.fCX = TILECX;
 	m_tInfo.fCY = TILECY;
-
+	m_tPropertyName = L"BG_Front";
 	m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front");	// 타일의 정보를 받아옴
 	Set_FrameProperty(m_tFramePropCur);	// m_tFrame 에 방금 받아온 정보를 반영
 }
 
+
 int CTile::Update()
 {
-	
 	__super::Update_Rect2X();
 
 	return 0;
@@ -38,7 +39,7 @@ void CTile::Late_Update()
 
 void CTile::Render(HDC hDC)
 {
-	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"BG_Front");
+	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_tPropertyName);
 
 	int iOutX = m_tRect.left;
 	int iOutY = m_tRect.top;
@@ -56,6 +57,9 @@ void CTile::Render(HDC hDC)
 	//			SRCCOPY);
 
 
+	// 이거를 받아온 프로퍼티에 맞게 수정해야 함
+	// 그 뒤, CTIleMgr의 Render 부분에서 주석처리한 부분을 해제해보기. (프로퍼티프레임 지정하는 부분)
+	// 해제했을 때에도 좌표가 이상하면 프로퍼티프레임을 지정하는 함수 호출을 어느 타이밍에 해야 할 지 생각해본 뒤 반영
 	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT)
 	{
 		GdiTransparentBlt(	hDC,
@@ -101,4 +105,10 @@ void CTile::Render(HDC hDC)
 
 void CTile::Release()
 {
+}
+
+void CTile::Set_PropName(const TCHAR* _propertyName)
+{
+	m_tPropertyName = _propertyName;
+	m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName);
 }
