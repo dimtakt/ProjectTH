@@ -159,14 +159,15 @@ void CEdit::Key_Input()
 		if (iInfo == IDYES)
 		{
 			iEditMode = (iEditMode >= 1) ? 0 : iEditMode + 1;
+
 			std::cout << "[INFO][CEdit::Key_Input] Current EditMode is " << iEditMode << "!" << std::endl;
 
 			iSelectedTileIndex = 0;
 			std::cout << "[INFO][CEdit::Key_Input] Current Selected Tile Index : " << iSelectedTileIndex << std::endl;
 
-			if (iEditMode = 0)
+			if (iEditMode == 0)
 				CTileMgr::Get_Instance()->Set_PropName(L"BG_Front");
-			else if (iEditMode = 1)
+			else if (iEditMode == 1)
 				CTileMgr::Get_Instance()->Set_PropName(L"Collision_Tile");
 		}
 	}

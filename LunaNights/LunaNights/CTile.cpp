@@ -62,27 +62,36 @@ void CTile::Render(HDC hDC)
 	// 해제했을 때에도 좌표가 이상하면 프로퍼티프레임을 지정하는 함수 호출을 어느 타이밍에 해야 할 지 생각해본 뒤 반영
 	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT)
 	{
+		FRAME_PROP tOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName);
+
 		GdiTransparentBlt(	hDC,
 							iOutX,
 							iOutY,
-							TILECX * 2, TILECY * 2,
+							TILECX * 2,
+							TILECY * 2,
 							hMemDC,
-							TILECX * ((m_iDrawID) % (m_tFrame.iFrameMaxX)),
-							TILECY * ((m_iDrawID) / (m_tFrame.iFrameMaxX)),
-							TILECX,
-							TILECY,
+							tOriginProp.iCX * ((m_iDrawID) % (m_tFrame.iFrameMaxX)),
+							tOriginProp.iCY * ((m_iDrawID) / (m_tFrame.iFrameMaxX)),
+							tOriginProp.iCX,
+							tOriginProp.iCY,
 							RGB(255, 0, 255));
+
+
+		
 	}
 	else
 	{
+		FRAME_PROP tOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName);
+
 		StretchBlt(			hDC,					// 사본 DC
 							iOutX,					// 그리려는 곳의 X 좌표
 							iOutY,					// 그리려는 곳의 Y 좌표
 							TILECX * 2, TILECY * 2,	// 그리려는 곳의 X, Y Size
 							hMemDC,					// 원본 DC
-							TILECX * ((m_iDrawID) % (m_tFrame.iFrameMaxX)),		// 가져올 이미지의 X 좌표
-							TILECY * ((m_iDrawID) / (m_tFrame.iFrameMaxX)),		// 가져올 이미지의 Y 좌표
-							TILECX, TILECY,
+							tOriginProp.iCX * ((m_iDrawID) % (m_tFrame.iFrameMaxX)),		// 가져올 이미지의 X 좌표
+							tOriginProp.iCY * ((m_iDrawID) / (m_tFrame.iFrameMaxX)),		// 가져올 이미지의 Y 좌표
+							tOriginProp.iCX ,
+							tOriginProp.iCY ,
 							SRCCOPY);
 	}
 
