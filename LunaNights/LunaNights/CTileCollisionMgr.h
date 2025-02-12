@@ -22,6 +22,8 @@ public:
 	// 콜라이더의 TileID를 넣으면, 콜라이더 기준의 4개 점 좌표를 반환해주는 함수
 	static COL_POINT GetColPoint(INFO _tileInfo, int iTileIndex);
 
+	static void Debug_CheckLine(POINT _LineA1, POINT _LineA2, POINT _LineB1, POINT _LineB2);
+
 
 
 

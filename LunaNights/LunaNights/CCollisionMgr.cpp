@@ -75,9 +75,11 @@ bool CCollisionMgr::Check_Rect(CObj* pDst, CObj* pSrc, float* pX, float* pY)
 
 	if ((fRadiusX > fWidth) && (fRadiusY > fHeight))
 	{
-		*pX = fRadiusX - fWidth;
-		*pY = fRadiusY - fHeight;
-
+		if (pX && pY)
+		{
+			*pX = fRadiusX - fWidth;
+			*pY = fRadiusY - fHeight;
+		}
 		return true;
 	}
 	
