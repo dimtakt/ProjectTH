@@ -113,44 +113,37 @@ void CPlayer::Render(HDC hDC)
 	// 충돌 기준 확인용
 	// 빨간 색은 Rect 기준, 초록색은 Info 기준 위치.
 
-// 카메라 기준으로 수정된 좌표 얻기
 	int iTestOutX = 0, iTestOutY = 0;
 	CCameraMgr::Get_Instance()->Get_RenderPos(iTestOutX, iTestOutY);
 
-	// 초록색 펜 생성 (INFO 기준)
 	HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 	HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
 
-	// INFO를 기준으로 사각형 좌표 계산
-	int infoLeft = (int)(m_tInfo.fX - m_tInfo.fCX * 0.5f) + iTestOutX;
-	int infoTop = (int)(m_tInfo.fY - m_tInfo.fCY * 0.5f) + iTestOutY;
-	int infoRight = (int)(m_tInfo.fX + m_tInfo.fCX * 0.5f) + iTestOutX;
-	int infoBottom = (int)(m_tInfo.fY + m_tInfo.fCY * 0.5f) + iTestOutY;
+	int infoLeft	= (int)(m_tInfo.fX - m_tInfo.fCX * 0.5f) + iTestOutX;
+	int infoTop		= (int)(m_tInfo.fY - m_tInfo.fCY * 0.5f) + iTestOutY;
+	int infoRight	= (int)(m_tInfo.fX + m_tInfo.fCX * 0.5f) + iTestOutX;
+	int infoBottom	= (int)(m_tInfo.fY + m_tInfo.fCY * 0.5f) + iTestOutY;
 
-	// INFO 사각형 그리기
-	MoveToEx(hDC, infoLeft, infoTop, NULL);
+	MoveToEx(hDC, infoLeft, infoTop, nullptr);
 	LineTo(hDC, infoRight, infoTop);
 	LineTo(hDC, infoRight, infoBottom);
 	LineTo(hDC, infoLeft, infoBottom);
-	LineTo(hDC, infoLeft, infoTop); // 처음 점으로 닫음
+	LineTo(hDC, infoLeft, infoTop);
 
-	// 빨간색 펜 생성 (RECT 기준)
 	HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 	hOldPen = (HPEN)SelectObject(hDC, hRedPen);
 
-	// RECT를 기준으로 사각형 그리기
-	int rectLeft = m_tRect.left + iTestOutX;
-	int rectTop = m_tRect.top + iTestOutY;
-	int rectRight = m_tRect.right + iTestOutX;
-	int rectBottom = m_tRect.bottom + iTestOutY;
+	int rectLeft	= m_tRect.left + iTestOutX;
+	int rectTop		= m_tRect.top + iTestOutY;
+	int rectRight	= m_tRect.right + iTestOutX;
+	int rectBottom	= m_tRect.bottom + iTestOutY;
 
-	MoveToEx(hDC, rectLeft, rectTop, NULL);
+	MoveToEx(hDC, rectLeft, rectTop, nullptr);
 	LineTo(hDC, rectRight, rectTop);
 	LineTo(hDC, rectRight, rectBottom);
 	LineTo(hDC, rectLeft, rectBottom);
-	LineTo(hDC, rectLeft, rectTop); // 처음 점으로 닫음
+	LineTo(hDC, rectLeft, rectTop);
 
-	// 원래 펜으로 복구 및 리소스 해제
 	SelectObject(hDC, hOldPen);
 	DeleteObject(hGreenPen);
 	DeleteObject(hRedPen);

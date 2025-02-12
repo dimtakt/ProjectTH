@@ -14,13 +14,12 @@ void CTileCollisionMgr::Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::lis
 		{
 			if (Check_Collision_Tile2Obj(_Tile, _Obj, nullptr, nullptr))
 			{
-				//std::cout << "[INFO][CTileCollisionMgr::Collision_Tile2Obj] Collision Detected (Tile OriginPos : " << _Tile->Get_Info()->fX << ", " << _Tile->Get_Info()->fY << ")" << std::endl;
-				//std::cout << "[INFO][CTileCollisionMgr::Collision_Tile2Obj] Collision Detected (Tile Tiled Pos : " << (int)(_Tile->Get_Info()->fX / (68)) << ", " << (int)(_Tile->Get_Info()->fY / (68)) << ")" << std::endl;
+				// if 충돌하면
+				// 플레이어 좌표를 이전으로 돌리든 뭐든..
+				// 이 부분은 나중에 구현.. ksta
+				
 			}
 
-			// if 충돌하면
-			// 플레이어 좌표를 이전으로 돌림
-			// 이 부분은 나중에 구현.. ksta
 		}
 	}
 }

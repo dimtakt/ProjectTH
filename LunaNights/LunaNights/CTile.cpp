@@ -56,7 +56,6 @@ void CTile::Render(HDC hDC)
 	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT)
 	{
 		FRAME_PROP tOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName);
-
 		GdiTransparentBlt(	hDC,
 							iOutX,
 							iOutY,
@@ -72,7 +71,6 @@ void CTile::Render(HDC hDC)
 	else
 	{
 		FRAME_PROP tOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName);
-
 		StretchBlt(			hDC,					// 사본 DC
 							iOutX,					// 그리려는 곳의 X 좌표
 							iOutY,					// 그리려는 곳의 Y 좌표
@@ -85,17 +83,6 @@ void CTile::Render(HDC hDC)
 							SRCCOPY);
 	}
 
-
-	// 테스트용, 수정 이후 위의 StretchBlt와 전환
-	//StretchBlt(	GetDC(g_hWnd),					// 사본 DC
-	//			iOutX,					// 그리려는 곳의 X 좌표
-	//			iOutY,					// 그리려는 곳의 Y 좌표
-	//			TILECX * 2, TILECY * 2,	// 그리려는 곳의 X, Y Size
-	//			hMemDC,					// 원본 DC
-	//			TILECX * ((m_iDrawID) % (m_tFrame.iFrameMaxX)),		// 가져올 이미지의 X 좌표
-	//			TILECY * ((m_iDrawID) / (m_tFrame.iFrameMaxX)),		// 가져올 이미지의 Y 좌표
-	//			TILECX, TILECY,
-	//			SRCCOPY);
 
 
 	//std::cout << "[INFO][CTile::Render] Tile Generated on.. : " << iOutX << ", " << iOutY << " (Size : " << TILECX * 2 << ", " << TILECY * 2 << ")" << std::endl;
