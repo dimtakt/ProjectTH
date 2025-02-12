@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CObjMgr.h"
 #include "CCollisionMgr.h"
+#include "CTileCollisionMgr.h"
+#include "CTileMgr.h"
 
 CObjMgr* CObjMgr::m_pInstance = nullptr;
 
@@ -86,7 +88,12 @@ void CObjMgr::Late_Update()
 		}
 	}
 
-	// 충돌처리 활성화는 이곳에서 KSTA
+	// 충돌처리 활성화는 이곳에서 ksta
+	
+	std::vector<CObj*> vTiles = CTileMgr::Get_Instance()->Get_CollideVecTile();
+	if (vTiles.size() != 0)
+		CTileCollisionMgr::Collision_Tile2Obj(vTiles, m_ObjList[OBJ_PLAYER]);
+
 	//CCollisionMgr::Collision_Rect(m_ObjList[MOUSE], m_ObjList[MONSTER]);
 	//CCollisionMgr::Collision_Circle(m_ObjList[BULLET], m_ObjList[MONSTER]);
 	//CCollisionMgr::Collision_RectEx(m_ObjList[MONSTER], m_ObjList[PLAYER]);

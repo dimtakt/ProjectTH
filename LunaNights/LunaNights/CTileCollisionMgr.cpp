@@ -10,8 +10,11 @@ void CTileCollisionMgr::Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::lis
 	{
 		for (auto& _Obj : _ObjList)
 		{
-			if (Check_Collision_Tile2Obj(_Obj, _Tile, nullptr, nullptr))
-				std::cout << "[INFO][CTileCollisionMgr::Collision_Tile2Obj] Collision Detected (Tile Pos : " << _Tile->Get_Info()->fX << ", " << _Tile->Get_Info()->fY << ")" << std::endl;
+			if (Check_Collision_Tile2Obj(_Tile, _Obj, nullptr, nullptr))
+			{
+				std::cout << "[INFO][CTileCollisionMgr::Collision_Tile2Obj] Collision Detected (Tile OriginPos : " << _Tile->Get_Info()->fX << ", " << _Tile->Get_Info()->fY << ")" << std::endl;
+				std::cout << "[INFO][CTileCollisionMgr::Collision_Tile2Obj] Collision Detected (Tile Tiled Pos : " << (int)(_Tile->Get_Info()->fX / (68)) << ", " << (int)(_Tile->Get_Info()->fY / (68)) << ")" << std::endl;
+			}
 
 			// if 충돌하면
 			// 플레이어 좌표를 이전으로 돌림
@@ -23,34 +26,55 @@ void CTileCollisionMgr::Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::lis
 // float 인자는 얼마나 겹치는지를 반환하도록 제작하여 넘친 만큼의 좌표를 재조정함
 bool CTileCollisionMgr::Check_Collision_Tile2Obj(CObj* _pTile, CObj* _pObj, float* _pX, float* _pY)
 {
-	INFO tTileInfo = *_pTile->Get_Info();
+	CTile* tmpTile = dynamic_cast<CTile*>(_pTile);
+
+	INFO tTileInfo = *tmpTile->Get_Info();
 	INFO tObjInfo = *_pObj->Get_Info();
 
-	unsigned int iTileID = dynamic_cast<CTile*>(_pTile)->Get_DrawID();	// 이걸로 콜라이더의 생김새를 판별
+	unsigned int iTileID = tmpTile->Get_DrawID();	// 이걸로 콜라이더의 생김새를 판별
 	COL_POINT tTilePoint = GetColPoint(tTileInfo, iTileID);
 	
 	// 계산의 편의성을 위해 배열에 담음
-	POINT tTilePoints[4] = { tTilePoint.ptLUp, tTilePoint.ptRUp, tTilePoint.ptLDown, tTilePoint.ptRDown };
-	POINT tObjPoints[4] = { tObjInfo.fX - tObjInfo.fCX * 0.5f,
-							tObjInfo.fX + tObjInfo.fCX * 0.5f,
-							tObjInfo.fY - tObjInfo.fCY * 0.5f,
-							tObjInfo.fY + tObjInfo.fCY * 0.5f };
 	
-	for (int i = 0; i < 4; i++)
+	// AABB 검사용 배열
+	POINT tTileRectPoints[4] = {{ tTileInfo.fX - tTileInfo.fCX * 0.5f, tTileInfo.fY - tTileInfo.fCY * 0.5f },
+								{ tTileInfo.fX + tTileInfo.fCX * 0.5f, tTileInfo.fY - tTileInfo.fCY * 0.5f },
+								{ tTileInfo.fX + tTileInfo.fCX * 0.5f, tTileInfo.fY + tTileInfo.fCY * 0.5f },
+								{ tTileInfo.fX - tTileInfo.fCX * 0.5f, tTileInfo.fY + tTileInfo.fCY * 0.5f } };
+	POINT tObjPoints[4] = { {tObjInfo.fX - tObjInfo.fCX * 0.5f, tObjInfo.fY - tObjInfo.fCY * 0.5f},
+							{tObjInfo.fX + tObjInfo.fCX * 0.5f, tObjInfo.fY - tObjInfo.fCY * 0.5f},
+							{tObjInfo.fX - tObjInfo.fCX * 0.5f, tObjInfo.fY + tObjInfo.fCY * 0.5f},
+							{tObjInfo.fX + tObjInfo.fCX * 0.5f, tObjInfo.fY + tObjInfo.fCY * 0.5f} };
+
+	// 상세 충돌 검사용 배열
+	POINT tTilePoints[4] = { tTilePoint.ptLUp, tTilePoint.ptRUp, tTilePoint.ptLDown, tTilePoint.ptRDown };
+	
+
+
+	// 우선 AABB 충돌 검사 실행
+	if (tTileRectPoints[1].x < tObjPoints[0].x || tTileRectPoints[0].x > tObjPoints[1].x ||
+		tTileRectPoints[2].y < tObjPoints[0].y || tTileRectPoints[0].y > tObjPoints[2].y) {
+		return false;
+	}
+	// AABB 충돌 검사에서 충돌이 확인되었다면, 상세 충돌 검사 실행
+	else
 	{
-		for (int j = 0; j < 4; j++)
+		// 상세 충돌 검사 실행 (CCW 알고리즘을 이용하여 각 타일마다의 충돌 여부 반환)
+		for (int i = 0; i < 4; i++)
 		{
-			int iTmp = ((i + 1) >= 4) ? 0 : i + 1;
-			int jTmp = ((j + 1) >= 4) ? 0 : j + 1;
+			for (int j = 0; j < 4; j++)
+			{
+				int iTmp = ((i + 1) >= 4) ? 0 : i + 1;
+				int jTmp = ((j + 1) >= 4) ? 0 : j + 1;
 
-			bool isCollided = isCollideLine(	tTilePoints[i], tTilePoints[iTmp],
-												tObjPoints[j], tObjPoints[jTmp]);
-
-			if (isCollided)
-				return true;
+				bool isCollided = isCollideLine(tTilePoints[i], tTilePoints[iTmp],
+					tObjPoints[j], tObjPoints[jTmp]);
+				if (isCollided)		return true;
+			}
 		}
 	}
 
+	// 모든 검사 이후에 충돌 확인이 되지 않았다면, false 반환
 	return false;
 }
 

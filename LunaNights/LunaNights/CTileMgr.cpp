@@ -10,6 +10,7 @@ CTileMgr::CTileMgr()
 {
 	// 미리 로드할 타일의 갯수를 정해, 메모리를 확보함
 	m_vecTile.reserve(TILEX * TILEY);
+	m_collideVecTile.reserve(TILEX * TILEY);
 }
 
 CTileMgr::~CTileMgr()
@@ -29,6 +30,8 @@ void CTileMgr::Initialize()
 
 			CObj* pTile = CAbstractFactory<CTile>::Create(fX, fY);
 			m_vecTile.push_back(pTile);
+			CObj* pCollideTile = CAbstractFactory<CTile>::Create(fX, fY);
+			m_collideVecTile.push_back(pCollideTile);
 			
 			std::cout << "[INFO][CTileMgr::Initialize] Generated Tile Position : " << fX << ", " << fY << std::endl;
 		}
@@ -44,13 +47,17 @@ void CTileMgr::Update()
 {
 	for (auto& pTile : m_vecTile)
 		pTile->Update();
+	for (auto& pTile : m_collideVecTile)
+		pTile->Update();
 }
 
 void CTileMgr::Late_Update()
 {
 	for (auto& pTile : m_vecTile)
 		pTile->Late_Update();
-	return;
+	for (auto& pTile : m_collideVecTile)
+		pTile->Late_Update();
+	// 타일과의 충돌처리는..?
 }
 
 void CTileMgr::Render(HDC hDC)
@@ -103,6 +110,10 @@ void CTileMgr::Release()
 	for_each(m_vecTile.begin(), m_vecTile.end(), DeleteObj());
 	m_vecTile.clear();
 	m_vecTile.shrink_to_fit();
+
+	for_each(m_collideVecTile.begin(), m_collideVecTile.end(), DeleteObj());
+	m_collideVecTile.clear();
+	m_collideVecTile.shrink_to_fit();
 }
 
 void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
@@ -143,46 +154,102 @@ void CTileMgr::Save_Tile(const TCHAR* _dataFileName)
 
 	CloseHandle(hFile);
 
-	MessageBox(g_hWnd, L"Tile Save", L"성공", MB_OK);
+	//MessageBox(g_hWnd, L"Tile Save", L"성공", MB_OK);
 }
 
-void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName)
+// 인자로 파일 위치와 해당 타일의 프로퍼티를 받아,
+// 기존 로드된 타일 정보들을 삭제하고 다시 불러오는 함수
+void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName, bool _isWithCollideTile,
+						const TCHAR* _collideFileName, const TCHAR* _collidePropertyName)
 {
-	HANDLE	hFile = CreateFile(_dataFileName,
-		GENERIC_READ,
-		NULL, NULL,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL);
-
-	if (INVALID_HANDLE_VALUE == hFile)
-		return;
-
-	int		iDrawID(0), iOption(0);
-	INFO	tInfo{};
-	DWORD	dwByte(0);
-
 	Release();
 
-	while (true)
+	// *************************************************
+	// 데이터 하나만 로드 (Edit 모드 처럼)
+	// *************************************************
+	if (true)
 	{
-		ReadFile(hFile, &tInfo, sizeof(INFO), &dwByte, NULL);
-		ReadFile(hFile, &iDrawID, sizeof(int), &dwByte, NULL);
-		ReadFile(hFile, &iOption, sizeof(int), &dwByte, NULL);
+		HANDLE	hFile = CreateFile(_dataFileName,
+			GENERIC_READ,
+			NULL, NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
 
-		if (dwByte == 0)
-			break;
+		if (INVALID_HANDLE_VALUE == hFile)
+			return;
 
-		CObj* pTile = CAbstractFactory<CTile>::Create(tInfo.fX, tInfo.fY);
-		dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
-		dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
-		dynamic_cast<CTile*>(pTile)->Update_Rect2X();
-		dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(_propertyName));
+		int		iDrawID(0), iOption(0);
+		INFO	tInfo{};
+		DWORD	dwByte(0);
 
-		m_vecTile.push_back(pTile);
+		while (true)
+		{
+			ReadFile(hFile, &tInfo, sizeof(INFO), &dwByte, NULL);
+			ReadFile(hFile, &iDrawID, sizeof(int), &dwByte, NULL);
+			ReadFile(hFile, &iOption, sizeof(int), &dwByte, NULL);
+
+			if (dwByte == 0)
+				break;
+
+			CObj* pTile = CAbstractFactory<CTile>::Create(tInfo.fX, tInfo.fY);
+			dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
+			dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
+			dynamic_cast<CTile*>(pTile)->Update_Rect2X();
+			dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(_propertyName));
+
+			m_vecTile.push_back(pTile);
+
+		}
+		
+		CloseHandle(hFile);
+	}
+		
+	// *************************************************
+	// 기존 데이터에 콜라이더 데이터의 부름도 필요할 때
+	// *************************************************
+	if (_isWithCollideTile)
+	{
+		HANDLE	hCollideFile = CreateFile(_collideFileName,
+			GENERIC_READ,
+			NULL, NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+
+		if (INVALID_HANDLE_VALUE == hCollideFile)
+			return;
+
+		int		iDrawID(0), iOption(0);
+		INFO	tInfo{};
+		DWORD	dwByte(0);
+
+		while (true)
+		{
+			ReadFile(hCollideFile, &tInfo, sizeof(INFO), &dwByte, NULL);
+			ReadFile(hCollideFile, &iDrawID, sizeof(int), &dwByte, NULL);
+			ReadFile(hCollideFile, &iOption, sizeof(int), &dwByte, NULL);
+
+			if (dwByte == 0)
+				break;
+
+			CObj* pTile = CAbstractFactory<CTile>::Create(tInfo.fX, tInfo.fY);
+			dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
+			dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
+			dynamic_cast<CTile*>(pTile)->Update_Rect2X();
+			dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(_collidePropertyName));
+
+			m_collideVecTile.push_back(pTile);
+
+
+			std::cout << m_vecTile.size() << std::endl;
+
+
+		}
+
+		CloseHandle(hCollideFile);
+
 	}
 
-	CloseHandle(hFile);
-
-	MessageBox(g_hWnd, L"Tile Load", L"성공", MB_OK);
+	//MessageBox(g_hWnd, L"Tile Load", L"성공", MB_OK);
 }

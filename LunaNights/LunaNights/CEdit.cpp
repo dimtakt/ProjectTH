@@ -74,7 +74,6 @@ void CEdit::Key_Input()
 
 	float fCameraMoveSpeed = 5.f;
 	float fCameraX, fCameraY;
-	// 현재 카메라가 비추는 좌표를 가져올 방법을 찾아야 함.
 	CCameraMgr::Get_Instance()->Get_CameraPos(fCameraX, fCameraY);
 	
 	int iMaxIndex;	// 선택 가능한 타일의 최대 인덱스
@@ -170,9 +169,9 @@ void CEdit::Key_Input()
 
 	if (CKeyMgr::Get_Instance()->Key_Down(VK_TAB))
 	{
-		int iInfo = MessageBox(g_hWnd, L"편집 모드를 바꾸시겠습니까?", L"Change EditMode", MB_YESNO);
+		//int iInfo = MessageBox(g_hWnd, L"편집 모드를 바꾸시겠습니까?", L"Change EditMode", MB_YESNO);
 
-		if (iInfo == IDYES)
+		//if (iInfo == IDYES)
 		{
 			if (iEditMode == 0)
 			{
