@@ -40,7 +40,7 @@ void CPlayer::Initialize()
 	LoadImages();
 
 
-	FRAME_PROP tPlayer_IDLE = { 64, 64, 5, 5, 21, 5 };
+	FRAME_PROP tPlayer_IDLE = { 64*2, 64*2, 5, 5, 21, 5 };
 	m_pFrameKey = L"Player_IDLE";
 	m_tFramePropCur = tPlayer_IDLE;
 
@@ -64,6 +64,11 @@ int CPlayer::Update()
 	m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
 	Set_FrameProperty(m_tFramePropCur);	// 현재 프레임에 현 상태에 맞는 정보를 반영
 	Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
+
+	m_tCollideInfo = {	m_tInfo.fX, 
+						m_tInfo.fY - 64,
+						64,
+						128 };
 
 	// 플레이어는 좌표로부터 위쪽 범위에 렌더시켜야 함 (서있으므로)
 	__super::Update_Rect_UpStand();	// 2배크기 렌더 기준 좌표보정
@@ -119,10 +124,10 @@ void CPlayer::Render(HDC hDC)
 	HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 	HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
 
-	int infoLeft	= (int)(m_tInfo.fX - m_tInfo.fCX * 0.5f) + iTestOutX;
-	int infoTop		= (int)(m_tInfo.fY - m_tInfo.fCY * 0.5f) + iTestOutY;
-	int infoRight	= (int)(m_tInfo.fX + m_tInfo.fCX * 0.5f) + iTestOutX;
-	int infoBottom	= (int)(m_tInfo.fY + m_tInfo.fCY * 0.5f) + iTestOutY;
+	int infoLeft	= (int)(m_tCollideInfo.fX - m_tCollideInfo.fCX * 0.5f) + iTestOutX;
+	int infoTop		= (int)(m_tCollideInfo.fY - m_tCollideInfo.fCY * 0.5f) + iTestOutY;
+	int infoRight	= (int)(m_tCollideInfo.fX + m_tCollideInfo.fCX * 0.5f) + iTestOutX;
+	int infoBottom	= (int)(m_tCollideInfo.fY + m_tCollideInfo.fCY * 0.5f) + iTestOutY;
 
 	MoveToEx(hDC, infoLeft, infoTop, nullptr);
 	LineTo(hDC, infoRight, infoTop);

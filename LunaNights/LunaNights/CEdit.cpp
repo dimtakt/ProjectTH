@@ -205,8 +205,7 @@ void CEdit::LoadImages()
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
 	FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
-	
-	(tBG_Front, L"BG_Front");
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Back.bmp", L"BG_Back");
 	FRAME_PROP tBG_Back = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보

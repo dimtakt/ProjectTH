@@ -17,6 +17,7 @@ public:
 
 	const RECT* Get_Rect() const			{ return &m_tRect; }
 	const INFO* Get_Info() const			{ return &m_tInfo; }
+	const INFO* Get_CollideInfo() const		{ return &m_tCollideInfo; }
 
 	bool Get_Dead()							{ return m_isDead; }
 	void Set_Dead()							{ m_isDead = true; }
@@ -64,13 +65,17 @@ public:
 
 protected:
 	INFO		m_tInfo;
+	INFO		m_tCollideInfo;
 	RECT		m_tRect;
 	FRAME		m_tFrame;
 	FRAME_PROP	m_tFramePropCur;
 	OBJ_STATE	m_eState;
 	RENDERID	m_eRender;
+	
+
 
 	CObj* m_pTarget;
+	
 
 	float		m_fSpeed;
 	bool		m_isDead;

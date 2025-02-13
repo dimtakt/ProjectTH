@@ -31,7 +31,7 @@ bool CTileCollisionMgr::Check_Collision_Tile2Obj(CObj* _pTile, CObj* _pObj, floa
 	CTile* tmpTile = dynamic_cast<CTile*>(_pTile);
 
 	INFO tTileInfo = *tmpTile->Get_Info();
-	INFO tObjInfo = *_pObj->Get_Info();
+	INFO tObjInfo = *_pObj->Get_CollideInfo();
 
 	unsigned int iTileID = tmpTile->Get_DrawID();	// 이걸로 콜라이더의 생김새를 판별
 	if (!(1 <= iTileID && iTileID <= 30)) return false; // 만약 대상 타일이 콜라이더가 존재하지 않을 경우, 즉시 false 리턴함
@@ -46,11 +46,6 @@ bool CTileCollisionMgr::Check_Collision_Tile2Obj(CObj* _pTile, CObj* _pObj, floa
 		// 상세 충돌 검사 (CCW 알고리즘을 이용하여 각 타일을 구성하는 선 마다의 충돌 여부 반환)
 		
 		// 계산의 편의성을 위해 배열에 담음
-		// AABB 검사용 배열
-		POINT tTileRectPoints[4] = { { tTileInfo.fX - tTileInfo.fCX * 0.5f, tTileInfo.fY - tTileInfo.fCY * 0.5f },	// 좌상
-									{ tTileInfo.fX + tTileInfo.fCX * 0.5f, tTileInfo.fY - tTileInfo.fCY * 0.5f },	// 우상
-									{ tTileInfo.fX + tTileInfo.fCX * 0.5f, tTileInfo.fY + tTileInfo.fCY * 0.5f },	// 우하
-									{ tTileInfo.fX - tTileInfo.fCX * 0.5f, tTileInfo.fY + tTileInfo.fCY * 0.5f } };	// 좌하
 		POINT tObjPoints[4] = { {tObjInfo.fX - tObjInfo.fCX * 0.5f, tObjInfo.fY - tObjInfo.fCY * 0.5f},		// 좌상
 								{tObjInfo.fX + tObjInfo.fCX * 0.5f, tObjInfo.fY - tObjInfo.fCY * 0.5f},		// 우상
 								{tObjInfo.fX + tObjInfo.fCX * 0.5f, tObjInfo.fY + tObjInfo.fCY * 0.5f},		// 우하
@@ -94,33 +89,56 @@ bool CTileCollisionMgr::isCollideLine(POINT _LineA1, POINT _LineA2, POINT _LineB
 
 	// 두 선분을 각각의 시작 기준으로 잡고 확인했을 때,
 	// 두 경우 모두, 각각의 경우에 하나는 시계, 하나는 반시계인 경우에 겹친다.
-	if (CCW(_LineA1, _LineA2, _LineB1) * CCW(_LineA1, _LineA2, _LineB2) < 0 &&
-		CCW(_LineB1, _LineB2, _LineA1) * CCW(_LineB1, _LineB2, _LineA2) < 0)
+	if (CCW(_LineA1, _LineA2, _LineB1) * CCW(_LineA1, _LineA2, _LineB2) <= 0 &&
+		CCW(_LineB1, _LineB2, _LineA1) * CCW(_LineB1, _LineB2, _LineA2) <= 0)
 	{
+		// ** 예외사항 2
+		// 단, 둘 다 0을 리턴. 즉 둘 다 하나의 직선상에 (일직선상에) 위치한 경우 예외 발생
+		// 이 경우 포개어짐을 확인한다. 어차피 일직선상에 있으므로 x 하나만 잡고 검사함
+		if (CCW(_LineA1, _LineA2, _LineB1) * CCW(_LineA1, _LineA2, _LineB2) == 0 &&
+			CCW(_LineB1, _LineB2, _LineA1) * CCW(_LineB1, _LineB2, _LineA2) == 0)
+		{
+			// 예외사항 3
+			// 단, X 축이 모두 같은 경우에 예외 발생.
+			if (_LineA1.x == _LineA2.x)
+			{
+				float fY[4]{ _LineA1.y, _LineA2.y, _LineB1.y, _LineB2.y };
+
+				if (fY[0] > fY[1]) { float fTmp = fY[0]; fY[0] = fY[1]; fY[1] = fTmp; }
+				if (fY[2] > fY[3]) { float fTmp = fY[2]; fY[2] = fY[3]; fY[3] = fTmp; }
+
+				// 겹치는 경우를 일직선상에서 보면 (A시작)---(B시작)--(A끝)--(B시작) 과 같은 꼴
+				if (fY[2] <= fY[1] && fY[0] <= fY[3])
+				{
+					Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+			{
+				// 각각 점의 x를 오름차순으로 정렬한 뒤,
+				// 겹치는지를 확인
+				float fX[4]{ _LineA1.x, _LineA2.x, _LineB1.x, _LineB2.x };
+
+				if (fX[0] > fX[1]) { float fTmp = fX[0]; fX[0] = fX[1]; fX[1] = fTmp; }
+				if (fX[2] > fX[3]) { float fTmp = fX[2]; fX[2] = fX[3]; fX[3] = fTmp; }
+
+				// 겹치는 경우를 일직선상에서 보면 (A시작)---(B시작)--(A끝)--(B시작) 과 같은 꼴
+				if (fX[2] <= fX[1] && fX[0] <= fX[3])
+				{
+					Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
+					return true;
+				}
+			}
+		}
+
 		Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
 		return true;
 	}
 
-	// ** 예외사항 2
-	// 단, 둘 다 0을 리턴. 즉 둘 다 하나의 직선상에 (일직선상에) 위치한 경우 예외 발생
-	// 이 경우 포개어짐을 확인한다. 어차피 일직선상에 있으므로 x 하나만 잡고 검사함
-	if (CCW(_LineA1, _LineA2, _LineB1) * CCW(_LineA1, _LineA2, _LineB2) == 0 &&
-		CCW(_LineB1, _LineA2, _LineA1) * CCW(_LineB1, _LineA2, _LineB2) == 0)
-	{
-		// 각각 점의 x를 오름차순으로 정렬한 뒤,
-		// 겹치는지를 확인
-		float fX[4]{ _LineA1.x, _LineA2.x, _LineB1.x, _LineB2.x };
 
-		if (fX[0] > fX[1]) { float fTmp = fX[0]; fX[0] = fX[1]; fX[1] = fTmp; }
-		if (fX[2] > fX[3]) { float fTmp = fX[2]; fX[2] = fX[3]; fX[3] = fTmp; }
-
-		// 겹치는 경우를 일직선상에서 보면 (A시작)---(B시작)--(A끝)--(B시작) 과 같은 꼴
-		if (fX[2] <= fX[1] && fX[0] <= fX[3])
-		{
-			Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
-			return true;
-		}
-	}
 
 
 	return false;
