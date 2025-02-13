@@ -111,7 +111,7 @@ bool CTileCollisionMgr::isCollideLine(POINT _LineA1, POINT _LineA2, POINT _LineB
 				// 겹치는 경우를 일직선상에서 보면 (A시작)---(B시작)--(A끝)--(B시작) 과 같은 꼴
 				if (fY[2] <= fY[1] && fY[0] <= fY[3])
 				{
-					Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
+					//Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
 					return true;
 				}
 				else
@@ -129,13 +129,13 @@ bool CTileCollisionMgr::isCollideLine(POINT _LineA1, POINT _LineA2, POINT _LineB
 				// 겹치는 경우를 일직선상에서 보면 (A시작)---(B시작)--(A끝)--(B시작) 과 같은 꼴
 				if (fX[2] <= fX[1] && fX[0] <= fX[3])
 				{
-					Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
+					//Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
 					return true;
 				}
 			}
 		}
 
-		Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
+		//Debug_CheckLine(_LineA1, _LineA2, _LineB1, _LineB2);
 		return true;
 	}
 
@@ -284,6 +284,34 @@ bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 		// 1번 조건 검사
 		if (_fX >= pLine.ptStart.x && _fX < pLine.ptEnd.x)
 		{
+			HDC m_DC = GetDC(g_hWnd);
+			HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
+			HPEN hOldPen = (HPEN)SelectObject(m_DC, hPen);
+
+			int LineB1X = pLine.ptStart.x-1, LineB1Y = pLine.ptStart.y-1;
+			int LineB2X = pLine.ptEnd.x+1, LineB2Y = pLine.ptEnd.y+1;
+			int LineA1X = pLine.ptStart.x-1, LineA1Y = pLine.ptStart.y-1;
+			int LineA2X = pLine.ptEnd.x+1, LineA2Y = pLine.ptEnd.y+1;
+
+			CCameraMgr::Get_Instance()->Get_RenderPos(LineB1X, LineB1Y);
+			CCameraMgr::Get_Instance()->Get_RenderPos(LineB2X, LineB2Y);
+			CCameraMgr::Get_Instance()->Get_RenderPos(LineA1X, LineA1Y);
+			CCameraMgr::Get_Instance()->Get_RenderPos(LineA2X, LineA2Y);
+
+			MoveToEx(m_DC, LineB1X, LineB1Y, nullptr);
+			LineTo(m_DC, LineB2X, LineB2Y);
+			MoveToEx(m_DC, LineA1X, LineA1Y, nullptr);
+			LineTo(m_DC, LineA2X, LineA2Y);
+
+			SelectObject(m_DC, hOldPen);
+			DeleteObject(hPen);
+
+
+
+
+
+
+
 			// 타겟이 비어있는 경우, 3번 조건 필요 X. 즉시 조건에 부합하는지 검사
 			if (pTarget == nullptr)
 			{
@@ -309,7 +337,7 @@ bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 				float fTargetY1 = pTarget->ptStart.y;
 
 				float fTargetX2 = pTarget->ptEnd.x;
-				float fTargetY2 = pTarget->ptEnd.x;
+				float fTargetY2 = pTarget->ptEnd.y;
 
 				float fTargetLineY = ((fTargetY2 - fTargetY1) / (fTargetX2 - fTargetX1)) * (_fX - fTargetX1) + fTargetY1;
 			
@@ -343,6 +371,9 @@ bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 
 	float fResultY = ((y2 - y1) / (x2 - x1)) * (_fX - x1) + y1;
 	_pY = fResultY;
+
+
+
 
 
 	// 타겟 선을 찾았음 (즉, 플레이어가 지형에 닿았음) 을 알림

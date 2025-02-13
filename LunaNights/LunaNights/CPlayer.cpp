@@ -430,7 +430,7 @@ void CPlayer::Jump()
 		else
 		{
 			m_isJumping = false;
-			m_eCurState = OBJST_IDLE;
+			//m_eCurState = OBJST_IDLE;
 			m_fVelocityY = 0;
 			m_tInfo.fY = fPlayerPosY;
 		}
@@ -441,12 +441,13 @@ void CPlayer::Jump()
 		
 		if (fDiffY > 0)
 		{
-			isFoundLine = CTileCollisionMgr::Collision_Line(fPlayerPosY, m_tInfo.fX);
+			isFoundLine = CTileCollisionMgr::Collision_Line(fPlayerPosY, m_tInfo.fX); // 여기서 순간이동함. 플레이어와의 높이 차이가 고려되지 않는 듯.
 
 			if (isFoundLine)
 			{
 				m_isJumping = false;
-				m_eCurState = OBJST_IDLE;
+				m_fVelocityY = 0;
+				//m_eCurState = OBJST_IDLE;
 			}
 		}
 			
