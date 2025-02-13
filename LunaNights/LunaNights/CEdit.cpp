@@ -51,8 +51,8 @@ void CEdit::Render(HDC _DC)
 	for (int i = 0; i < TILEX; i++)
 		for (int j = 0; j < TILEY; j++)
 		{
-			POINT ptLUp{ i * (TILECX * TILESIZERATIO), j * (TILECY * TILESIZERATIO) };
-			POINT ptRDown{ (i + 1) * (TILECX * TILESIZERATIO) - 1, (j + 1) * (TILECY * TILESIZERATIO) - 1};
+			POINT ptLUp{ i * (TILECX), j * (TILECY) };
+			POINT ptRDown{ (i + 1) * (TILECX) - 1, (j + 1) * (TILECY) - 1};
 			CCameraMgr::Get_Instance()->Get_RenderPos(ptLUp.x, ptLUp.y);
 			CCameraMgr::Get_Instance()->Get_RenderPos(ptRDown.x, ptRDown.y);
 			
@@ -205,7 +205,8 @@ void CEdit::LoadImages()
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
 	FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
+	
+	(tBG_Front, L"BG_Front");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Back.bmp", L"BG_Back");
 	FRAME_PROP tBG_Back = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
@@ -216,7 +217,7 @@ void CEdit::LoadImages()
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_ForestTile, L"BG_ForestTile");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/Collision_Tile.bmp", L"Collision_Tile");
-	FRAME_PROP tCollision_Tile = { 32, 32, 8, 4, 32 };							// 타일의 가로세로 길이 정보
+	FRAME_PROP tCollision_Tile = { TILECX, TILECY, 8, 4, 32 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tCollision_Tile, L"Collision_Tile");
 
 

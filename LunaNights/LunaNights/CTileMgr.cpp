@@ -26,8 +26,8 @@ void CTileMgr::Initialize()
 	{
 		for (int j = 0; j < TILEX; ++j)
 		{
-			float fX = (float)((TILECX * TILESIZERATIO) * j) + ((TILECX * TILESIZERATIO) >> 1);
-			float fY = (float)((TILECY * TILESIZERATIO) * i) + ((TILECY * TILESIZERATIO) >> 1);
+			float fX = (float)((TILECX) * j) + ((TILECX) >> 1);
+			float fY = (float)((TILECY) * i) + ((TILECY) >> 1);
 
 			CObj* pTile = CAbstractFactory<CTile>::Create(fX, fY);
 			m_vecTile.push_back(pTile);
@@ -67,13 +67,13 @@ void CTileMgr::Render(HDC hDC)
 	CCameraMgr::Get_Instance()->Get_CameraPos(fOutX, fOutY);
 
 	// 렌더 스타트의 타일단위 좌표
-	fOutX = (fOutX - (WINCX / 2)) / (TILECX * TILESIZERATIO);
-	fOutY = (fOutY - (WINCY / 2)) / (TILECY * TILESIZERATIO);
+	fOutX = (fOutX - (WINCX / 2)) / (TILECX);
+	fOutY = (fOutY - (WINCY / 2)) / (TILECY);
 	
 	int iTmp = 0;
 
-	int iMaxX = (fOutX + (WINCX / (TILECX * TILESIZERATIO))) + 2;
-	int iMaxY = (fOutY + (WINCY / (TILECY * TILESIZERATIO))) + 2;
+	int iMaxX = (fOutX + (WINCX / (TILECX))) + 2;
+	int iMaxY = (fOutY + (WINCY / (TILECY))) + 2;
 
 	for (int i = (int)fOutY; i < iMaxY; i++)
 	{
@@ -165,8 +165,8 @@ void CTileMgr::Release()
 
 void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 {
-	int	x = ptMouse.x / (TILECX * TILESIZERATIO) ;
-	int	y = ptMouse.y / (TILECY * TILESIZERATIO) ;
+	int	x = ptMouse.x / (TILECX) ;
+	int	y = ptMouse.y / (TILECY) ;
 
 	int		iIndex = y * TILEX + x;
 
@@ -242,7 +242,7 @@ void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName,
 			CObj* pTile = CAbstractFactory<CTile>::Create(tInfo.fX, tInfo.fY);
 			dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
 			dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
-			dynamic_cast<CTile*>(pTile)->Update_Rect2X();
+			dynamic_cast<CTile*>(pTile)->Update_Rect();
 			dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(_propertyName));
 
 			m_vecTile.push_back(pTile);
@@ -283,7 +283,7 @@ void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName,
 			CObj* pTile = CAbstractFactory<CTile>::Create(tInfo.fX, tInfo.fY);
 			dynamic_cast<CTile*>(pTile)->Set_DrawID(iDrawID);
 			dynamic_cast<CTile*>(pTile)->Set_Option(iOption);
-			dynamic_cast<CTile*>(pTile)->Update_Rect2X();
+			dynamic_cast<CTile*>(pTile)->Update_Rect();
 			dynamic_cast<CTile*>(pTile)->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(_collidePropertyName));
 
 			m_collideVecTile.push_back(pTile);

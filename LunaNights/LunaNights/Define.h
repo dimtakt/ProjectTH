@@ -15,10 +15,10 @@
 // #define			TILECY			64
 
 
-#define			TILECX			34			// 타일 하나의 크기를 의미
-#define			TILECY			34			// 타일 하나의 크기를 의미
+#define			TILECX			68			// 타일 하나의 크기를 의미
+#define			TILECY			68			// 타일 하나의 크기를 의미
 
-#define			TILESIZERATIO	2			// 스프라이트를 출력시킬 배율을 의미
+//#define			TILESIZERATIO	1			// 스프라이트를 출력시킬 배율을 의미
 
 #define			TILEX			20	// 만들 타일의 갯수를 의미 ksta
 #define			TILEY			12 // ceil(WINCY / (TILECX / TILESIZERATIO))	// 만들 타일의 갯수를 의미 ksta

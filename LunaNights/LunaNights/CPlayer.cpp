@@ -66,7 +66,7 @@ int CPlayer::Update()
 	Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
 
 	// 플레이어는 좌표로부터 위쪽 범위에 렌더시켜야 함 (서있으므로)
-	__super::Update_Rect_UpStand2X();	// 2배크기 렌더 기준 좌표보정
+	__super::Update_Rect_UpStand();	// 2배크기 렌더 기준 좌표보정
 
 	return OBJ_NOEVENT;
 }
@@ -98,8 +98,8 @@ void CPlayer::Render(HDC hDC)
 		 				iOutY,
 						//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
 						//iOutY - m_tInfo.fCY,
-		 				m_tInfo.fCX * 2,	// 복사 받을 가로, 세로 길이.
-		 				m_tInfo.fCY * 2,
+		 				m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+		 				m_tInfo.fCY,
 		 				hMemDC,					// 비트맵을 가지고 있는 DC
 						m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
 						m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
@@ -396,43 +396,43 @@ void CPlayer::LoadImages()
 
 	// ..플레이어 좌우 이동
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_stop/player_stop.bmp", L"Player_IDLE");				// 64_64_X5Y5_21
-	FRAME_PROP tPlayer_IDLE = { 64, 64, 5, 5, 21, 5 };
+	FRAME_PROP tPlayer_IDLE = { 64*2, 64*2, 5, 5, 21, 5 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_IDLE, L"Player_IDLE");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_stop/player_stop_R.bmp", L"Player_IDLE_R");				// 64_64_X5Y5_21
-	FRAME_PROP tPlayer_IDLE_R = { 64, 64, 5, 5, 21, 5 };
+	FRAME_PROP tPlayer_IDLE_R = { 64*2, 64*2, 5, 5, 21, 5 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_IDLE, L"Player_IDLE_R");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_start/player_run_start.bmp", L"Player_RUNSTART");	// 96_64_X3Y3_9
-	FRAME_PROP tPlayer_RUNSTART = { 96, 64, 3, 3, 9 };
+	FRAME_PROP tPlayer_RUNSTART = { 96*2, 64*2, 3, 3, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNSTART, L"Player_RUNSTART");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_start/player_run_start_R.bmp", L"Player_RUNSTART_R");	// 96_64_X3Y3_9
-	FRAME_PROP tPlayer_RUNSTART_R = { 96, 64, 3, 3, 9 };
+	FRAME_PROP tPlayer_RUNSTART_R = { 96*2, 64*2, 3, 3, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNSTART_R, L"Player_RUNSTART_R");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run/player_run.bmp", L"Player_RUN");					// 96_64_X4Y4_16
-	FRAME_PROP tPlayer_RUN = { 96, 64, 4, 4, 16 };
+	FRAME_PROP tPlayer_RUN = { 96*2, 64*2, 4, 4, 16 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN, L"Player_RUN");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run/player_run_R.bmp", L"Player_RUN_R");					// 96_64_X4Y4_16
-	FRAME_PROP tPlayer_RUN_R = { 96, 64, 4, 4, 16 };
+	FRAME_PROP tPlayer_RUN_R = { 96*2, 64*2, 4, 4, 16 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_R, L"Player_RUN_R");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_stop/player_run_stop.bmp", L"Player_RUNEND");		// 64_64_X5
-	FRAME_PROP tPlayer_RUNEND = { 64, 64, 5, 1, 5 };
+	FRAME_PROP tPlayer_RUNEND = { 64*2, 64*2, 5, 1, 5 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNEND, L"Player_RUNEND");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_stop/player_run_stop_R.bmp", L"Player_RUNEND_R");		// 64_64_X5
-	FRAME_PROP tPlayer_RUNEND_R = { 64, 64, 5, 1, 5 };
+	FRAME_PROP tPlayer_RUNEND_R = { 64*2, 64*2, 5, 1, 5 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNEND_R, L"Player_RUNEND_R");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_back/player_run_back.bmp", L"Player_RUNCHANGE");	// 96_64_X3Y3_9
-	FRAME_PROP tPlayer_RUNCHANGE = { 96, 64, 3, 3, 9 };
+	FRAME_PROP tPlayer_RUNCHANGE = { 96*2, 64*2, 3, 3, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNCHANGE, L"Player_RUNCHANGE");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_back/player_run_back_R.bmp", L"Player_RUNCHANGE_R");	// 96_64_X3Y3_9
-	FRAME_PROP tPlayer_RUNCHANGE_R = { 96, 64, 3, 3, 9 };
+	FRAME_PROP tPlayer_RUNCHANGE_R = { 96*2, 64*2, 3, 3, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNCHANGE_R, L"Player_RUNCHANGE_R");
 
 	// ..플레이어 앉기
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_down/player_down.bmp", L"Player_DOWN");				// 64_64_X4
-	FRAME_PROP tPlayer_DOWN = { 64, 64, 4, 1, 4 };
+	FRAME_PROP tPlayer_DOWN = { 64*2, 64*2, 4, 1, 4 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_DOWN");
 
 	// ..플레이어 공격
