@@ -158,6 +158,18 @@ typedef struct tagCollisionPoint
 
 }COL_POINT;
 
+typedef struct tagLinePoint
+{
+	POINT ptStart;
+	POINT ptEnd;
+}LINE_POINT;
+
+typedef struct tagFloatPoint
+{
+	float x;
+	float y;
+}FPOINT;
+
 #pragma endregion
 
 

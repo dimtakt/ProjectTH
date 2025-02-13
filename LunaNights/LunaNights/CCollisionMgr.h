@@ -21,5 +21,6 @@ public:
 
 	// 원 충돌 여부를 반환하는 함수
 	static bool	Intersect_Circle(CObj* pDst, CObj* pSrc);
+
 };
 

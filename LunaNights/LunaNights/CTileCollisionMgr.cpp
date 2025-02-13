@@ -2,6 +2,7 @@
 #include "CTileCollisionMgr.h"
 #include "CCollisionMgr.h"
 #include "CCameraMgr.h"
+#include "CTileMgr.h"
 #include "CTile.h"
 
 void CTileCollisionMgr::Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::list<CObj*> _ObjList)
@@ -238,6 +239,120 @@ COL_POINT CTileCollisionMgr::GetColPoint(INFO _tileInfo, int _tileIndex)
 	return COL_POINT{ 0,0,0,0,false };
 }
 
+
+
+bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
+{
+	// 자연스러운 선타기 조작감을 위한, 판정을 널널하게 하는 보정 값.
+	float fMargin = 40.f;
+
+
+
+	// 검사할 타일들의 정보들을 가져옴
+	std::vector<CObj*> pColliderVecTile = CTileMgr::Get_Instance()->Get_CollideVecTile();
+	
+	// 검사할 타일이 없다면 false 반환
+	if (pColliderVecTile.size() == 0)
+		return false;
+
+	
+	// 라인 정보를 담을 벡터 우선 생성
+	std::vector<LINE_POINT> tTileTopVec;
+	for (int i = 0; i < pColliderVecTile.size(); i++)
+	{
+		// 타일 정보에 기반하여 맨 위에 위치한 선분을 찾아, push_back함.
+		// (COL_POINT의 4개 점 중 좌상 우상 점이 연결된 선분)
+		CTile* tmpTile = dynamic_cast<CTile*>(pColliderVecTile[i]);
+		COL_POINT tmpTileColPoint = CTileCollisionMgr::GetColPoint(*tmpTile->Get_Info(), tmpTile->Get_DrawID());
+		
+		LINE_POINT tmpLine = { tmpTileColPoint.ptLUp, tmpTileColPoint.ptRUp };
+		tTileTopVec.push_back(tmpLine);
+	}
+
+	// 받아온 플레이어의 _pY, _fX 정보에 기반하여 해당되는 선분을 탐색
+	// 1. 플레이어의 _fX 위치 범위 내에 있는 선분이어야 함
+	// 2. 플레이어의 _pY 위치보다는 더 낮아야 함 (값이 더 높아야 함)
+	// 3. 해당되는 선분이 여러개라면, 그중에선 가장 높아야 함 (값이 더 낮아야 함)
+	// 이렇게 구한 선분의 정보를 이용, 플레이어의 최종 _pY 값을 계산 후 반영
+
+	// 타겟 우선 선언
+	LINE_POINT* pTarget = nullptr;
+
+	// 조건에 맞는 타겟 할당..
+	for (auto& pLine : tTileTopVec)
+	{
+		// 1번 조건 검사
+		if (_fX >= pLine.ptStart.x && _fX < pLine.ptEnd.x)
+		{
+			// 타겟이 비어있는 경우, 3번 조건 필요 X. 즉시 조건에 부합하는지 검사
+			if (pTarget == nullptr)
+			{
+				float fNewX1 = pLine.ptStart.x;
+				float fNewY1 = pLine.ptStart.y;
+
+				float fNewX2 = pLine.ptEnd.x;
+				float fNewY2 = pLine.ptEnd.y;
+
+				float fNewLineY = ((fNewY2 - fNewY1) / (fNewX2 - fNewX1)) * (_fX - fNewX1) + fNewY1;
+				
+				// 2번 조건 검사
+				// 플레이어가 해당 선보다 아래에 있되, 마진 이내의 차이면 할당
+				if ((_pY - fMargin <= fNewLineY))
+					pTarget = &pLine;
+			}
+
+			// 타겟이 이미 있는 경우, 3번 조건 검사 필요.
+			else
+			{	
+				// fTargetLineY 의 계산
+				float fTargetX1 = pTarget->ptStart.x;
+				float fTargetY1 = pTarget->ptStart.y;
+
+				float fTargetX2 = pTarget->ptEnd.x;
+				float fTargetY2 = pTarget->ptEnd.x;
+
+				float fTargetLineY = ((fTargetY2 - fTargetY1) / (fTargetX2 - fTargetX1)) * (_fX - fTargetX1) + fTargetY1;
+			
+				// fNewLineY 의 계산
+				float fNewX1 = pLine.ptStart.x;
+				float fNewY1 = pLine.ptStart.y;
+
+				float fNewX2 = pLine.ptEnd.x;
+				float fNewY2 = pLine.ptEnd.y;
+
+				float fNewLineY = ((fNewY2 - fNewY1) / (fNewX2 - fNewX1)) * (_fX - fNewX1) + fNewY1;
+
+				// 2, 3번 조건 동시검사
+				// 플레이어가 해당 선보다 아래에 있되, 마진 이내의 차이면 할당
+				// 단, 기존의 타겟 선 보다는 더 위에 있어야 함
+				if ((_pY - fMargin <= fNewLineY && fTargetLineY >= fNewLineY))
+					pTarget = &pLine;
+			}
+		}
+	}
+
+	// 타겟이 없다면 false 반환
+	if (!pTarget)
+		return false;
+
+	// 계산 후 결과에 따라 _pY 값 변환
+	float	x1 = pTarget->ptStart.x;
+	float	y1 = pTarget->ptStart.y;
+	float	x2 = pTarget->ptEnd.x;
+	float	y2 = pTarget->ptEnd.y;
+
+	float fResultY = ((y2 - y1) / (x2 - x1)) * (_fX - x1) + y1;
+	_pY = fResultY;
+
+
+	// 타겟 선을 찾았음 (즉, 플레이어가 지형에 닿았음) 을 알림
+	return true;
+}
+
+
+
+
+
 void CTileCollisionMgr::Debug_CheckLine(POINT _LineA1, POINT _LineA2, POINT _LineB1, POINT _LineB2)
 {
 #pragma region Console Logging
@@ -275,3 +390,5 @@ void CTileCollisionMgr::Debug_CheckLine(POINT _LineA1, POINT _LineA2, POINT _Lin
 #pragma endregion
 
 }
+
+

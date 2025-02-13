@@ -7,15 +7,18 @@
 #include "CCameraMgr.h"
 #include "CBmpMgr.h"
 #include "CSpritePropertyMgr.h"
+#include "CTileCOllisionMgr.h"
 
 CPlayer::CPlayer() :
 	m_eCurState(OBJST_IDLE),
 	m_ePreState(OBJST_END),
 	m_dwTime(GetTickCount()),
-	m_dwStateChangeTime(0)
+	m_dwStateChangeTime(0),
+	m_isStartStage(false)
 {
 	//ZeroMemory(&m_tPosin, sizeof(POINT));
 	ZeroMemory(&m_tInfo, sizeof(INFO));
+	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
 
 CPlayer::~CPlayer()
@@ -195,7 +198,9 @@ void CPlayer::Release()
 
 void CPlayer::Key_Input()
 {
+	// ********************
 	// ** 왼쪽 방향키
+	// ********************
 	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_LEFT))
 	{
 		// 이전 상태가 반대를 바라본 채로 IDLE or RUN or RUNSTART 이었다면
@@ -237,9 +242,13 @@ void CPlayer::Key_Input()
 
 		m_tInfo.fX -= m_fSpeed;
 		m_isStretch = true;
+		return;
 	}
 
+	
+	// ********************
 	// ** 오른쪽 방향키
+	// ********************
 	else if (CKeyMgr::Get_Instance()->Key_Pressing(VK_RIGHT))
 	{
 		// 이전 상태가 반대를 바라본 채로 IDLE or RUN or RUNSTART 이었다면
@@ -281,48 +290,170 @@ void CPlayer::Key_Input()
 
 		m_tInfo.fX += m_fSpeed;
 		m_isStretch = false;
+		return;
 	}
 
 
-	else
+	// ********************
+
+
+	// ********************
+	// ** 점프 키 (점프 중이 아닐 때에만 가능)
+	// ********************
+	if (CKeyMgr::Get_Instance()->Key_Down('X') && !m_isJumping)
 	{
-		// 이전 상태가 RUN or RUNSTART or RUNCHANGE 이었다면
-		if (m_ePreState == OBJST_RUN ||
-			m_ePreState == OBJST_RUNSTART ||
-			m_ePreState == OBJST_RUNCHANGE)
-		{
-			m_dwStateChangeTime = GetTickCount();				// 타이머 체크
-			if (m_isStretch)	m_pFrameKey = L"Player_RUNEND_R";	// 프레임키와 상태 = "달리기 끝"
-			else				m_pFrameKey = L"Player_RUNEND";
-			m_eCurState = OBJST_RUNEND;
-		}
+		// 올라가는 중, 내려가는 중의 모션 조건도 따로 만들어줘야 함
+		// 꾹 누르는 중에 천천히 내려가며 활공하는 조건도 따로 만들어줘야 함
+		// later
+		if (m_isStretch)	m_pFrameKey = L"Player_Jump_R";
+		else				m_pFrameKey = L"Player_Jump";
+
+		m_dwStateChangeTime = 0;
+		m_eCurState = OBJST_JUMP;
+		m_fVelocityY = -30.f;	// 임시값. Jump()
+
+		m_isJumping = true;
+	}
 
 
-		// 모션이 바뀌는 타이머가 돌아가는 중이었고, 해당 프레임이 마지막을 찍으면 원복
-		if (m_dwStateChangeTime != 0)
-		{
-			if ((m_tFrame.iFrameCur == (m_tFrame.iFrameAmount - 1)) &&
-				(m_dwStateChangeTime - GetTickCount()) >= (m_tFrame.iFrameAmount * m_tFrame.dwSpeed))
-			{
-				if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";	// 프레임키와 상태 = "달리기 끝"
-				else				m_pFrameKey = L"Player_IDLE";
-				m_dwStateChangeTime = 0;
-				m_eCurState = OBJST_IDLE;
-			}
-		}
-		else
+
+
+
+
+	// ********************
+	// ** 아무 키도 누르지 않은 IDLE 한 상태
+	// ** (다른 키를 누른 경우에는 return으로 예외처리함)
+	// ********************
+
+	// 이전 상태가 RUN or RUNSTART or RUNCHANGE 이었다면
+	if (m_ePreState == OBJST_RUN ||
+		m_ePreState == OBJST_RUNSTART ||
+		m_ePreState == OBJST_RUNCHANGE)
+	{
+		m_dwStateChangeTime = GetTickCount();				// 타이머 체크
+		if (m_isStretch)	m_pFrameKey = L"Player_RUNEND_R";	// 프레임키와 상태 = "달리기 끝"
+		else				m_pFrameKey = L"Player_RUNEND";
+		m_eCurState = OBJST_RUNEND;
+	}
+
+
+	// 모션이 바뀌는 타이머가 돌아가는 중이었고, 해당 프레임이 마지막을 찍으면 원복
+	if (m_dwStateChangeTime != 0)
+	{
+		if ((m_tFrame.iFrameCur == (m_tFrame.iFrameAmount - 1)) &&
+			(m_dwStateChangeTime - GetTickCount()) >= (m_tFrame.iFrameAmount * m_tFrame.dwSpeed))
 		{
 			if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";	// 프레임키와 상태 = "달리기 끝"
 			else				m_pFrameKey = L"Player_IDLE";
+			m_dwStateChangeTime = 0;
 			m_eCurState = OBJST_IDLE;
 		}
-
-
+	}
+	else
+	{
+		if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";	// 프레임키와 상태 = "달리기 끝"
+		else				m_pFrameKey = L"Player_IDLE";
+		m_eCurState = OBJST_IDLE;
 	}
 }
 
 void CPlayer::Jump()
 {
+	// 점프 구현
+	//
+	// 1. 점프를 눌렀다면, m_isJumping 이 true가 됨
+	// 2. 그리고 점프 즉시, 위로 튀어오르는 세기를 특정 값으로 변경 (VelocityY = 30.f 이런 식)
+	// 3. 점프중이라면 매 프레임마다 중력가속도를 받음 (현실은 9.8m/s이나, 게임에 맞게 배율 조정)
+	// 4. 단, 최대 속도는 제한을 두어 바닥 충돌 관리에 용이하게 함
+	
+	// https://www.desmos.com/calculator/ps70idpqw0
+	// 대충 이런 식에서 x 계수를 바꾸면 좌우 길이가, y 계수를 바꾸면 상하 길이가 바뀜
+
+	// 점프중이라면,
+	//
+	// 1. 착지할 선을 탐색
+	// 2. 단, 선은 타일의 맨 윗 부분의 선을 의미. (좌상, 우상 두 점을 잇는 선)
+	// 3. 플레이어의 착지 기준점은 m_tInfo.x, m_tInfo.y 라고 가정.
+	//
+	// 4. 선은 플레이어의 기준점과 같은 x축이되, y축보다 낮은 곳에 있어야 함.
+	// 5. 여러 개라면, 그 중에선 가장 높아야 함
+	// 6. 플레이어의 기준점이 착지예정 선보다 같거나 약간 낮다면, 해당 선의 y축으로 높이 변경
+	// 7. 착지 완료했다면, isJumping = false 로 전환
+	
+	
+	
+	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
+
+	float fMaxVelocityY = 20;				// 최대 낙하속도 제한
+	float fGravityConst = GRAVITY * 0.1;	// 대충 자연스러운 중력가속도 및 계수
+
+	// 플레이어 Y축 가속도. 30 안넘게 조절
+	m_fVelocityY = ((m_fVelocityY + fGravityConst) >= fMaxVelocityY) ? fMaxVelocityY : m_fVelocityY + fGravityConst;
+
+	
+
+	float fDiffY;							// 전 프레임, 현 프레임 간의 Y축 차이
+
+	if (m_tPrePos.x == 0 && m_tPrePos.y == 0)
+		fDiffY = 0;
+	else
+		fDiffY = m_tInfo.fY - m_tPrePos.y;
+	
+	m_tPrePos = { m_tInfo.fX, m_tInfo.fY };	// 이전 프레임 정보 저장
+
+
+	bool isFoundLine = false;
+	if (m_isStartStage)						// 스테이지 시작 1회에 한해 실행
+	{
+		m_isStartStage = false;
+		isFoundLine = CTileCollisionMgr::Collision_Line(fPlayerPosY, m_tInfo.fX);
+		if (!isFoundLine)
+		{
+			m_isJumping = true;
+			m_eCurState = OBJST_JUMP;
+		}
+	}
+
+
+	if (!m_isJumping)	// 점프 X
+	{
+		isFoundLine = CTileCollisionMgr::Collision_Line(fPlayerPosY, m_tInfo.fX);
+		
+		if (!isFoundLine)
+		{
+			m_isJumping = true;
+			m_eCurState = OBJST_JUMP;
+			m_tInfo.fY += m_fVelocityY;
+			std::cout << "[INFO][CPlayer::Jump] Player Pos : (X : " << m_tInfo.fX << ", Y : " << m_tInfo.fY << ")" << std::endl;
+		
+		}
+		else
+		{
+			m_isJumping = false;
+			m_eCurState = OBJST_IDLE;
+			m_fVelocityY = 0;
+			m_tInfo.fY = fPlayerPosY;
+		}
+	}
+	else				// 점프 O
+	{
+		m_tInfo.fY += m_fVelocityY;
+		
+		if (fDiffY > 0)
+		{
+			isFoundLine = CTileCollisionMgr::Collision_Line(fPlayerPosY, m_tInfo.fX);
+
+			if (isFoundLine)
+			{
+				m_isJumping = false;
+				m_eCurState = OBJST_IDLE;
+			}
+		}
+			
+	}
+
+
+	// 기본적인 좌우상 충돌은 다르게 해야 하나?
 }
 
 void CPlayer::Camera_Offset()
@@ -358,6 +489,11 @@ void CPlayer::Motion_Change()
 		case OBJ_STATE::OBJST_RUNCHANGE:
 			m_tFrame.dwTime = GetTickCount();
 			m_tFrame.dwSpeed = 40;
+			break;
+
+		case OBJ_STATE::OBJST_JUMP:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 80;
 			break;
 
 		//case CPlayer::ATTACK:

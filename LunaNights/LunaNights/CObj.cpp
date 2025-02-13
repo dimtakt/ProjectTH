@@ -12,7 +12,8 @@ CObj::CObj() :
 	m_isStretch(false),
 	m_pFrameKey(nullptr),
 	m_isJumping(false),
-	m_isFlying(false)
+	m_isFlying(false),
+	m_fVelocityY(0)
 {
 	ZeroMemory(&m_tInfo, sizeof(INFO));
 	ZeroMemory(&m_tRect, sizeof(RECT));

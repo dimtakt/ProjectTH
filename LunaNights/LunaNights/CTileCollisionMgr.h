@@ -12,7 +12,9 @@ class CTileCollisionMgr
 public:
 	static void Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::list<CObj*> _Obj);
 	static bool Check_Collision_Tile2Obj(CObj* _pTile, CObj* _pObj, float* _pX, float* _pY);
-	
+
+	// 플레이어와 타일의 충돌을 이용하여 서있을 수 있는 타일의 Line을 탐색함
+	static bool Collision_Line(float& pY, float fX);
 
 
 
