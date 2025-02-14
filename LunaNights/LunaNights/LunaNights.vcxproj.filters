@@ -91,6 +91,9 @@
     <Filter Include="03. Design\01. CollisionMgr">
       <UniqueIdentifier>{63cdf345-02c8-4076-86cf-4d523cbdb54c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Design\09. UIMgr">
+      <UniqueIdentifier>{4bea1021-91fb-48e6-a2de-2725c987cd5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -168,6 +171,9 @@
     <ClInclude Include="CEdit.h">
       <Filter>02. Scene\T. Edit</Filter>
     </ClInclude>
+    <ClInclude Include="CUIMgr.h">
+      <Filter>03. Design\09. UIMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -229,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="CEdit.cpp">
       <Filter>02. Scene\T. Edit</Filter>
+    </ClCompile>
+    <ClCompile Include="CUIMgr.cpp">
+      <Filter>03. Design\09. UIMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

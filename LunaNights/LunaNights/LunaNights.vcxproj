@@ -153,6 +153,7 @@
     <ClInclude Include="CStage1_01.h" />
     <ClInclude Include="CTile.h" />
     <ClInclude Include="CTileCollisionMgr.h" />
+    <ClInclude Include="CUIMgr.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LunaNights.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="CStage1_01.cpp" />
     <ClCompile Include="CTile.cpp" />
     <ClCompile Include="CTileCollisionMgr.cpp" />
+    <ClCompile Include="CUIMgr.cpp" />
     <ClCompile Include="LunaNights.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
