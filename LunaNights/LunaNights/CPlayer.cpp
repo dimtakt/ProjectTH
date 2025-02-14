@@ -70,7 +70,7 @@ int CPlayer::Update()
 
 	m_tCollideInfo = {	m_tInfo.fX, 
 						m_tInfo.fY - 64,
-						64,
+						48,
 						128 };
 
 	// 플레이어는 좌표로부터 위쪽 범위에 렌더시켜야 함 (서있으므로)
@@ -121,40 +121,40 @@ void CPlayer::Render(HDC hDC)
 	// 충돌 기준 확인용
 	// 빨간 색은 Rect 기준, 초록색은 Info 기준 위치.
 
-	int iTestOutX = 0, iTestOutY = 0;
-	CCameraMgr::Get_Instance()->Get_RenderPos(iTestOutX, iTestOutY);
-
-	HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
-	HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
-
-	int infoLeft	= (int)(m_tCollideInfo.fX - m_tCollideInfo.fCX * 0.5f) + iTestOutX;
-	int infoTop		= (int)(m_tCollideInfo.fY - m_tCollideInfo.fCY * 0.5f) + iTestOutY;
-	int infoRight	= (int)(m_tCollideInfo.fX + m_tCollideInfo.fCX * 0.5f) + iTestOutX;
-	int infoBottom	= (int)(m_tCollideInfo.fY + m_tCollideInfo.fCY * 0.5f) + iTestOutY;
-
-	MoveToEx(hDC, infoLeft, infoTop, nullptr);
-	LineTo(hDC, infoRight, infoTop);
-	LineTo(hDC, infoRight, infoBottom);
-	LineTo(hDC, infoLeft, infoBottom);
-	LineTo(hDC, infoLeft, infoTop);
-
-	HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-	hOldPen = (HPEN)SelectObject(hDC, hRedPen);
-
-	int rectLeft	= m_tRect.left + iTestOutX;
-	int rectTop		= m_tRect.top + iTestOutY;
-	int rectRight	= m_tRect.right + iTestOutX;
-	int rectBottom	= m_tRect.bottom + iTestOutY;
-
-	MoveToEx(hDC, rectLeft, rectTop, nullptr);
-	LineTo(hDC, rectRight, rectTop);
-	LineTo(hDC, rectRight, rectBottom);
-	LineTo(hDC, rectLeft, rectBottom);
-	LineTo(hDC, rectLeft, rectTop);
-
-	SelectObject(hDC, hOldPen);
-	DeleteObject(hGreenPen);
-	DeleteObject(hRedPen);
+	//int iTestOutX = 0, iTestOutY = 0;
+	//CCameraMgr::Get_Instance()->Get_RenderPos(iTestOutX, iTestOutY);
+	//
+	//HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+	//HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
+	//
+	//int infoLeft	= (int)(m_tCollideInfo.fX - m_tCollideInfo.fCX * 0.5f) + iTestOutX;
+	//int infoTop		= (int)(m_tCollideInfo.fY - m_tCollideInfo.fCY * 0.5f) + iTestOutY;
+	//int infoRight	= (int)(m_tCollideInfo.fX + m_tCollideInfo.fCX * 0.5f) + iTestOutX;
+	//int infoBottom	= (int)(m_tCollideInfo.fY + m_tCollideInfo.fCY * 0.5f) + iTestOutY;
+	//
+	//MoveToEx(hDC, infoLeft, infoTop, nullptr);
+	//LineTo(hDC, infoRight, infoTop);
+	//LineTo(hDC, infoRight, infoBottom);
+	//LineTo(hDC, infoLeft, infoBottom);
+	//LineTo(hDC, infoLeft, infoTop);
+	//
+	//HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+	//hOldPen = (HPEN)SelectObject(hDC, hRedPen);
+	//
+	//int rectLeft	= m_tRect.left + iTestOutX;
+	//int rectTop		= m_tRect.top + iTestOutY;
+	//int rectRight	= m_tRect.right + iTestOutX;
+	//int rectBottom	= m_tRect.bottom + iTestOutY;
+	//
+	//MoveToEx(hDC, rectLeft, rectTop, nullptr);
+	//LineTo(hDC, rectRight, rectTop);
+	//LineTo(hDC, rectRight, rectBottom);
+	//LineTo(hDC, rectLeft, rectBottom);
+	//LineTo(hDC, rectLeft, rectTop);
+	//
+	//SelectObject(hDC, hOldPen);
+	//DeleteObject(hGreenPen);
+	//DeleteObject(hRedPen);
 
 
 
@@ -310,7 +310,7 @@ void CPlayer::Key_Input()
 
 		m_dwStateChangeTime = 0;
 		m_eCurState = OBJST_JUMP;
-		m_fVelocityY = -30.f;	// 임시값. Jump()
+		m_fVelocityY = -20.f;	// 임시값. Jump()
 
 		m_isJumping = true;
 	}
@@ -368,6 +368,7 @@ void CPlayer::Jump()
 	
 	// https://www.desmos.com/calculator/ps70idpqw0
 	// 대충 이런 식에서 x 계수를 바꾸면 좌우 길이가, y 계수를 바꾸면 상하 길이가 바뀜
+	// y 계수와 x 계수는 각각 어느 경우에 대응되지?
 
 	// 점프중이라면,
 	//
@@ -380,15 +381,20 @@ void CPlayer::Jump()
 	// 6. 플레이어의 기준점이 착지예정 선보다 같거나 약간 낮다면, 해당 선의 y축으로 높이 변경
 	// 7. 착지 완료했다면, isJumping = false 로 전환
 	
-	
-	
+
+
+
+	// y축을 즉시 대입하는 게 아니라, 복사한 변수를 대입하고, 조건에 따라 해당 값을 원본 값에 대입하는 식으로 바꿔야 함
+	// 444번째 줄 확인해보고 조건을 주는 식으로 수정해야 함
 	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
+	float fMargin = 40.f;					// 자연스러운 착지를 위한 마진값
 
 	float fMaxVelocityY = 20;				// 최대 낙하속도 제한
-	float fGravityConst = GRAVITY * 0.1;	// 대충 자연스러운 중력가속도 및 계수
+	float fGravityConst = GRAVITY * 0.12;	// 대충 자연스러운 중력가속도 및 계수
 
-	// 플레이어 Y축 가속도. 30 안넘게 조절
-	m_fVelocityY = ((m_fVelocityY + fGravityConst) >= fMaxVelocityY) ? fMaxVelocityY : m_fVelocityY + fGravityConst;
+	// 플레이어 Y축 속도. 30 안넘게 조절
+	m_fVelocityY = ((m_fVelocityY + fGravityConst) >= fMaxVelocityY) ?
+		fMaxVelocityY : m_fVelocityY + fGravityConst;
 
 	
 
@@ -429,12 +435,29 @@ void CPlayer::Jump()
 		}
 		else
 		{
-			m_isJumping = false;
-			//m_eCurState = OBJST_IDLE;
-			m_fVelocityY = 0;
-			m_tInfo.fY = fPlayerPosY;
+			// 찾은 선이 있기 한데, 범위에서 심하게 차이날 때.
+			// (즉 플레이어 아래에 바닥이 있긴 하나 발이 떨어져있을 때)
+			// 플레이어가 지형에서 떨어졌다고 판정, 점프상태 On.
+			if (isFoundLine &&
+				(m_tInfo.fY - fMargin > fPlayerPosY || m_tInfo.fY + fMargin / 4 < fPlayerPosY))
+			{
+				m_isJumping = true;
+			}
+			else
+			{
+				m_isJumping = false;
+				//m_eCurState = OBJST_IDLE;
+				m_fVelocityY = 0;
+				m_tInfo.fY = fPlayerPosY;
+			}
 		}
 	}
+
+	// 선을 타다가 떨어졌을 때;
+	// 언제 점핑을 주긴 해야함
+
+
+
 	else				// 점프 O
 	{
 		m_tInfo.fY += m_fVelocityY;
@@ -443,12 +466,15 @@ void CPlayer::Jump()
 		{
 			isFoundLine = CTileCollisionMgr::Collision_Line(fPlayerPosY, m_tInfo.fX); // 여기서 순간이동함. 플레이어와의 높이 차이가 고려되지 않는 듯.
 
-			if (isFoundLine)
+			// 상하단에 약간의 여윳값을 주어 선을 자연스럽게 타도록 함
+			if (isFoundLine &&
+				m_tInfo.fY - fMargin <= fPlayerPosY &&
+				m_tInfo.fY + fMargin/4 >= fPlayerPosY)
 			{
 				m_isJumping = false;
 				m_fVelocityY = 0;
-				//m_eCurState = OBJST_IDLE;
 			}
+			//m_eCurState = OBJST_IDLE;
 		}
 			
 	}
@@ -580,5 +606,5 @@ void CPlayer::LoadImages()
 	// ..플레이어 공격
 	//..
 
-
+	
 }

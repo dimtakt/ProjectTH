@@ -94,8 +94,8 @@ void CTileMgr::Render(HDC hDC)
 
 
 
-
 			// **** 충돌 기준정보 확인
+
 			if (m_collideVecTile.size() != 0)
 			{
 				int iOutX = 0, iOutY = 0;

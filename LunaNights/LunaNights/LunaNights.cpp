@@ -85,17 +85,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
-            if (dwTime + 10 < GetTickCount())   // 매 10ms 마다 갱신
-            {
-                MainGame.Update();
-                MainGame.Late_Update();
-                MainGame.Render();
-
-                dwTime = GetTickCount();
-            }
-            //MainGame.Update();
-            //MainGame.Late_Update();
-            //MainGame.Render();            
+            //if (dwTime + 10 < GetTickCount())   // 매 10ms 마다 갱신
+            //{
+            //    MainGame.Update();
+            //    MainGame.Late_Update();
+            //    MainGame.Render();
+            //
+            //    dwTime = GetTickCount();
+            //}
+            MainGame.Update();
+            MainGame.Late_Update();
+            MainGame.Render();            
         }
     }
 

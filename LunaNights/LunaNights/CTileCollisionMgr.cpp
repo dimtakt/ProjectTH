@@ -257,6 +257,7 @@ bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 
 	
 	// 라인 정보를 담을 벡터 우선 생성
+	// 벡터에 넣지 말고 그때그떄 검사하면 안되나
 	std::vector<LINE_POINT> tTileTopVec;
 	for (int i = 0; i < pColliderVecTile.size(); i++)
 	{
@@ -267,7 +268,37 @@ bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 		
 		LINE_POINT tmpLine = { tmpTileColPoint.ptLUp, tmpTileColPoint.ptRUp };
 		tTileTopVec.push_back(tmpLine);
+
+		if ((tmpTile->Get_DrawID() == 29 ||
+			tmpTile->Get_DrawID() == 30))
+		{
+			// editafter
+			// 여기서 타일의 번호에 따라 라인을 하나 더 넣는걸 생각해야함
+			//		(콜라이더 뒷번호는 이 조건으로는 계산되지 않는 라인이 있음.
+			//		플레이어와 닿는 라인이 2개인데 하나만 계산에 들어가므로)
+			//LINE_POINT tmpExtraLine = {};
+			//
+			//if (tmpTile->Get_DrawID() == 29)
+			//{
+			//	//tmpExtraLine = { tmpTileColPoint.ptLUp, tmpTileColPoint.ptRUp };
+			//
+			//}
+			//else if (tmpTile->Get_DrawID() == 30)
+			//{
+			//	//tmpExtraLine = { tmpTileColPoint.ptLUp, tmpTileColPoint.ptRUp };
+			//
+			//}
+			//
+			//tTileTopVec.push_back(tmpExtraLine);
+			
+		
+		}
+		
+		
+		
+		
 	}
+
 
 	// 받아온 플레이어의 _pY, _fX 정보에 기반하여 해당되는 선분을 탐색
 	// 1. 플레이어의 _fX 위치 범위 내에 있는 선분이어야 함
@@ -284,27 +315,27 @@ bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 		// 1번 조건 검사
 		if (_fX >= pLine.ptStart.x && _fX < pLine.ptEnd.x)
 		{
-			HDC m_DC = GetDC(g_hWnd);
-			HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
-			HPEN hOldPen = (HPEN)SelectObject(m_DC, hPen);
-
-			int LineB1X = pLine.ptStart.x-1, LineB1Y = pLine.ptStart.y-1;
-			int LineB2X = pLine.ptEnd.x+1, LineB2Y = pLine.ptEnd.y+1;
-			int LineA1X = pLine.ptStart.x-1, LineA1Y = pLine.ptStart.y-1;
-			int LineA2X = pLine.ptEnd.x+1, LineA2Y = pLine.ptEnd.y+1;
-
-			CCameraMgr::Get_Instance()->Get_RenderPos(LineB1X, LineB1Y);
-			CCameraMgr::Get_Instance()->Get_RenderPos(LineB2X, LineB2Y);
-			CCameraMgr::Get_Instance()->Get_RenderPos(LineA1X, LineA1Y);
-			CCameraMgr::Get_Instance()->Get_RenderPos(LineA2X, LineA2Y);
-
-			MoveToEx(m_DC, LineB1X, LineB1Y, nullptr);
-			LineTo(m_DC, LineB2X, LineB2Y);
-			MoveToEx(m_DC, LineA1X, LineA1Y, nullptr);
-			LineTo(m_DC, LineA2X, LineA2Y);
-
-			SelectObject(m_DC, hOldPen);
-			DeleteObject(hPen);
+			//HDC m_DC = GetDC(g_hWnd);
+			//HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
+			//HPEN hOldPen = (HPEN)SelectObject(m_DC, hPen);
+			//
+			//int LineB1X = pLine.ptStart.x-1, LineB1Y = pLine.ptStart.y-1;
+			//int LineB2X = pLine.ptEnd.x+1, LineB2Y = pLine.ptEnd.y+1;
+			//int LineA1X = pLine.ptStart.x-1, LineA1Y = pLine.ptStart.y-1;
+			//int LineA2X = pLine.ptEnd.x+1, LineA2Y = pLine.ptEnd.y+1;
+			//
+			//CCameraMgr::Get_Instance()->Get_RenderPos(LineB1X, LineB1Y);
+			//CCameraMgr::Get_Instance()->Get_RenderPos(LineB2X, LineB2Y);
+			//CCameraMgr::Get_Instance()->Get_RenderPos(LineA1X, LineA1Y);
+			//CCameraMgr::Get_Instance()->Get_RenderPos(LineA2X, LineA2Y);
+			//
+			//MoveToEx(m_DC, LineB1X, LineB1Y, nullptr);
+			//LineTo(m_DC, LineB2X, LineB2Y);
+			//MoveToEx(m_DC, LineA1X, LineA1Y, nullptr);
+			//LineTo(m_DC, LineA2X, LineA2Y);
+			//
+			//SelectObject(m_DC, hOldPen);
+			//DeleteObject(hPen);
 
 
 
