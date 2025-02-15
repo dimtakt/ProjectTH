@@ -147,18 +147,20 @@
     <ClInclude Include="CObj.h" />
     <ClInclude Include="CObjMgr.h" />
     <ClInclude Include="CPlayer.h" />
+    <ClInclude Include="CPlayerBullet.h" />
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSceneMgr.h" />
     <ClInclude Include="CSpritePropertyMgr.h" />
     <ClInclude Include="CStage1_01.h" />
     <ClInclude Include="CTile.h" />
     <ClInclude Include="CTileCollisionMgr.h" />
-    <ClInclude Include="CUIMgr.h" />
+    <ClInclude Include="CUI.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LunaNights.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SoundMgr.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="CTileMgr.h" />
   </ItemGroup>
@@ -174,13 +176,14 @@
     <ClCompile Include="CObj.cpp" />
     <ClCompile Include="CObjMgr.cpp" />
     <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CPlayerBullet.cpp" />
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSceneMgr.cpp" />
     <ClCompile Include="CSpritePropertyMgr.cpp" />
     <ClCompile Include="CStage1_01.cpp" />
     <ClCompile Include="CTile.cpp" />
     <ClCompile Include="CTileCollisionMgr.cpp" />
-    <ClCompile Include="CUIMgr.cpp" />
+    <ClCompile Include="CUI.cpp" />
     <ClCompile Include="LunaNights.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -189,6 +192,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="CTileMgr.cpp" />
+    <ClCompile Include="SoundMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunaNights.rc" />

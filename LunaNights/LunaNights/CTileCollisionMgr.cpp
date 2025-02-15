@@ -244,7 +244,7 @@ COL_POINT CTileCollisionMgr::GetColPoint(INFO _tileInfo, int _tileIndex)
 bool CTileCollisionMgr::Collision_Line(float& _pY, float _fX)
 {
 	// 자연스러운 선타기 조작감을 위한, 판정을 널널하게 하는 보정 값.
-	float fMargin = 40.f;
+	float fMargin = 20.f;
 
 
 

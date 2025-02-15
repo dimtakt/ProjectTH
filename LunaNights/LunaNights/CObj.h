@@ -41,6 +41,16 @@ public:
 		m_tFrame.iFrameMaxY		= _property.iFrameMaxY;
 		m_tFrame.iFrameAmount	= _property.iFrameAmount;
 	}
+	void Set_FrameProperty(FRAME_PROP _property, FRAME& _frame)
+	{
+		_frame.iCX = _property.iCX;
+		_frame.iCY = _property.iCY;
+
+		_frame.iFrameMaxX = _property.iFrameMaxX;
+		_frame.iFrameMaxY = _property.iFrameMaxY;
+		_frame.iFrameAmount = _property.iFrameAmount;
+	}
+
 
 
 public:
@@ -62,6 +72,10 @@ public:
 
 
 	void		Move_Frame();
+	void		Move_Frame(FRAME& _tFrame);
+
+	// PlgBlt 를 통해 사진의 돌리기를 위해 만든 함수
+	void		RotatePoints(float centerX, float centerY, POINT points[3], float angle = 0.f);
 
 protected:
 	INFO		m_tInfo;

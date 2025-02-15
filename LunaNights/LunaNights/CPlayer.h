@@ -23,8 +23,27 @@ private:
 
 	void LoadImages();
 
+
+public:
+	enum PLAYERSTAT
+	{
+		HP, MAXHP,
+		MP, MAXMP,
+		TP,
+		GOLD,
+		ATK,
+		KNIFE,
+		ISGETWATCH,
+
+		TIMEMODE,
+		STAT_END
+	};
+
+	int Get_Stat(PLAYERSTAT _statType);
+	bool Get_Stretch() { return m_isStretch; }
+
 private:
-	//POINT m_tPosin;
+	float m_fPosinLength;
 
 	float m_fJumpSpeed;
 	float m_fTime;
@@ -38,6 +57,22 @@ private:
 	FPOINT m_tPrePos;
 
 	bool m_isStartStage;
+
+
+
+	// Player Stats.
+
+	int m_iHp;
+	int m_iMaxHp;
+	int m_iMp;
+	int m_iMaxMp;
+	int m_iTp;
+	int m_iGold;
+	float m_fAtk;
+	int m_iKnife;
+	bool m_isGetWatch;
+
+	int m_iTimeMode;
 
 
 

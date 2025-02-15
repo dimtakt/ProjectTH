@@ -289,7 +289,7 @@ void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName,
 			m_collideVecTile.push_back(pTile);
 
 
-			std::cout << m_vecTile.size() << std::endl;
+			//std::cout << m_vecTile.size() << std::endl;
 
 
 		}

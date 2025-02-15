@@ -13,10 +13,16 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include <iostream>
+
+
+// 이거 영상용아님?
+#include <Vfw.h>
+#pragma comment(lib, "vfw32.lib")
 
 // 사운드 재생용
 #include <io.h>
+#include <iostream>
+
 #include "fmod.h"
 #include "fmod.hpp"
 #pragma comment(lib, "fmodex_vc.lib")

@@ -15,7 +15,7 @@ private:
 	virtual ~CCameraMgr();
 
 public:
-	void	Update_CameraPos();
+	void	Update_CameraPos(int _iMaxX, int _iMaxY, int _iMinX = 0, int _iMinY = 0);
 
 
 	void Set_Pos(float _fX, float _fY)
@@ -66,6 +66,10 @@ public:
 
 public:
 	void CalcDiff();
+
+	// 일정 범위 밖으로 카메라가 나가지 못하도록 하는 함수
+	// MainGame or Scene의 Late_Update 에서 돌릴 것
+	void Lock_Camera(int _iMaxX, int _iMaxY, int _iMinX = 0, int _iMinY = 0);
 
 
 private:

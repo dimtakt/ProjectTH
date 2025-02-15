@@ -70,3 +70,37 @@ void CObj::Move_Frame()
 
 	}
 }
+
+void CObj::Move_Frame(FRAME& _tFrame)
+{
+	if (_tFrame.dwTime + _tFrame.dwSpeed < GetTickCount())
+	{
+		++_tFrame.iFrameCur;
+
+		if (_tFrame.iFrameCur >= _tFrame.iFrameAmount)
+		{
+			_tFrame.iFrameCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey).iFrameStart;
+		}
+
+		_tFrame.dwTime = GetTickCount();
+
+	}
+}
+
+
+void CObj::RotatePoints(float centerX, float centerY, POINT points[3], float angle)
+{
+	float radian = angle * DEG2RAD;  // 각도를 라디안으로 변환
+	float cosA = cos(radian);
+	float sinA = sin(radian);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		float x = static_cast<float>(points[i].x);
+		float y = static_cast<float>(points[i].y);
+
+		// 회전 변환 공식 적용
+		points[i].x = static_cast<LONG>(centerX + (x - centerX) * cosA - (y - centerY) * sinA);
+		points[i].y = static_cast<LONG>(centerY + (x - centerX) * sinA + (y - centerY) * cosA);
+	}
+}

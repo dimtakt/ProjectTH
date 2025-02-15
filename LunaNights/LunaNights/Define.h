@@ -34,6 +34,9 @@
 
 #define			VK_MAX			0xff
 
+#define			DEG2RAD			(PI / 180.0f)
+#define			RAD2DEG			(180.0f / PI)
+
 
 #pragma endregion
 
@@ -56,7 +59,8 @@ extern HWND g_hWnd;
 
 // 오브젝트의 종류를 나타내는 열거형
 enum OBJ_ID		{	OBJ_PLAYER,
-					OBJ_BULLET,
+					OBJ_PLAYERBULLET,
+					OBJ_MONSTERBULLET,
 					OBJ_MONSTER,
 					OBJ_ITEM,
 					OBJ_TILE,
@@ -86,15 +90,24 @@ enum OBJ_STATE	{	// IDLE, 이동, 이동시작, 이동중정지, 이동중방향전환, 앉기
 
 
 // 오브젝트의 렌더 순서를 나타내는 열거형
-enum RENDERID	{	RENDER_PRIORITY,				// 가장 우선순위 높게 렌더링
-					RENDER_UI,						// UI
-					RENDER_GAMEOBJECT,				// GAMEOBJECT
-					RENDER_TILE_BACKGROUND,			// 배경 (타일)
-					REDNER_FRONT_BACKGROUND,		// 배경 (타일 뒤의 나무와 같은, 배경보단 위의 이미지)
+enum RENDERID	{	
 					RENDER_BACKGROUND,				// 배경	(하늘과 같은, 제일 뒤쪽의 이미지)
-
+					REDDER_FRONT_BACKGROUND,		// 배경 (타일 뒤의 나무와 같은, 배경보단 위의 이미지)
+					RENDER_TILE_BACKGROUND,			// 배경 (타일)
+					RENDER_GAMEOBJECT,				// GAMEOBJECT
+					RENDER_UI,						// UI
+					RENDER_PRIORITY,				// 가장 우선순위 높게 렌더링
 					RENDER_END
 				};
+
+
+// 소리의 유형을 나타내는 열거형
+enum CHANNELID
+{
+	SOUND_EFFECT,
+	SOUND_BGM,
+	MAXCHANNEL
+};
 
 #pragma endregion
 

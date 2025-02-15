@@ -21,7 +21,7 @@ CCameraMgr::~CCameraMgr()
 {
 }
 
-void CCameraMgr::Update_CameraPos()
+void CCameraMgr::Update_CameraPos(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY)
 {
 	// 타겟이 존재하는 경우, 카메라의 좌표를 타겟으로 변경
 	// 타겟이 존재는 하나 사망한 경우, 타겟을 해제
@@ -31,7 +31,7 @@ void CCameraMgr::Update_CameraPos()
 			m_pTarget = nullptr;
 
 		m_fCameraX = m_pTarget->Get_Info()->fX;
-		m_fCameraY = m_pTarget->Get_Info()->fY;
+		m_fCameraY = m_pTarget->Get_Info()->fY - m_pTarget->Get_Info()->fCY / 2;
 	}
 
 #pragma region Camera Test Code with WASD
@@ -48,6 +48,7 @@ void CCameraMgr::Update_CameraPos()
 
 #pragma endregion
 
+	Lock_Camera(_iMaxX, _iMaxY, _iMinX, _iMinY);
 	CCameraMgr::CalcDiff();
 }
 
@@ -59,4 +60,34 @@ void CCameraMgr::CalcDiff()
 
 	m_fDiffX = m_fCameraX - fCenterX;	// 카메라 좌표가 X만큼 더해지면 오브젝트들은 -X만큼 이동해야 함
 	m_fDiffY = m_fCameraY - fCenterY;	// 카메라 좌표가 Y만큼 더해지면 오브젝트들은 -Y만큼 이동해야 함
+}
+
+// Run on LateUpdate
+void CCameraMgr::Lock_Camera(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY)
+{
+	//int iMargin = 30;
+
+	if		(_iMinX > m_fCameraX - 640)
+		m_fCameraX = _iMinX + 640;
+	else if (_iMaxX < m_fCameraX + 640)
+		m_fCameraX = _iMaxX - 640;
+
+	if		(_iMinY > m_fCameraY - 360)
+		m_fCameraY = _iMinY + 360;
+	else if	(_iMaxY < m_fCameraY + 360)
+		m_fCameraY = _iMaxY - 360;
+
+	//if (_iMinX > m_fCameraX - WINCX / 2)
+	//	m_fCameraX = _iMinX + WINCX / 2;
+	//else if (_iMaxY < m_fCameraX + WINCX / 2)
+	//	m_fCameraX = _iMaxX - WINCX / 2;
+
+	//if (_iMinX > m_fCameraY - WINCY / 2)
+	//	m_fCameraY = _iMinY + WINCY / 2;
+	//else if (_iMaxY < m_fCameraY + WINCY / 2)
+	//	m_fCameraY = _iMaxY - WINCY / 2;
+
+
+
+	std::cout << "[INFO][CCameraMgr::Lock_Camera] CameraPos : " << m_fCameraX << ", " << m_fCameraY << std::endl;
 }

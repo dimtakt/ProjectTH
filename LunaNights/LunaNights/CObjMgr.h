@@ -22,6 +22,9 @@ public:
 	void	Release();
 
 	void	Delete_ID(OBJ_ID eID);
+	void	Delete_SpecificObj(OBJ_ID _eID, CObj* _obj);
+
+	void Optimize_DeleteOutsideScreen();
 
 private:
 	std::list<CObj*>	m_ObjList[OBJ_END];	// update ¿ë
@@ -44,6 +47,11 @@ public:
 			delete m_pInstance;
 			m_pInstance = nullptr;
 		}
+	}
+
+	CObj* Get_Player()
+	{
+		return *m_ObjList[OBJ_PLAYER].begin();
 	}
 
 private:

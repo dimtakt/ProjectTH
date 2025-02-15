@@ -2,12 +2,14 @@
 #include "CMainGame.h"
 #include "CAbstractFactory.h"
 #include "CObjMgr.h"
-//#include "CLineMgr.h"
 #include "CKeyMgr.h"
 #include "CCameraMgr.h"
 #include "CBmpMgr.h"
 #include "CSceneMgr.h"
 #include "CTileMgr.h"
+#include "SoundMgr.h"
+#include "CSpritePropertyMgr.h"
+
 
 CMainGame::CMainGame() :
 	m_dwTime(GetTickCount()),
@@ -29,7 +31,9 @@ void CMainGame::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/Back.bmp", L"Back");
 
 	CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_LOGO);
-	
+
+	CSoundMgr::Get_Instance()->Initialize();
+
 
 
 #ifdef _DEBUG
@@ -49,7 +53,6 @@ void CMainGame::Initialize()
 void CMainGame::Update()
 {
 	CSceneMgr::Get_Instance()->Update();
-	CCameraMgr::Get_Instance()->Update_CameraPos();
 }
 
 void CMainGame::Late_Update()
@@ -90,14 +93,16 @@ void CMainGame::Release()
 #endif // _DEBUG
 
 	CBmpMgr::Destroy_Instance();
-	//CCameraMgr::Destroy_Instance();
-
 	CKeyMgr::Destroy_Instance();
-	//CLineMgr::Destroy_Instance();
 	CTileMgr::Destroy_Instance();
+	CSpritePropertyMgr::Destroy_Instance();
+	CCameraMgr::Destroy_Instance();
 
 	CSceneMgr::Destroy_Instance();
 	CObjMgr::Destroy_Instance();
+
+	CSoundMgr::Destroy_Instance();
+
 
 	ReleaseDC(g_hWnd, m_DC);
 }

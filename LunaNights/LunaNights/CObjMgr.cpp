@@ -4,6 +4,9 @@
 #include "CTileCollisionMgr.h"
 #include "CTileMgr.h"
 
+#include "CCameraMgr.h"
+#include "CPlayerBullet.h"
+
 CObjMgr* CObjMgr::m_pInstance = nullptr;
 
 CObjMgr::CObjMgr()
@@ -54,6 +57,8 @@ void CObjMgr::Add_Object(OBJ_ID eID, CObj* pObj)
 
 void CObjMgr::Update()
 {
+	Optimize_DeleteOutsideScreen();
+
 	for (unsigned int i = 0; i < OBJ_END; ++i)
 	{
 		for (auto iter = m_ObjList[i].begin();
@@ -70,6 +75,7 @@ void CObjMgr::Update()
 				++iter;
 		}
 	}
+
 }
 
 void CObjMgr::Late_Update()
@@ -130,4 +136,45 @@ void CObjMgr::Delete_ID(OBJ_ID eID)
 		Safe_Delete(pObj);
 
 	m_ObjList[eID].clear();
+}
+
+//void CObjMgr::Delete_SpecificObj(OBJ_ID _eID, CObj* _obj)
+//{
+//	if (_obj == nullptr)
+//		return;
+//
+//	for (auto iter = m_ObjList[_eID].begin(); iter != m_ObjList[_eID].end(); ++iter)
+//	{
+//		if (*iter == _obj)
+//		{
+//			Safe_Delete<CObj*>(_obj);
+//			m_ObjList[_eID].erase(iter);
+//			return;
+//		}
+//	}
+//
+//}
+
+void CObjMgr::Optimize_DeleteOutsideScreen()
+{
+	// 총알에 한해 화면 밖을 나갔는지 검사
+	for (auto iter = m_ObjList[OBJ_PLAYERBULLET].begin(); iter != m_ObjList[OBJ_PLAYERBULLET].end();)
+	{
+		if (m_ObjList[OBJ_PLAYERBULLET].size() <= 0)
+			return;
+
+		const INFO* tObjPos = dynamic_cast<CPlayerBullet*>(*iter)->Get_Info();
+
+		// 화면 밖을 나갔다면
+		if ((tObjPos->fX + tObjPos->fCX < 0 || tObjPos->fX - tObjPos->fCX > WINCX) ||
+			(tObjPos->fY + tObjPos->fCY < 0 || tObjPos->fY - tObjPos->fCY > WINCY))
+			// 삭제
+		{
+			Safe_Delete<CObj*>(*iter);
+			m_ObjList[OBJ_PLAYERBULLET].erase(iter);
+			return;
+		}
+		else
+			++iter;
+	}
 }

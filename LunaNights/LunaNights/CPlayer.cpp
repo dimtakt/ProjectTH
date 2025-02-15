@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "CPlayer.h"
+
+
 #include "CAbstractFactory.h"
 #include "CBmpMgr.h"
 #include "CKeyMgr.h"
 #include "CObjMgr.h"
 #include "CCameraMgr.h"
-#include "CBmpMgr.h"
 #include "CSpritePropertyMgr.h"
 #include "CTileCOllisionMgr.h"
+#include "CPlayerBullet.h"
 
 CPlayer::CPlayer() :
 	m_eCurState(OBJST_IDLE),
@@ -16,8 +18,6 @@ CPlayer::CPlayer() :
 	m_dwStateChangeTime(0),
 	m_isStartStage(false)
 {
-	//ZeroMemory(&m_tPosin, sizeof(POINT));
-	ZeroMemory(&m_tInfo, sizeof(INFO));
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
 
@@ -38,6 +38,22 @@ void CPlayer::Initialize()
 	m_isJumping = false;
 	m_fTime = 0.f;
 	m_fJumpSpeed = 20.f;
+	m_fPosinLength = 50.f;
+	m_fAngle = 0.f;
+
+	// 변수-스탯 초기화
+	m_iHp = 100;
+	m_iMaxHp = 100;
+	m_iMp = 100;
+	m_iMaxMp = 100;
+	m_iTp = 85;
+	m_iGold = 0;
+	m_fAtk = 5.2;
+	m_iKnife = 18;
+	m_isGetWatch = 0;
+
+	m_iTimeMode = 0;	// 0 Idle, 1 Snail, 2 Stop
+
 
 	// BmpMgr 을 통한 이미지 로드, 난잡해서 따로 뺐음
 	LoadImages();
@@ -55,6 +71,9 @@ void CPlayer::Initialize()
 	m_tFrame.dwTime = GetTickCount();	// 모션이 바뀌었을 때 흐른 시간을 저장
 
 	m_eRender = RENDER_GAMEOBJECT;
+
+
+	CCameraMgr::Get_Instance()->Set_Target(this);
 }
 
 int CPlayer::Update()
@@ -75,6 +94,8 @@ int CPlayer::Update()
 
 	// 플레이어는 좌표로부터 위쪽 범위에 렌더시켜야 함 (서있으므로)
 	__super::Update_Rect_UpStand();	// 2배크기 렌더 기준 좌표보정
+
+	//std::cout << "[INFO][CPlayer::Update] PlayerPos : " << m_tInfo.fX << ", " << m_tInfo.fY << std::endl;
 
 	return OBJ_NOEVENT;
 }
@@ -116,8 +137,6 @@ void CPlayer::Render(HDC hDC)
 		 				RGB(255, 0, 255));		// 제거할 색상
 
 
-
-
 	// 충돌 기준 확인용
 	// 빨간 색은 Rect 기준, 초록색은 Info 기준 위치.
 
@@ -157,23 +176,6 @@ void CPlayer::Render(HDC hDC)
 	//DeleteObject(hRedPen);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	if ( true )// GetTickCount() % 2 == 1)
 	{
 		//std::cout << "Player Rect : \t" << m_tRect.left << "\t" << m_tRect.top << "\t" << m_tRect.right << "\t" << m_tRect.bottom << std::endl;
@@ -198,6 +200,60 @@ void CPlayer::Release()
 
 void CPlayer::Key_Input()
 {
+	// ********************
+	// ** 점프 키 (점프 중이 아닐 때에만 가능)
+	// ********************
+	if (CKeyMgr::Get_Instance()->Key_Down('X') && !m_isJumping)
+	{
+		// 올라가는 중, 내려가는 중의 모션 조건도 따로 만들어줘야 함
+		// 꾹 누르는 중에 천천히 내려가며 활공하는 조건도 따로 만들어줘야 함
+		// later
+		if (m_isStretch)	m_pFrameKey = L"Player_Jump_R";
+		else				m_pFrameKey = L"Player_Jump";
+
+		m_dwStateChangeTime = 0;
+		m_eCurState = OBJST_JUMP;
+		m_fVelocityY = -20.f;	// 임시값. Jump()
+
+		m_isJumping = true;
+	}
+
+	// ********************
+	// ** 공격 키
+	// ********************
+	if (	CKeyMgr::Get_Instance()->Key_Down('Z'))
+	{
+		float iKnifeSpace = 20.f;
+
+		// 총알의 초기 위치 계산
+		float bulletX = m_tInfo.fX + m_fPosinLength * cos(m_fAngle * DEG2RAD);
+		float bulletY = m_tInfo.fY - m_fPosinLength * sin(m_fAngle * DEG2RAD);
+		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
+		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+	
+		if (!m_isStretch)
+			bulletX -= iKnifeSpace;
+		else
+			bulletX += iKnifeSpace;
+
+		bulletY += iKnifeSpace;
+		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
+		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+
+		if (!m_isStretch)
+			bulletX -= iKnifeSpace;
+		else
+			bulletX += iKnifeSpace;
+
+		bulletY -= iKnifeSpace*2;
+		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
+		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+
+
+	}
+
+
+
 	// ********************
 	// ** 왼쪽 방향키
 	// ********************
@@ -242,6 +298,7 @@ void CPlayer::Key_Input()
 
 		m_tInfo.fX -= m_fSpeed;
 		m_isStretch = true;
+		m_fAngle = 180.f;
 		return;
 	}
 
@@ -290,6 +347,7 @@ void CPlayer::Key_Input()
 
 		m_tInfo.fX += m_fSpeed;
 		m_isStretch = false;
+		m_fAngle = 0.f;
 		return;
 	}
 
@@ -297,23 +355,6 @@ void CPlayer::Key_Input()
 	// ********************
 
 
-	// ********************
-	// ** 점프 키 (점프 중이 아닐 때에만 가능)
-	// ********************
-	if (CKeyMgr::Get_Instance()->Key_Down('X') && !m_isJumping)
-	{
-		// 올라가는 중, 내려가는 중의 모션 조건도 따로 만들어줘야 함
-		// 꾹 누르는 중에 천천히 내려가며 활공하는 조건도 따로 만들어줘야 함
-		// later
-		if (m_isStretch)	m_pFrameKey = L"Player_Jump_R";
-		else				m_pFrameKey = L"Player_Jump";
-
-		m_dwStateChangeTime = 0;
-		m_eCurState = OBJST_JUMP;
-		m_fVelocityY = -20.f;	// 임시값. Jump()
-
-		m_isJumping = true;
-	}
 
 
 
@@ -376,7 +417,7 @@ void CPlayer::Jump()
 	// 2. 단, 선은 타일의 맨 윗 부분의 선을 의미. (좌상, 우상 두 점을 잇는 선)
 	// 3. 플레이어의 착지 기준점은 m_tInfo.x, m_tInfo.y 라고 가정.
 	//
-	// 4. 선은 플레이어의 기준점과 같은 x축이되, y축보다 낮은 곳에 있어야 함.
+	// 4. 선은 플레이어의 기준점과 같은 x축이되, y축보다 낮은 곳에 있어야 함.`
 	// 5. 여러 개라면, 그 중에선 가장 높아야 함
 	// 6. 플레이어의 기준점이 착지예정 선보다 같거나 약간 낮다면, 해당 선의 y축으로 높이 변경
 	// 7. 착지 완료했다면, isJumping = false 로 전환
@@ -387,7 +428,7 @@ void CPlayer::Jump()
 	// y축을 즉시 대입하는 게 아니라, 복사한 변수를 대입하고, 조건에 따라 해당 값을 원본 값에 대입하는 식으로 바꿔야 함
 	// 444번째 줄 확인해보고 조건을 주는 식으로 수정해야 함
 	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
-	float fMargin = 40.f;					// 자연스러운 착지를 위한 마진값
+	float fMargin = 20.f;					// 자연스러운 착지를 위한 마진값
 
 	float fMaxVelocityY = 20;				// 최대 낙하속도 제한
 	float fGravityConst = GRAVITY * 0.12;	// 대충 자연스러운 중력가속도 및 계수
@@ -452,12 +493,6 @@ void CPlayer::Jump()
 			}
 		}
 	}
-
-	// 선을 타다가 떨어졌을 때;
-	// 언제 점핑을 주긴 해야함
-
-
-
 	else				// 점프 O
 	{
 		m_tInfo.fY += m_fVelocityY;
@@ -604,7 +639,34 @@ void CPlayer::LoadImages()
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_DOWN");
 
 	// ..플레이어 공격
-	//..
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION");				// 64_64_X4
+	FRAME_PROP tPlayer_DOWN = { 128 * 2, 64 * 2, 1, 6, 1 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION2");				// 64_64_X4
+	FRAME_PROP tPlayer_DOWN = { 160 * 2, 64 * 2, 1, 6, 1 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION2");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION3");				// 64_64_X4
+	FRAME_PROP tPlayer_DOWN = { 160 * 2, 64 * 2, 1, 6, 1 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION3");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION4");				// 64_64_X4
+	FRAME_PROP tPlayer_DOWN = { 128 * 2, 64 * 2, 1, 6, 1 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION4");
 
-	
+}
+
+int CPlayer::Get_Stat(PLAYERSTAT _statType)
+{
+	switch (_statType)
+	{
+	case CPlayer::HP:				return m_iHp;
+	case CPlayer::MAXHP:			return m_iMaxHp;
+	case CPlayer::MP:				return m_iMp;
+	case CPlayer::MAXMP:			return m_iMaxMp;
+	case CPlayer::TP:				return m_iTp;
+	case CPlayer::GOLD:				return m_iGold;
+	case CPlayer::ATK:				return (int)m_fAtk;
+	case CPlayer::KNIFE:			return m_iKnife;
+	case CPlayer::ISGETWATCH:		return m_isGetWatch;
+	case CPlayer::TIMEMODE:			return m_iTimeMode;
+	}
 }

@@ -91,8 +91,11 @@
     <Filter Include="03. Design\01. CollisionMgr">
       <UniqueIdentifier>{63cdf345-02c8-4076-86cf-4d523cbdb54c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Design\09. UIMgr">
-      <UniqueIdentifier>{4bea1021-91fb-48e6-a2de-2725c987cd5d}</UniqueIdentifier>
+    <Filter Include="01. Obj\05. UI">
+      <UniqueIdentifier>{017acb8e-8d44-4f4a-bd21-170a06cb2270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Design\09. SoundMgr">
+      <UniqueIdentifier>{ca02dae1-b581-4d2d-9047-80eb84b70961}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -171,8 +174,14 @@
     <ClInclude Include="CEdit.h">
       <Filter>02. Scene\T. Edit</Filter>
     </ClInclude>
-    <ClInclude Include="CUIMgr.h">
-      <Filter>03. Design\09. UIMgr</Filter>
+    <ClInclude Include="CUI.h">
+      <Filter>01. Obj\05. UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundMgr.h">
+      <Filter>03. Design\09. SoundMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerBullet.h">
+      <Filter>01. Obj\01. Bullet\00. PlayerBullet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,8 +245,14 @@
     <ClCompile Include="CEdit.cpp">
       <Filter>02. Scene\T. Edit</Filter>
     </ClCompile>
-    <ClCompile Include="CUIMgr.cpp">
-      <Filter>03. Design\09. UIMgr</Filter>
+    <ClCompile Include="CUI.cpp">
+      <Filter>01. Obj\05. UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundMgr.cpp">
+      <Filter>03. Design\09. SoundMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerBullet.cpp">
+      <Filter>01. Obj\01. Bullet\00. PlayerBullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
