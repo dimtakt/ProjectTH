@@ -89,5 +89,5 @@ void CCameraMgr::Lock_Camera(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY)
 
 
 
-	std::cout << "[INFO][CCameraMgr::Lock_Camera] CameraPos : " << m_fCameraX << ", " << m_fCameraY << std::endl;
+	//std::cout << "[INFO][CCameraMgr::Lock_Camera] CameraPos : " << m_fCameraX << ", " << m_fCameraY << std::endl;
 }

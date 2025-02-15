@@ -10,6 +10,7 @@
 #include "CSpritePropertyMgr.h"
 #include "CTileCOllisionMgr.h"
 #include "CPlayerBullet.h"
+#include "SoundMgr.h"
 
 CPlayer::CPlayer() :
 	m_eCurState(OBJST_IDLE),
@@ -182,9 +183,9 @@ void CPlayer::Render(HDC hDC)
 		//std::cout << "Player Scale: \t" << m_tInfo.fCX << "\t" << m_tInfo.fCY << std::endl;
 		//std::cout << "Player Info : \t" << m_tInfo.fX << "\t" << m_tInfo.fY << std::endl;
 
-		//std::cout << "CurrentState: \t" << m_eCurState << std::endl;
-		//std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
-		//std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
+		std::cout << "CurrentState: \t" << m_eCurState << std::endl;
+		std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
+		std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
 
 	}
 
@@ -200,6 +201,9 @@ void CPlayer::Release()
 
 void CPlayer::Key_Input()
 {
+
+
+
 	// ********************
 	// ** 점프 키 (점프 중이 아닐 때에만 가능)
 	// ********************
@@ -208,24 +212,37 @@ void CPlayer::Key_Input()
 		// 올라가는 중, 내려가는 중의 모션 조건도 따로 만들어줘야 함
 		// 꾹 누르는 중에 천천히 내려가며 활공하는 조건도 따로 만들어줘야 함
 		// later
-		if (m_isStretch)	m_pFrameKey = L"Player_Jump_R";
-		else				m_pFrameKey = L"Player_Jump";
 
-		m_dwStateChangeTime = 0;
+		
 		m_eCurState = OBJST_JUMP;
 		m_fVelocityY = -20.f;	// 임시값. Jump()
 
 		m_isJumping = true;
 	}
 
+	if (m_isJumping)
+	{
+		if (m_isStretch)	m_pFrameKey = L"Player_JUMP_R";
+		else				m_pFrameKey = L"Player_JUMP";
+
+		//m_dwStateChangeTime = 0;
+		m_dwStateChangeTime = GetTickCount();
+	}
+
+
+
+
 	// ********************
 	// ** 공격 키
 	// ********************
 	if (	CKeyMgr::Get_Instance()->Key_Down('Z'))
 	{
+		CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_EFFECT, 0.2f);
+
+		//┌ 칼날이 날아갈 위치/방향 정하는 부분
+
 		float iKnifeSpace = 20.f;
 
-		// 총알의 초기 위치 계산
 		float bulletX = m_tInfo.fX + m_fPosinLength * cos(m_fAngle * DEG2RAD);
 		float bulletY = m_tInfo.fY - m_fPosinLength * sin(m_fAngle * DEG2RAD);
 		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
@@ -245,10 +262,119 @@ void CPlayer::Key_Input()
 		else
 			bulletX += iKnifeSpace;
 
-		bulletY -= iKnifeSpace*2;
+		bulletY -= iKnifeSpace * 2;
 		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
 		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+		
+		//└ ****************************
+		
+		if (!m_isJumping &&
+			(m_eCurState != OBJST_RUN &&
+			m_eCurState != OBJST_RUN_ATTACK1 &&
+			m_eCurState != OBJST_RUN_ATTACK2 &&
+			m_eCurState != OBJST_RUN_ATTACK3 &&
+			m_eCurState != OBJST_RUN_ATTACK4) ||
+			(m_eCurState == OBJST_IDLE ||
+			m_eCurState == OBJST_ACTION1 ||
+			m_eCurState == OBJST_ACTION2 ||
+			m_eCurState == OBJST_ACTION3 ||
+			m_eCurState == OBJST_ACTION4))
+		{
+			if (m_eCurState == OBJST_IDLE)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
+				else				m_pFrameKey = L"Player_ACTION";
+				m_eCurState = OBJST_ACTION1;
+			}
+			else if (m_eCurState == OBJST_ACTION1)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_ACTION2_R";
+				else				m_pFrameKey = L"Player_ACTION2";
+				m_eCurState = OBJST_ACTION2;
+			}
+			else if (m_eCurState == OBJST_ACTION2)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_ACTION3_R";
+				else				m_pFrameKey = L"Player_ACTION3";
+				m_eCurState = OBJST_ACTION3;
+			}
+			else if (m_eCurState == OBJST_ACTION3)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_ACTION4_R";
+				else				m_pFrameKey = L"Player_ACTION4";
+				m_eCurState = OBJST_ACTION4;
+			}
+			else if (m_eCurState == OBJST_ACTION4)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
+				else				m_pFrameKey = L"Player_ACTION";
+				m_eCurState = OBJST_ACTION1;
+			}
+		}
+		else if ((!m_isJumping && m_eCurState == OBJST_RUN) ||
+			m_eCurState == OBJST_RUN_ATTACK1 ||
+			m_eCurState == OBJST_RUN_ATTACK2 ||
+			m_eCurState == OBJST_RUN_ATTACK3 ||
+			m_eCurState == OBJST_RUN_ATTACK4)
+		{
+			if (m_eCurState == OBJST_RUN)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK_R";
+				else				m_pFrameKey = L"Player_RUN_ATTACK";
+				m_eCurState = OBJST_RUN_ATTACK1;
+			}
+			else if (m_eCurState == OBJST_RUN_ATTACK1)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK2_R";
+				else				m_pFrameKey = L"Player_RUN_ATTACK2";
+				m_eCurState = OBJST_RUN_ATTACK2;
+			}
+			else if (m_eCurState == OBJST_RUN_ATTACK2)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK3_R";
+				else				m_pFrameKey = L"Player_RUN_ATTACK3";
+				m_eCurState = OBJST_RUN_ATTACK3;
+			}
+			else if (m_eCurState == OBJST_RUN_ATTACK3)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK4_R";
+				else				m_pFrameKey = L"Player_RUN_ATTACK4";
+				m_eCurState = OBJST_RUN_ATTACK4;
+			}
+			else if (m_eCurState == OBJST_RUN_ATTACK4)
+			{
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK_R";
+				else				m_pFrameKey = L"Player_RUN_ATTACK";
+				m_eCurState = OBJST_RUN_ATTACK1;
+			}
+		}
 
+
+		//}
+		//else
+		//{
+		//	if (m_eCurState == OBJST_JUMP)
+		//	{
+		//		m_dwStateChangeTime = GetTickCount();
+		//		if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
+		//		else				m_pFrameKey = L"Player_ACTION";
+		//		m_eCurState = OBJST_JUMP_ATTACK1;
+		//	}
+		//	else if (m_eCurState == OBJST_JUMP_ATTACK1)
+		//	{
+
+		//	}
+		//}
 
 	}
 
@@ -301,6 +427,23 @@ void CPlayer::Key_Input()
 		m_fAngle = 180.f;
 		return;
 	}
+
+
+
+	// ********************
+	// ** 앉기 키 (점프 중이 아닐 때에만 가능)
+	// ********************
+	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_DOWN) && !m_isJumping)
+	{
+		m_eCurState = OBJST_DOWN;
+		if (m_isStretch)	m_pFrameKey = L"Player_DOWN_R";
+		else				m_pFrameKey = L"Player_DOWN";
+		m_dwStateChangeTime = GetTickCount();
+
+		return;
+	}
+
+
 
 	
 	// ********************
@@ -384,7 +527,7 @@ void CPlayer::Key_Input()
 		if ((m_tFrame.iFrameCur == (m_tFrame.iFrameAmount - 1)) &&
 			(m_dwStateChangeTime - GetTickCount()) >= (m_tFrame.iFrameAmount * m_tFrame.dwSpeed))
 		{
-			if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";	// 프레임키와 상태 = "달리기 끝"
+			if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";
 			else				m_pFrameKey = L"Player_IDLE";
 			m_dwStateChangeTime = 0;
 			m_eCurState = OBJST_IDLE;
@@ -392,7 +535,7 @@ void CPlayer::Key_Input()
 	}
 	else
 	{
-		if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";	// 프레임키와 상태 = "달리기 끝"
+		if (m_isStretch)	m_pFrameKey = L"Player_IDLE_R";
 		else				m_pFrameKey = L"Player_IDLE";
 		m_eCurState = OBJST_IDLE;
 	}
@@ -558,13 +701,46 @@ void CPlayer::Motion_Change()
 			m_tFrame.dwSpeed = 80;
 			break;
 
-		//case CPlayer::ATTACK:
-		//	m_tFrame.iFrameStart = 0;
-		//	m_tFrame.iFrameEnd = 5;
-		//	m_tFrame.iMotion = 2;
-		//	m_tFrame.dwTime = GetTickCount();
-		//	m_tFrame.dwSpeed = 200;
-		//	break;
+		case OBJ_STATE::OBJST_DOWN:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 100;
+			break;
+
+		case OBJ_STATE::OBJST_ACTION1:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_ACTION2:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_ACTION3:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_ACTION4:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+
+		case OBJ_STATE::OBJST_JUMP_ATTACK1:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_JUMP_ATTACK2:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_JUMP_ATTACK3:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_JUMP_ATTACK4:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+
+
 
 		//case CPlayer::HIT:
 		//	m_tFrame.iFrameStart = 0;
@@ -633,24 +809,76 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_RUNCHANGE_R = { 96*2, 64*2, 3, 3, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUNCHANGE_R, L"Player_RUNCHANGE_R");
 
+	// ..플레이어 점프
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_jump/player_jump.bmp", L"Player_JUMP");
+	FRAME_PROP tPlayer_JUMP = { 64 * 2, 64 * 2, 2, 1, 2 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_JUMP, L"Player_JUMP");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_jump/player_jump_R.bmp", L"Player_JUMP_R");
+	FRAME_PROP tPlayer_JUMP_R = { 64 * 2, 64 * 2, 2, 1, 2 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_JUMP_R, L"Player_JUMP_R");
+
 	// ..플레이어 앉기
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_down/player_down.bmp", L"Player_DOWN");				// 64_64_X4
-	FRAME_PROP tPlayer_DOWN = { 64*2, 64*2, 4, 1, 4 };
+	FRAME_PROP tPlayer_DOWN = { 64 * 2, 64 * 2, 4, 1, 4 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_DOWN");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_down/player_down_R.bmp", L"Player_DOWN_R");				// 64_64_X4
+	FRAME_PROP tPlayer_DOWN_R = { 64 * 2, 64 * 2, 4, 1, 4 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN_R, L"Player_DOWN_R");
 
 	// ..플레이어 공격
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION");				// 64_64_X4
-	FRAME_PROP tPlayer_DOWN = { 128 * 2, 64 * 2, 1, 6, 1 };
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION2");				// 64_64_X4
-	FRAME_PROP tPlayer_DOWN = { 160 * 2, 64 * 2, 1, 6, 1 };
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION2");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION3");				// 64_64_X4
-	FRAME_PROP tPlayer_DOWN = { 160 * 2, 64 * 2, 1, 6, 1 };
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION3");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION4");				// 64_64_X4
-	FRAME_PROP tPlayer_DOWN = { 128 * 2, 64 * 2, 1, 6, 1 };
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DOWN, L"Player_ACTION4");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action.bmp", L"Player_ACTION");
+	FRAME_PROP tPlayer_ACTION = { 128 * 2, 64 * 2, 3, 3, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION, L"Player_ACTION");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action2/player_action2.bmp", L"Player_ACTION2");
+	FRAME_PROP tPlayer_ACTION2 = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION2, L"Player_ACTION2");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action3/player_action3.bmp", L"Player_ACTION3");
+	FRAME_PROP tPlayer_ACTION3 = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION3, L"Player_ACTION3");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action4/player_action4.bmp", L"Player_ACTION4");
+	FRAME_PROP tPlayer_ACTION4 = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION4, L"Player_ACTION4");
+
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action/player_action_R.bmp", L"Player_ACTION_R");
+	FRAME_PROP tPlayer_ACTION_R = { 128 * 2, 64 * 2, 3, 3, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION_R, L"Player_ACTION_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action2/player_action2_R.bmp", L"Player_ACTION2_R");
+	FRAME_PROP tPlayer_ACTION2_R = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION2_R, L"Player_ACTION2_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action3/player_action3_R.bmp", L"Player_ACTION3_R");
+	FRAME_PROP tPlayer_ACTION3_R = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION3_R, L"Player_ACTION3_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_action4/player_action4_R.bmp", L"Player_ACTION4_R");
+	FRAME_PROP tPlayer_ACTION4_R = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION4_R, L"Player_ACTION4_R");
+
+	// ..플레이어 공격 (점프 중)
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack/player_run_attack.bmp", L"Player_RUN_ATTACK");
+	FRAME_PROP tPlayer_RUN_ATTACK = { 160 * 2, 64 * 2, 2, 5, 10 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK, L"Player_RUN_ATTACK");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack2/player_run_attack2.bmp", L"Player_RUN_ATTACK2");
+	FRAME_PROP tPlayer_RUN_ATTACK2 = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK2, L"Player_RUN_ATTACK2");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack3/player_run_attack3.bmp", L"Player_RUN_ATTACK3");
+	FRAME_PROP tPlayer_RUN_ATTACK3 = { 160 * 2, 64 * 2, 1, 1, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK3, L"Player_RUN_ATTACK3");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack4/player_run_attack4.bmp", L"Player_RUN_ATTACK4");
+	FRAME_PROP tPlayer_RUN_ATTACK4 = { 128 * 2, 64 * 2, 1, 1, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK4, L"Player_RUN_ATTACK4");
+
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack/player_run_attack_R.bmp", L"Player_RUN_ATTACK_R");
+	FRAME_PROP tPlayer_RUN_ATTACK_R = { 160 * 2, 64 * 2, 2, 5, 10 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK_R, L"Player_RUN_ATTACK_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack2/player_run_attack2_R.bmp", L"Player_RUN_ATTACK2_R");
+	FRAME_PROP tPlayer_RUN_ATTACK2_R = { 128 * 2, 64 * 2, 1, 9, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK2_R, L"Player_RUN_ATTACK2_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack3/player_run_attack3_R.bmp", L"Player_RUN_ATTACK3_R");
+	FRAME_PROP tPlayer_RUN_ATTACK3_R = { 160 * 2, 64 * 2, 1, 1, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK3_R, L"Player_RUN_ATTACK3_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack4/player_run_attack4_R.bmp", L"Player_RUN_ATTACK4_R");
+	FRAME_PROP tPlayer_RUN_ATTACK4_R = { 128 * 2, 64 * 2, 1, 1, 9 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK4_R, L"Player_RUN_ATTACK4_R");
+
 
 }
 

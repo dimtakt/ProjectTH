@@ -79,6 +79,13 @@ enum OBJ_STATE	{	// IDLE, 이동, 이동시작, 이동중정지, 이동중방향전환, 앉기
 					
 					// 공격 단계 별 상태
 					OBJST_ACTION1, OBJST_ACTION2, OBJST_ACTION3, OBJST_ACTION4,
+
+					// 공격 단계 별 상태
+					OBJST_JUMP_ATTACK1, OBJST_JUMP_ATTACK2, OBJST_JUMP_ATTACK3, OBJST_JUMP_ATTACK4,
+					
+					// 공격 단계 별 상태
+					OBJST_RUN_ATTACK1, OBJST_RUN_ATTACK2, OBJST_RUN_ATTACK3, OBJST_RUN_ATTACK4,
+
 					// 윗공격, 점프 중 공격, 점프 중 대각공격
 					OBJST_UPACTION, OBJST_JUMPACTION,	OBJST_UNDERACTION,
 
