@@ -165,9 +165,12 @@ void CObjMgr::Optimize_DeleteOutsideScreen()
 
 		const INFO* tObjPos = dynamic_cast<CPlayerBullet*>(*iter)->Get_Info();
 
+		int iOutX = 0, iOutY = 0;
+		CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY);
+
 		// 화면 밖을 나갔다면
-		if ((tObjPos->fX + tObjPos->fCX < 0 || tObjPos->fX - tObjPos->fCX > WINCX) ||
-			(tObjPos->fY + tObjPos->fCY < 0 || tObjPos->fY - tObjPos->fCY > WINCY))
+		if ((tObjPos->fX + tObjPos->fCX < 0 - iOutX || tObjPos->fX - iOutY - tObjPos->fCX > WINCX - iOutX) ||
+			(tObjPos->fY + tObjPos->fCY < 0 - iOutY || tObjPos->fY - iOutY - tObjPos->fCY > WINCY - iOutY))
 			// 삭제
 		{
 			Safe_Delete<CObj*>(*iter);

@@ -10,8 +10,8 @@ CTileMgr* CTileMgr::m_pInstance = nullptr;
 CTileMgr::CTileMgr()
 {
 	// 미리 로드할 타일의 갯수를 정해, 메모리를 확보함
-	m_vecTile.reserve(TILEX * TILEY);
-	m_collideVecTile.reserve(TILEX * TILEY);
+	m_vecTile.reserve(TILEX * TILEY * 4);
+	m_collideVecTile.reserve(TILEX * TILEY * 4);
 }
 
 CTileMgr::~CTileMgr()
@@ -24,7 +24,7 @@ void CTileMgr::Initialize()
 	// 화면 크기에 맞게 타일을 생성함
 	for (int i = 0; i < TILEY; ++i)
 	{
-		for (int j = 0; j < TILEX; ++j)
+		for (int j = 0; j < TILEX * 4; ++j)
 		{
 			float fX = (float)((TILECX) * j) + ((TILECX) >> 1);
 			float fY = (float)((TILECY) * i) + ((TILECY) >> 1);
@@ -34,7 +34,7 @@ void CTileMgr::Initialize()
 			CObj* pCollideTile = CAbstractFactory<CTile>::Create(fX, fY);
 			m_collideVecTile.push_back(pCollideTile);
 			
-			std::cout << "[INFO][CTileMgr::Initialize] Generated Tile Position : " << fX << ", " << fY << std::endl;
+			//std::cout << "[INFO][CTileMgr::Initialize] Generated Tile Position : " << fX << ", " << fY << std::endl;
 		}
 	}
 
@@ -79,9 +79,9 @@ void CTileMgr::Render(HDC hDC)
 		for (int j = (int)fOutX; j < iMaxX; j++)
 		{
 			if (i < 0 || i >= TILEY) continue;
-			if (j < 0 || j >= TILEX) continue;
+			if (j < 0 || j >= TILEX * 4) continue;
 
-			int iIndex = i * TILEX + j;
+			int iIndex = i * TILEX * 4 + j;
 			
 			// 찾으려는 타일이 있을 경우에만 실행,
 			// 타일의 프로퍼티(스프라이트의 X축/Y축 갯수, 총 갯수, 길이 정보)를 가져와서 사용 가능하도록 반영
@@ -184,7 +184,7 @@ void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 	int	x = ptMouse.x / (TILECX);
 	int	y = ptMouse.y / (TILECY);
 	
-	int		iIndex = y * TILEX + x;
+	int		iIndex = y * TILEX * 4 + x;
 	
 	if (0 > iIndex || (size_t)iIndex >= m_vecTile.size())
 		return;

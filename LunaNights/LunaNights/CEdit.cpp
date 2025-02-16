@@ -46,16 +46,11 @@ void CEdit::Update()
 	// 스테이지마다 스테이지의 가로/세로 길이가 다름. 그것을 관리.
 	switch (iEditStage)
 	{
-	case 1:
-		iTileX = 3; iTileY = 1; break;
-	case 2:
-		iTileX = 2; iTileY = 1; break;
-	case 3:
-		iTileX = 1; iTileY = 1; break;
-	case 4:
-		iTileX = 2; iTileY = 1; break;
-	default:
-		break;
+	case 1:			iTileX = 3; iTileY = 1; break;
+	case 2:			iTileX = 2; iTileY = 1; break;
+	case 3:			iTileX = 1; iTileY = 1; break;
+	case 4:			iTileX = 2; iTileY = 1; break;
+	default:		break;
 	}
 
 
@@ -224,34 +219,84 @@ void CEdit::Key_Input()
 	if (CKeyMgr::Get_Instance()->Key_Down('1'))
 	{
 		if (iEditStage != 1)
+		{
+			switch (iEditStage)
+			{
+			//case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
+			case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
+			case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
+			case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			default:	break;
+			}
+			
 			iEditStage = 1;
-
+			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-1.dat", L"Collision_Tile");
+		}
+		
 		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
 	}
 	if (CKeyMgr::Get_Instance()->Key_Down('2'))
 	{
 		if (iEditStage != 2)
+		{
+			switch (iEditStage)
+			{
+			case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
+			//case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
+			case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
+			case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			default:	break;
+			}
+			
 			iEditStage = 2;
+			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-2.dat", L"Collision_Tile");
+		}
 
 		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
 	}
 	if (CKeyMgr::Get_Instance()->Key_Down('3'))
 	{
 		if (iEditStage != 3)
+		{
+			switch (iEditStage)
+			{
+			case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
+			case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
+			//case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
+			case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			default:	break;
+			}
+			
 			iEditStage = 3;
+			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-3.dat", L"Collision_Tile");
+
+		}
 
 		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
 	}
 	if (CKeyMgr::Get_Instance()->Key_Down('4'))
 	{
 		if (iEditStage != 4)
+		{
+			switch (iEditStage)
+			{
+			case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
+			case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
+			case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
+			//case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			default:	break;
+			}
+			
 			iEditStage = 4;
+			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat", L"Collision_Tile");
+
+		}
 
 		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
 	}
 
 
-	if (CKeyMgr::Get_Instance()->Key_Down('O'))
+	if (CKeyMgr::Get_Instance()->Key_Down('O') && iEditMode == 1)
 	{
 		int iInfo = MessageBox(g_hWnd, L"타일 정보를 저장하시겠습니까?", L"Save", MB_YESNO);
 
@@ -266,24 +311,18 @@ void CEdit::Key_Input()
 			{
 				switch (iEditStage)
 				{
-				case 1:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-1.dat"); break;
-				case 2:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-2.dat"); break;
-				case 3:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-3.dat"); break;
-				case 4:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-Boss.dat"); break;
-
-				default:
-					break;
+				case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-1.dat"); break;
+				case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-2.dat"); break;
+				case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-3.dat"); break;
+				case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-Boss.dat"); break;
+				default:	break;
 				}
 
 			}
 		}
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down('L'))
+	if (CKeyMgr::Get_Instance()->Key_Down('L') && iEditMode == 1)
 	{
 		int iInfo = MessageBox(g_hWnd, L"타일 정보를 불러오시겠습니까?", L"Load", MB_YESNO);
 
@@ -297,17 +336,11 @@ void CEdit::Key_Input()
 			{
 				switch (iEditStage)
 				{
-				case 1:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile"); break;
-				case 2:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-2.dat", L"Collision_Tile"); break;
-				case 3:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-3.dat", L"Collision_Tile"); break;
-				case 4:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
-
-				default:
-					break;
+				case 1:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile"); break;
+				case 2:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-2.dat", L"Collision_Tile"); break;
+				case 3:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-3.dat", L"Collision_Tile"); break;
+				case 4:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
+				default:	break;
 				}
 
 			}
@@ -324,14 +357,10 @@ void CEdit::Key_Input()
 			{
 				switch (iEditStage)
 				{
-				case 1:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-1.dat", L"Collision_Tile"); break;
-				case 2:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-2.dat", L"Collision_Tile"); break;
-				case 3:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-3.dat", L"Collision_Tile"); break;
-				case 4:
-					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
+				case 1:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-1.dat", L"Collision_Tile"); break;
+				case 2:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-2.dat", L"Collision_Tile"); break;
+				case 3:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-3.dat", L"Collision_Tile"); break;
+				case 4:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
 
 				default:
 					break;
@@ -342,14 +371,10 @@ void CEdit::Key_Input()
 			{
 				switch (iEditStage)
 				{
-				case 1:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
-				case 2:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
-				case 3:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
-				case 4:
-					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+				case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
+				case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
+				case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
+				case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
 
 				default:
 					break;
