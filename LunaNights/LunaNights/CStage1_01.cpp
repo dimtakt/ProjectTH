@@ -25,6 +25,9 @@ CStage1_01::~CStage1_01()
 
 void CStage1_01::Initialize()
 {
+	m_iTileTimesX = 3;
+	m_iTileTimesY = 1;
+
 	// 플레이어 생성
 	CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
 
@@ -49,7 +52,7 @@ void CStage1_01::Initialize()
 	// 맵을 하나의 통 텍스쳐를 쓸 것으로 변경함에 따라,
 	// 기존 타일 텍스쳐를 로드하지 않고, 콜라이더 정보만을 로드하도록 수정
 	CTileMgr::Get_Instance()->Load_Tile(nullptr, nullptr, true,
-										L"../Data/Tile_Collision.dat", L"Collision_Tile");
+										L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile");
 	
 	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
 	//FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보

@@ -25,9 +25,13 @@ void CEdit::Initialize()
 	LoadImages();
 
 	iSelectedTileIndex = 0;
-	iEditMode = 0;	// 0은 맵 편집, 1은 콜라이더 편집
+	iEditMode = 1;	// 0은 맵 편집, 1은 콜라이더 편집
+	iEditStage = 1;
+	iTileX = 3;
+	iTileY = 1;
 	
 	CTileMgr::Get_Instance()->Initialize();
+	CTileMgr::Get_Instance()->Set_PropName(L"Collision_Tile");
 
 	std::cout << "[INFO][CEdit::Initialize] Initialize Complete!" << std::endl;
 }
@@ -38,7 +42,24 @@ void CEdit::Update()
 
 	CTileMgr::Get_Instance()->Update();
 	
-	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX, TILECY * TILEY);
+
+	// 스테이지마다 스테이지의 가로/세로 길이가 다름. 그것을 관리.
+	switch (iEditStage)
+	{
+	case 1:
+		iTileX = 3; iTileY = 1; break;
+	case 2:
+		iTileX = 2; iTileY = 1; break;
+	case 3:
+		iTileX = 1; iTileY = 1; break;
+	case 4:
+		iTileX = 2; iTileY = 1; break;
+	default:
+		break;
+	}
+
+
+	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX * iTileX, TILECY * TILEY * iTileY);
 }
 
 void CEdit::Late_Update()
@@ -48,10 +69,67 @@ void CEdit::Late_Update()
 
 void CEdit::Render(HDC _DC)
 {
-	CTileMgr::Get_Instance()->Render(_DC);
+	// 로드 한 이미지를, 현재의 iEditStage 에 맞게 보여줘야 함.
+	HDC	hMemDC;
+	FRAME_PROP tBGOriginProp;
+	int iOutX = 0;
+	int iOutY = 0;
+	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
 
-	for (int i = 0; i < TILEX; i++)
-		for (int j = 0; j < TILEY; j++)
+
+
+	if (iEditMode == 0)
+	{
+
+		switch (iEditStage)
+		{
+		case 1:
+			hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT");
+			tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT");
+			BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+
+			break;
+
+		case 2:
+			hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_02_FRONT");
+			tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_02_FRONT");
+			BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+
+			break;
+
+		case 3:
+			hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_03_FRONT");
+			tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_03_FRONT");
+			BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+
+			break;
+
+		case 4:
+			hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_BOSS_FRONT");
+			tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_BOSS_FRONT");
+			BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+
+			break;
+
+
+		default:
+			break;
+		}
+
+	}
+
+	else
+	{
+
+		// 타일 렌더
+		CTileMgr::Get_Instance()->Render(_DC);
+
+	}
+
+
+	// 편집용 격자 생성
+	for (int i = 0; i < TILEX * iTileX; i++)
+		for (int j = 0; j < TILEY * iTileY; j++)
 		{
 			POINT ptLUp{ i * (TILECX), j * (TILECY) };
 			POINT ptRDown{ (i + 1) * (TILECX) - 1, (j + 1) * (TILECY) - 1};
@@ -79,10 +157,12 @@ void CEdit::Key_Input()
 	CCameraMgr::Get_Instance()->Get_CameraPos(fCameraX, fCameraY);
 	
 	int iMaxIndex;	// 선택 가능한 타일의 최대 인덱스
-	if (iEditMode == 0)
-		iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front").iFrameAmount;
-	else if (iEditMode == 1)
-		iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Collision_Tile").iFrameAmount;
+
+	//if (iEditMode == 0)
+	//	iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front").iFrameAmount;
+	//else if (iEditMode == 1)
+
+	iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Collision_Tile").iFrameAmount;
 	
 
 	if (CKeyMgr::Get_Instance()->Key_Down(VK_LEFT))
@@ -141,6 +221,34 @@ void CEdit::Key_Input()
 	}
 
 
+	if (CKeyMgr::Get_Instance()->Key_Down('1'))
+	{
+		if (iEditStage != 1)
+			iEditStage = 1;
+
+		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
+	}
+	if (CKeyMgr::Get_Instance()->Key_Down('2'))
+	{
+		if (iEditStage != 2)
+			iEditStage = 2;
+
+		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
+	}
+	if (CKeyMgr::Get_Instance()->Key_Down('3'))
+	{
+		if (iEditStage != 3)
+			iEditStage = 3;
+
+		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
+	}
+	if (CKeyMgr::Get_Instance()->Key_Down('4'))
+	{
+		if (iEditStage != 4)
+			iEditStage = 4;
+
+		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
+	}
 
 
 	if (CKeyMgr::Get_Instance()->Key_Down('O'))
@@ -149,10 +257,29 @@ void CEdit::Key_Input()
 
 		if (iInfo == IDYES)
 		{
-			if (iEditMode == 0)
-				CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile.dat");
-			else if (iEditMode == 1)
-				CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision.dat");
+			// 맵 타일 편집 모드 제거함.
+			//if (iEditMode == 0)
+			//	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile.dat");
+			//else 
+			
+			if (iEditMode == 1)
+			{
+				switch (iEditStage)
+				{
+				case 1:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-1.dat"); break;
+				case 2:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-2.dat"); break;
+				case 3:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-3.dat"); break;
+				case 4:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-Boss.dat"); break;
+
+				default:
+					break;
+				}
+
+			}
 		}
 	}
 
@@ -162,10 +289,28 @@ void CEdit::Key_Input()
 
 		if (iInfo == IDYES)
 		{
-			if (iEditMode == 0)
-				CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front");
-			else if (iEditMode == 1)
-				CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision.dat", L"Collision_Tile");
+			// 맵 타일 편집 모드 제거함.
+			//if (iEditMode == 0)
+			//	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front");
+			//else
+			if (iEditMode == 1)
+			{
+				switch (iEditStage)
+				{
+				case 1:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile"); break;
+				case 2:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-2.dat", L"Collision_Tile"); break;
+				case 3:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-3.dat", L"Collision_Tile"); break;
+				case 4:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
+
+				default:
+					break;
+				}
+
+			}
 		}
 	}
 
@@ -177,25 +322,48 @@ void CEdit::Key_Input()
 		{
 			if (iEditMode == 0)
 			{
-				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile.dat");
-				CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision.dat", L"Collision_Tile");
+				switch (iEditStage)
+				{
+				case 1:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-1.dat", L"Collision_Tile"); break;
+				case 2:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-2.dat", L"Collision_Tile"); break;
+				case 3:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-3.dat", L"Collision_Tile"); break;
+				case 4:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
+
+				default:
+					break;
+				}
 				iEditMode = 1;
 			}
 			else
 			{
-				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision.dat");
-				CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile.dat", L"BG_Front");
+				switch (iEditStage)
+				{
+				case 1:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
+				case 2:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
+				case 3:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
+				case 4:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+
+				default:
+					break;
+				}
 				iEditMode = 0;
 			}
 
 			std::cout << "[INFO][CEdit::Key_Input] Current EditMode is " << iEditMode << "!" << std::endl;
+			std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
 
-			iSelectedTileIndex = 0;
-			std::cout << "[INFO][CEdit::Key_Input] Current Selected Tile Index : " << iSelectedTileIndex << std::endl;
+			//iSelectedTileIndex = 0;
+			//std::cout << "[INFO][CEdit::Key_Input] Current Selected Tile Index : " << iSelectedTileIndex << std::endl;
 
-			if (iEditMode == 0)
-				CTileMgr::Get_Instance()->Set_PropName(L"BG_Front");
-			else if (iEditMode == 1)
+			if (iEditMode == 1)
 				CTileMgr::Get_Instance()->Set_PropName(L"Collision_Tile");
 		}
 	}
@@ -205,26 +373,52 @@ void CEdit::LoadImages()
 {
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/TempBG.bmp", L"STAGE1_01_BG");
 
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
-	FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
+#pragma region legacy
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
+	//FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
+	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
 
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Back.bmp", L"BG_Back");
-	FRAME_PROP tBG_Back = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Back, L"BG_Back");
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Back.bmp", L"BG_Back");
+	//FRAME_PROP tBG_Back = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
+	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Back, L"BG_Back");
 
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_ForestTile.bmp", L"BG_ForestTile");
-	FRAME_PROP tBG_ForestTile = { TILECX, TILECY, 21, 21, 440 };							// 타일의 가로세로 길이 정보
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_ForestTile, L"BG_ForestTile");
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_ForestTile.bmp", L"BG_ForestTile");
+	//FRAME_PROP tBG_ForestTile = { TILECX, TILECY, 21, 21, 440 };							// 타일의 가로세로 길이 정보
+	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_ForestTile, L"BG_ForestTile");
 
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/Tile.bmp", L"TILE");		// 테스트용 임시 타일
+	//FRAME_PROP tTILE = { TILECX, TILECY, 2, 1, 2 };							// 타일의 가로세로 길이 정보
+	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tTILE, L"TILE");	// 타일의 가로세로 길이 정보를 싱글톤에 담음
+
+#pragma endregion
+
+
+
+	// 콜라이더 타일 로드
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/Collision_Tile.bmp", L"Collision_Tile");
 	FRAME_PROP tCollision_Tile = { TILECX, TILECY, 8, 4, 32 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tCollision_Tile, L"Collision_Tile");
 
 
 
-	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/Tile.bmp", L"TILE");		// 테스트용 임시 타일
-	//FRAME_PROP tTILE = { TILECX, TILECY, 2, 1, 2 };							// 타일의 가로세로 길이 정보
-	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tTILE, L"TILE");	// 타일의 가로세로 길이 정보를 싱글톤에 담음
+	// 스테이지 1-1 이미지 로드
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-01_Merge0103.bmp", L"STAGE1_01_FRONT");
+	FRAME_PROP tSTAGE1_01_FRONT = { 4080, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_01_FRONT, L"STAGE1_01_FRONT");
+
+	// 스테이지 1-2 이미지 로드
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-02_Merge0405.bmp", L"STAGE1_02_FRONT");
+	FRAME_PROP tSTAGE1_02_FRONT = { 2720, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_02_FRONT, L"STAGE1_02_FRONT");
+
+	// 스테이지 1-3 이미지 로드
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-03_Merge.bmp", L"STAGE1_03_FRONT");
+	FRAME_PROP tSTAGE1_03_FRONT = { 1360, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_03_FRONT, L"STAGE1_03_FRONT");
+
+	// 스테이지 1-Boss 이미지 로드
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-Boss_Merge.bmp", L"STAGE1_BOSS_FRONT");
+	FRAME_PROP tSTAGE1_BOSS_FRONT = { 2720, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_BOSS_FRONT, L"STAGE1_BOSS_FRONT");
 
 }

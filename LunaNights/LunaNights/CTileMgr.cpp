@@ -58,7 +58,6 @@ void CTileMgr::Late_Update()
 		pTile->Late_Update();
 	for (auto& pTile : m_collideVecTile)
 		pTile->Late_Update();
-	// 타일과의 충돌처리는..?
 }
 
 void CTileMgr::Render(HDC hDC)
@@ -167,18 +166,35 @@ void CTileMgr::Release()
 
 void CTileMgr::Picking_Tile(POINT ptMouse, int _iDrawID, int _iOption)
 {
-	int	x = ptMouse.x / (TILECX) ;
-	int	y = ptMouse.y / (TILECY) ;
+	//int	x = ptMouse.x / (TILECX);
+	//int	y = ptMouse.y / (TILECY);
+	//
+	//int		iIndex = y * TILEX + x;
+	//
+	//if (0 > iIndex || (size_t)iIndex >= m_collideVecTile.size())
+	//	return;
+	//
+	//dynamic_cast<CTile*>(m_collideVecTile[iIndex])->Set_DrawID(_iDrawID);
+	//dynamic_cast<CTile*>(m_collideVecTile[iIndex])->Set_Option(_iOption);
+	//
+	//std::cout << "[INFO][CTileMgr::Picking_Tile] Picked Pos : " << x << ", " << y << std::endl;
 
+#pragma region legacy
+	
+	int	x = ptMouse.x / (TILECX);
+	int	y = ptMouse.y / (TILECY);
+	
 	int		iIndex = y * TILEX + x;
-
+	
 	if (0 > iIndex || (size_t)iIndex >= m_vecTile.size())
 		return;
-
+	
 	dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_DrawID(_iDrawID);
 	dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_Option(_iOption);
-
+	
 	std::cout << "[INFO][CTileMgr::Picking_Tile] Picked Pos : " << x << ", " << y << std::endl;
+
+#pragma endregion
 }
 
 void CTileMgr::Save_Tile(const TCHAR* _dataFileName)
