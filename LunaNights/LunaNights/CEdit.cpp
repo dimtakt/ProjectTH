@@ -37,6 +37,8 @@ void CEdit::Update()
 	Key_Input();
 
 	CTileMgr::Get_Instance()->Update();
+	
+	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX, TILECY * TILEY);
 }
 
 void CEdit::Late_Update()

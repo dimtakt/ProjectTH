@@ -70,7 +70,7 @@ void CTileMgr::Render(HDC hDC)
 	fOutX = (fOutX - (WINCX / 2)) / (TILECX);
 	fOutY = (fOutY - (WINCY / 2)) / (TILECY);
 	
-	int iTmp = 0;
+	int iTmp = 0; // 디버깅용
 
 	int iMaxX = (fOutX + (WINCX / (TILECX))) + 2;
 	int iMaxY = (fOutY + (WINCY / (TILECY))) + 2;
@@ -83,19 +83,21 @@ void CTileMgr::Render(HDC hDC)
 			if (j < 0 || j >= TILEX) continue;
 
 			int iIndex = i * TILEX + j;
-			if ((size_t)iIndex >= m_vecTile.size())
-				continue;
+			
+			// 찾으려는 타일이 있을 경우에만 실행,
+			// 타일의 프로퍼티(스프라이트의 X축/Y축 갯수, 총 갯수, 길이 정보)를 가져와서 사용 가능하도록 반영
+			if (!((size_t)iIndex >= m_vecTile.size()))
+			{
+				dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_PropName(m_tPropertyName);
+				dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName));
+				m_vecTile[iIndex]->Render(hDC);
+			}
 
-			dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_PropName(m_tPropertyName);
-			dynamic_cast<CTile*>(m_vecTile[iIndex])->Set_FrameProperty(CSpritePropertyMgr::Get_Instance()->Find_Property(m_tPropertyName));
-			m_vecTile[iIndex]->Render(hDC);
 
 
 
 
-
-			// **** 충돌 기준정보 확인
-
+			// **** 충돌 기준정보 확인용 debug
 			if (m_collideVecTile.size() != 0)
 			{
 				int iOutX = 0, iOutY = 0;
@@ -214,7 +216,7 @@ void CTileMgr::Load_Tile(const TCHAR* _dataFileName, const TCHAR* _propertyName,
 	// *************************************************
 	// 데이터 하나만 로드 (Edit 모드 처럼)
 	// *************************************************
-	if (true)
+	if (_dataFileName)
 	{
 		HANDLE	hFile = CreateFile(_dataFileName,
 			GENERIC_READ,

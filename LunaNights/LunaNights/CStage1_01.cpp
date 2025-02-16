@@ -37,13 +37,28 @@ void CStage1_01::Initialize()
 	
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/TempBG.bmp", L"STAGE1_01_BG");
 
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
-	FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
-	CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-01_Merge0103.bmp", L"STAGE1_01_FRONT");
+	FRAME_PROP tSTAGE1_01_FRONT = { 4080, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_01_FRONT, L"STAGE1_01_FRONT");
+
 
 	CTileMgr::Get_Instance()->Initialize();
-	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front", true,
+
+
+
+	// 맵을 하나의 통 텍스쳐를 쓸 것으로 변경함에 따라,
+	// 기존 타일 텍스쳐를 로드하지 않고, 콜라이더 정보만을 로드하도록 수정
+	CTileMgr::Get_Instance()->Load_Tile(nullptr, nullptr, true,
 										L"../Data/Tile_Collision.dat", L"Collision_Tile");
+	
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
+	//FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
+	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
+
+	//CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front", true,
+	//									L"../Data/Tile_Collision.dat", L"Collision_Tile");
+
+	
 	
 	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
 	// CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision.dat", L"Collision_Tile");	// 콜라이더 데이터
@@ -53,7 +68,7 @@ void CStage1_01::Initialize()
 
 void CStage1_01::Update()
 {
-	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX, TILECY * TILEY);
+	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX * 3, TILECY * TILEY);
 
 	CTileMgr::Get_Instance()->Update();
 	CObjMgr::Get_Instance()->Update();
@@ -74,6 +89,30 @@ void CStage1_01::Render(HDC _DC)
 
 	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG");
 	BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
+
+
+
+	int iOutX = 0;
+	int iOutY = 0;
+	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+
+
+	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT");
+	FRAME_PROP tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT");
+	
+	//BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+
+	GdiTransparentBlt(	_DC,
+						iOutX,
+						iOutY,
+						tBGOriginProp.iCX,
+						tBGOriginProp.iCY,
+						hMemDC,
+						0,
+						0,
+						tBGOriginProp.iCX,
+						tBGOriginProp.iCY,
+						RGB(255, 0, 255));
 
 	CTileMgr::Get_Instance()->Render(_DC);
 	CObjMgr::Get_Instance()->Render(_DC);
