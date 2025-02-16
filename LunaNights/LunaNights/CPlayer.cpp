@@ -278,7 +278,9 @@ void CPlayer::Key_Input()
 			m_eCurState == OBJST_ACTION1 ||
 			m_eCurState == OBJST_ACTION2 ||
 			m_eCurState == OBJST_ACTION3 ||
-			m_eCurState == OBJST_ACTION4))
+			m_eCurState == OBJST_ACTION4 ||
+			m_eCurState == OBJST_RUNSTART ||
+			m_eCurState == OBJST_RUNEND))
 		{
 			if (m_eCurState == OBJST_IDLE)
 			{
@@ -894,7 +896,7 @@ int CPlayer::Get_Stat(PLAYERSTAT _statType)
 	case CPlayer::GOLD:				return m_iGold;
 	case CPlayer::ATK:				return (int)m_fAtk;
 	case CPlayer::KNIFE:			return m_iKnife;
-	case CPlayer::ISGETWATCH:		return m_isGetWatch;
+	case CPlayer::ISGETWATCH:		return (int)m_isGetWatch;
 	case CPlayer::TIMEMODE:			return m_iTimeMode;
 	}
 }
