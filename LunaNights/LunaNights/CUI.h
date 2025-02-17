@@ -19,5 +19,6 @@ private:
     FRAME tFrameHPMP;
     FRAME tFrameGauge_Stop;
     FRAME tFrameTime_Number;
+    FRAME tFrameNumber_Sprite;
 };
 

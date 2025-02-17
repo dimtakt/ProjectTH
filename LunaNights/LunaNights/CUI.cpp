@@ -8,12 +8,18 @@
 #include "CPlayer.h"
 #include "CObjMgr.h"
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!	UI 하나 추가할 때 마다 해당 FRAME 변수 및
+// !!!	변수에 대한 Zeromemory 추가할 것!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 CUI::CUI()
 {
 	ZeroMemory(&tFrameHPMP, sizeof(FRAME));
 	ZeroMemory(&tFrameGauge_Stop, sizeof(FRAME));
 	ZeroMemory(&tFrameTime_Number, sizeof(FRAME));
+	ZeroMemory(&tFrameNumber_Sprite, sizeof(FRAME));
 }
 
 CUI::~CUI()
@@ -39,6 +45,11 @@ void CUI::Initialize()
 	Set_FrameProperty(tUI_HPMP, tFrameHPMP);
 	tFrameHPMP.dwSpeed = 14;
 
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/ui_number_sprite/ui_number_sprite.bmp", L"UI_Number_Sprite");
+	FRAME_PROP tUI_Number_Sprite = { 4 * 2, 5 * 2, 10, 1, 10 };
+	Set_FrameProperty(tUI_Number_Sprite, tFrameNumber_Sprite);
+
+
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/gauge_stop/gauge_stop.bmp", L"UI_Gauge_Stop");
 	FRAME_PROP tUI_Gauge_Stop = { 32 * 2, 7 * 2, 1, 24, 24 };
 	Set_FrameProperty(tUI_Gauge_Stop, tFrameGauge_Stop);
@@ -48,6 +59,7 @@ void CUI::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/time_number_sprite/time_number_sprite.bmp", L"UI_Time_Number");
 	FRAME_PROP tUI_Time_Number = { 12 * 2, 18 * 2, 10, 1, 10 };
 	Set_FrameProperty(tUI_Time_Number, tFrameTime_Number);
+
 
 
 
@@ -111,13 +123,14 @@ void CUI::Render(HDC hDC)
 
 
 
-	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_HP");
 
 	// 남은 HP (체력)
+	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_HP");
+
 	StretchBlt(			hDC,											// 최종적으로 그릴 DC
-		 				213,												// 복사받을 위치 X, Y좌표
-		 				81,
-		 				tFrameHPMP.iCX,									// 복사 받을 가로, 세로 길이.
+		 				212,												// 복사받을 위치 X, Y좌표
+		 				80,
+		 				tFrameHPMP.iCX * ((float)pPlayer->Get_Stat(CPlayer::HP) / (float)pPlayer->Get_Stat(CPlayer::MAXHP)),									// 복사 받을 가로, 세로 길이.
 		 				tFrameHPMP.iCY,
 		 				hMemDC,											// 비트맵을 가지고 있는 DC
 						tFrameHPMP.iCX * ((tFrameHPMP.iFrameCur) % (tFrameHPMP.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
@@ -131,9 +144,9 @@ void CUI::Render(HDC hDC)
 	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_MP");
 
 	StretchBlt(			hDC,											// 최종적으로 그릴 DC
-		 				213,												// 복사받을 위치 X, Y좌표
-		 				105,
-		 				tFrameHPMP.iCX,									// 복사 받을 가로, 세로 길이.
+		 				212,												// 복사받을 위치 X, Y좌표
+		 				104,
+		 				tFrameHPMP.iCX * ((float)pPlayer->Get_Stat(CPlayer::MP) / (float)pPlayer->Get_Stat(CPlayer::MAXMP)),									// 복사 받을 가로, 세로 길이.
 		 				tFrameHPMP.iCY,
 		 				hMemDC,											// 비트맵을 가지고 있는 DC
 						tFrameHPMP.iCX * ((tFrameHPMP.iFrameCur) % (tFrameHPMP.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
@@ -142,6 +155,8 @@ void CUI::Render(HDC hDC)
 		 				tFrameHPMP.iCY,
 		 				SRCCOPY);										// 복사 모드
 	
+
+
 
 	// 상단에 보일 UI 틀
 	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_Gauge_Sprite");
@@ -205,6 +220,71 @@ void CUI::Render(HDC hDC)
 	}
 
 
+
+	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_Number_Sprite");
+	// 남은 HP
+
+	int iHp = pPlayer->Get_Stat(CPlayer::HP);
+
+	for (int i = 0; i < 3; i++)
+	{
+		int iHpChar = (iHp % (int)pow(10, 3 - i)) / (pow(10, 2 - i));							// 출력하려는 수
+
+		GdiTransparentBlt(	hDC,											// 최종적으로 그릴 DC
+							184 + i * tFrameNumber_Sprite.iCX,				// 복사받을 위치 X, Y좌표
+							80,
+							tFrameNumber_Sprite.iCX,						// 복사 받을 가로, 세로 길이.
+							tFrameNumber_Sprite.iCY,
+							hMemDC,											// 비트맵을 가지고 있는 DC
+							tFrameNumber_Sprite.iCX * ((iHpChar) % 10),		// 출력하려는 스트라이트 이미지 내에서의 좌표
+							tFrameNumber_Sprite.iCY * ((iHpChar) / 10),
+							tFrameNumber_Sprite.iCX,						// 비트맵을 출력할 가로, 세로 길이
+							tFrameNumber_Sprite.iCY,
+							RGB(255, 0, 255));								// 제거할 색상
+	}
+
+	// 남은 MP
+
+	int iMp = pPlayer->Get_Stat(CPlayer::MP);
+
+	for (int i = 0; i < 3; i++)
+	{
+		int iMpChar = (iMp % (int)pow(10, 3 - i)) / (pow(10, 2 - i));							// 출력하려는 수
+
+		GdiTransparentBlt(	hDC,											// 최종적으로 그릴 DC
+							184 + i * tFrameNumber_Sprite.iCX,				// 복사받을 위치 X, Y좌표
+							104,
+							tFrameNumber_Sprite.iCX,						// 복사 받을 가로, 세로 길이.
+							tFrameNumber_Sprite.iCY,
+							hMemDC,											// 비트맵을 가지고 있는 DC
+							tFrameNumber_Sprite.iCX * ((iMpChar) % 10),		// 출력하려는 스트라이트 이미지 내에서의 좌표
+							tFrameNumber_Sprite.iCY * ((iMpChar) / 10),
+							tFrameNumber_Sprite.iCX,						// 비트맵을 출력할 가로, 세로 길이
+							tFrameNumber_Sprite.iCY,
+							RGB(255, 0, 255));								// 제거할 색상
+	}
+
+	// 남은 GOLD
+
+	int iGold = pPlayer->Get_Stat(CPlayer::GOLD);
+	
+
+	for (int i = 0; i < 8; i++)
+	{
+		int iGoldChar = (iGold % (int)pow(10, 8 - i)) / (pow(10, 7 - i));							// 출력하려는 수
+
+		GdiTransparentBlt(	hDC,											// 최종적으로 그릴 DC
+							492 + i * tFrameNumber_Sprite.iCX,				// 복사받을 위치 X, Y좌표
+							80,
+							tFrameNumber_Sprite.iCX,						// 복사 받을 가로, 세로 길이.
+							tFrameNumber_Sprite.iCY,
+							hMemDC,											// 비트맵을 가지고 있는 DC
+							tFrameNumber_Sprite.iCX * ((iGoldChar) % 10),		// 출력하려는 스트라이트 이미지 내에서의 좌표
+							tFrameNumber_Sprite.iCY * ((iGoldChar) / 10),
+							tFrameNumber_Sprite.iCX,						// 비트맵을 출력할 가로, 세로 길이
+							tFrameNumber_Sprite.iCY,
+							RGB(255, 0, 255));								// 제거할 색상
+	}
 
 
 

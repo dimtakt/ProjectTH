@@ -97,6 +97,12 @@
     <Filter Include="03. Design\09. SoundMgr">
       <UniqueIdentifier>{ca02dae1-b581-4d2d-9047-80eb84b70961}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Obj\02. Monster\01. Wisp">
+      <UniqueIdentifier>{ec81774a-c8ba-4959-b69a-8aa0a94136fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Obj\02. Monster\00. Wolf">
+      <UniqueIdentifier>{9d3839b5-077d-493c-ac18-43513e8c422a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -183,6 +189,12 @@
     <ClInclude Include="CPlayerBullet.h">
       <Filter>01. Obj\01. Bullet\00. PlayerBullet</Filter>
     </ClInclude>
+    <ClInclude Include="CWolf.h">
+      <Filter>01. Obj\02. Monster\00. Wolf</Filter>
+    </ClInclude>
+    <ClInclude Include="CWisp.h">
+      <Filter>01. Obj\02. Monster\01. Wisp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -253,6 +265,12 @@
     </ClCompile>
     <ClCompile Include="CPlayerBullet.cpp">
       <Filter>01. Obj\01. Bullet\00. PlayerBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="CWolf.cpp">
+      <Filter>01. Obj\02. Monster\00. Wolf</Filter>
+    </ClCompile>
+    <ClCompile Include="CWisp.cpp">
+      <Filter>01. Obj\02. Monster\01. Wisp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

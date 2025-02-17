@@ -77,6 +77,11 @@ public:
 	// PlgBlt 를 통해 사진의 돌리기를 위해 만든 함수
 	void		RotatePoints(float centerX, float centerY, POINT points[3], float angle = 0.f);
 
+
+	bool		Get_isFlying() { return m_isFlying; }
+
+
+
 protected:
 	INFO		m_tInfo;
 	INFO		m_tCollideInfo;

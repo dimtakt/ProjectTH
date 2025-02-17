@@ -181,6 +181,8 @@ void CEdit::Key_Input()
 		std::cout << "[INFO][CEdit::Key_Input] Current Selected Tile Index : " << iSelectedTileIndex << std::endl;
 	}
 
+	
+
 
 	// 좌클 시 선택된 인덱스의 타일을 칠함
 	// 우클 시 선택된 인덱스의 타일을 0으로 되돌림

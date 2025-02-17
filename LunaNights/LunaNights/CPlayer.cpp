@@ -48,7 +48,7 @@ void CPlayer::Initialize()
 	m_iMp = 100;
 	m_iMaxMp = 100;
 	m_iTp = 85;
-	m_iGold = 0;
+	m_iGold = 50;
 	m_fAtk = 5.2;
 	m_iKnife = 18;
 	m_isGetWatch = 0;
@@ -73,6 +73,7 @@ void CPlayer::Initialize()
 
 	m_eRender = RENDER_GAMEOBJECT;
 
+	m_dwMpRegenTime = GetTickCount();
 
 	CCameraMgr::Get_Instance()->Set_Target(this);
 }
@@ -83,6 +84,14 @@ int CPlayer::Update()
 		return OBJ_DEAD;
 
 	Key_Input();
+
+	// 마나 자연회복
+	if (m_dwMpRegenTime + 500 <= GetTickCount() && !(m_iMp >= 100))
+	{
+		m_iMp++;
+		m_dwMpRegenTime = GetTickCount();
+	}
+
 
 	m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
 	Set_FrameProperty(m_tFramePropCur);	// 현재 프레임에 현 상태에 맞는 정보를 반영
@@ -237,129 +246,143 @@ void CPlayer::Key_Input()
 	// ********************
 	if (	CKeyMgr::Get_Instance()->Key_Down('Z'))
 	{
-		CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_EFFECT, 0.2f);
-
-		//┌ 칼날이 날아갈 위치/방향 정하는 부분
-
-		float iKnifeSpace = 20.f;
-
-		float bulletX = m_tInfo.fX + m_fPosinLength * cos(m_fAngle * DEG2RAD);
-		float bulletY = m_tInfo.fY - m_fPosinLength * sin(m_fAngle * DEG2RAD);
-		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
-		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
-	
-		if (!m_isStretch)
-			bulletX -= iKnifeSpace;
-		else
-			bulletX += iKnifeSpace;
-
-		bulletY += iKnifeSpace;
-		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
-		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
-
-		if (!m_isStretch)
-			bulletX -= iKnifeSpace;
-		else
-			bulletX += iKnifeSpace;
-
-		bulletY -= iKnifeSpace * 2;
-		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
-		std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
-		
-		//└ ****************************
-		
-		if (!m_isJumping &&
-			(m_eCurState != OBJST_RUN &&
-			m_eCurState != OBJST_RUN_ATTACK1 &&
-			m_eCurState != OBJST_RUN_ATTACK2 &&
-			m_eCurState != OBJST_RUN_ATTACK3 &&
-			m_eCurState != OBJST_RUN_ATTACK4) ||
-			(m_eCurState == OBJST_IDLE ||
-			m_eCurState == OBJST_ACTION1 ||
-			m_eCurState == OBJST_ACTION2 ||
-			m_eCurState == OBJST_ACTION3 ||
-			m_eCurState == OBJST_ACTION4 ||
-			m_eCurState == OBJST_RUNSTART ||
-			m_eCurState == OBJST_RUNEND))
+		if (m_iMp >= 3)
 		{
-			if (m_eCurState == OBJST_IDLE)
+			m_iMp -= 3;
+
+			CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_EFFECT, 0.2f);
+
+			//┌ 칼날이 날아갈 위치/방향 정하는 부분
+
+			float iKnifeSpace = 20.f;
+
+			float bulletX = m_tInfo.fX + m_fPosinLength * cos(m_fAngle * DEG2RAD);
+			float bulletY = m_tInfo.fY - m_fPosinLength * sin(m_fAngle * DEG2RAD);
+			CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
+			std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+
+			if (!m_isStretch)
+				bulletX -= iKnifeSpace;
+			else
+				bulletX += iKnifeSpace;
+
+			bulletY += iKnifeSpace;
+			CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
+			std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+
+			if (!m_isStretch)
+				bulletX -= iKnifeSpace;
+			else
+				bulletX += iKnifeSpace;
+
+			bulletY -= iKnifeSpace * 2;
+			CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYERBULLET, CAbstractFactory<CPlayerBullet>::Create(bulletX, bulletY - m_tInfo.fCY / 2, m_fAngle));
+			std::cout << "[INFO][CPlayer::Key_Input] " << "Bullet Created on..  " << bulletX << ", " << bulletY - m_tInfo.fCY / 2 << std::endl;
+
+			//└ ****************************
+
+			if (!m_isJumping &&
+				(m_eCurState != OBJST_RUN &&
+					m_eCurState != OBJST_RUN_ATTACK1 &&
+					m_eCurState != OBJST_RUN_ATTACK2 &&
+					m_eCurState != OBJST_RUN_ATTACK3 &&
+					m_eCurState != OBJST_RUN_ATTACK4) ||
+				(m_eCurState == OBJST_IDLE ||
+					m_eCurState == OBJST_ACTION1 ||
+					m_eCurState == OBJST_ACTION2 ||
+					m_eCurState == OBJST_ACTION3 ||
+					m_eCurState == OBJST_ACTION4 ||
+					m_eCurState == OBJST_RUNSTART ||
+					m_eCurState == OBJST_RUNEND))
 			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
-				else				m_pFrameKey = L"Player_ACTION";
-				m_eCurState = OBJST_ACTION1;
+				if (m_eCurState == OBJST_IDLE)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
+					else				m_pFrameKey = L"Player_ACTION";
+					m_eCurState = OBJST_ACTION1;
+				}
+				else if (m_eCurState == OBJST_ACTION1)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_ACTION2_R";
+					else				m_pFrameKey = L"Player_ACTION2";
+					m_eCurState = OBJST_ACTION2;
+				}
+				else if (m_eCurState == OBJST_ACTION2)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_ACTION3_R";
+					else				m_pFrameKey = L"Player_ACTION3";
+					m_eCurState = OBJST_ACTION3;
+				}
+				else if (m_eCurState == OBJST_ACTION3)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_ACTION4_R";
+					else				m_pFrameKey = L"Player_ACTION4";
+					m_eCurState = OBJST_ACTION4;
+				}
+				else if (m_eCurState == OBJST_ACTION4)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
+					else				m_pFrameKey = L"Player_ACTION";
+					m_eCurState = OBJST_ACTION1;
+				}
 			}
-			else if (m_eCurState == OBJST_ACTION1)
+			else if ((!m_isJumping && m_eCurState == OBJST_RUN) ||
+				m_eCurState == OBJST_RUN_ATTACK1 ||
+				m_eCurState == OBJST_RUN_ATTACK2 ||
+				m_eCurState == OBJST_RUN_ATTACK3 ||
+				m_eCurState == OBJST_RUN_ATTACK4)
 			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_ACTION2_R";
-				else				m_pFrameKey = L"Player_ACTION2";
-				m_eCurState = OBJST_ACTION2;
+				if (m_eCurState == OBJST_RUN)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK_R";
+					else				m_pFrameKey = L"Player_RUN_ATTACK";
+					m_eCurState = OBJST_RUN_ATTACK1;
+				}
+				else if (m_eCurState == OBJST_RUN_ATTACK1)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK2_R";
+					else				m_pFrameKey = L"Player_RUN_ATTACK2";
+					m_eCurState = OBJST_RUN_ATTACK2;
+				}
+				else if (m_eCurState == OBJST_RUN_ATTACK2)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK3_R";
+					else				m_pFrameKey = L"Player_RUN_ATTACK3";
+					m_eCurState = OBJST_RUN_ATTACK3;
+				}
+				else if (m_eCurState == OBJST_RUN_ATTACK3)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK4_R";
+					else				m_pFrameKey = L"Player_RUN_ATTACK4";
+					m_eCurState = OBJST_RUN_ATTACK4;
+				}
+				else if (m_eCurState == OBJST_RUN_ATTACK4)
+				{
+					m_dwStateChangeTime = GetTickCount();
+					if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK_R";
+					else				m_pFrameKey = L"Player_RUN_ATTACK";
+					m_eCurState = OBJST_RUN_ATTACK1;
+				}
 			}
-			else if (m_eCurState == OBJST_ACTION2)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_ACTION3_R";
-				else				m_pFrameKey = L"Player_ACTION3";
-				m_eCurState = OBJST_ACTION3;
-			}
-			else if (m_eCurState == OBJST_ACTION3)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_ACTION4_R";
-				else				m_pFrameKey = L"Player_ACTION4";
-				m_eCurState = OBJST_ACTION4;
-			}
-			else if (m_eCurState == OBJST_ACTION4)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
-				else				m_pFrameKey = L"Player_ACTION";
-				m_eCurState = OBJST_ACTION1;
-			}
+
 		}
-		else if ((!m_isJumping && m_eCurState == OBJST_RUN) ||
-			m_eCurState == OBJST_RUN_ATTACK1 ||
-			m_eCurState == OBJST_RUN_ATTACK2 ||
-			m_eCurState == OBJST_RUN_ATTACK3 ||
-			m_eCurState == OBJST_RUN_ATTACK4)
+
+		else
 		{
-			if (m_eCurState == OBJST_RUN)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK_R";
-				else				m_pFrameKey = L"Player_RUN_ATTACK";
-				m_eCurState = OBJST_RUN_ATTACK1;
-			}
-			else if (m_eCurState == OBJST_RUN_ATTACK1)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK2_R";
-				else				m_pFrameKey = L"Player_RUN_ATTACK2";
-				m_eCurState = OBJST_RUN_ATTACK2;
-			}
-			else if (m_eCurState == OBJST_RUN_ATTACK2)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK3_R";
-				else				m_pFrameKey = L"Player_RUN_ATTACK3";
-				m_eCurState = OBJST_RUN_ATTACK3;
-			}
-			else if (m_eCurState == OBJST_RUN_ATTACK3)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK4_R";
-				else				m_pFrameKey = L"Player_RUN_ATTACK4";
-				m_eCurState = OBJST_RUN_ATTACK4;
-			}
-			else if (m_eCurState == OBJST_RUN_ATTACK4)
-			{
-				m_dwStateChangeTime = GetTickCount();
-				if (m_isStretch)	m_pFrameKey = L"Player_RUN_ATTACK_R";
-				else				m_pFrameKey = L"Player_RUN_ATTACK";
-				m_eCurState = OBJST_RUN_ATTACK1;
-			}
+			// nomp 출력 laterEdit
+
 		}
+
+
 
 
 		//}

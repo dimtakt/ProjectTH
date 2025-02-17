@@ -54,6 +54,8 @@ private:
 	DWORD m_dwTime;
 	DWORD m_dwStateChangeTime;
 
+	DWORD m_dwMpRegenTime;
+
 	FPOINT m_tPrePos;
 
 	bool m_isStartStage;

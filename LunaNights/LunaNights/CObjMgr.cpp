@@ -98,7 +98,10 @@ void CObjMgr::Late_Update()
 	
 	std::vector<CObj*> vTiles = CTileMgr::Get_Instance()->Get_CollideVecTile();
 	if (vTiles.size() != 0)
+	{
 		CTileCollisionMgr::Collision_Tile2Obj(vTiles, m_ObjList[OBJ_PLAYER]);
+		CTileCollisionMgr::Collision_Tile2Obj(vTiles, m_ObjList[OBJ_MONSTER]);
+	}
 
 	//CCollisionMgr::Collision_Rect(m_ObjList[MOUSE], m_ObjList[MONSTER]);
 	//CCollisionMgr::Collision_Circle(m_ObjList[BULLET], m_ObjList[MONSTER]);

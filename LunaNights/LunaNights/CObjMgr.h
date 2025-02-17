@@ -22,7 +22,7 @@ public:
 	void	Release();
 
 	void	Delete_ID(OBJ_ID eID);
-	void	Delete_SpecificObj(OBJ_ID _eID, CObj* _obj);
+	//void	Delete_SpecificObj(OBJ_ID _eID, CObj* _obj);
 
 	void Optimize_DeleteOutsideScreen();
 

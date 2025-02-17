@@ -13,11 +13,15 @@ void CTileCollisionMgr::Collision_Tile2Obj(std::vector<CObj*> _TileVec, std::lis
 	{
 		for (auto& _Obj : _ObjList)
 		{
+			// 지형에 구애받지 않는 나는 몹인 경우는 제외
+			if (_Obj->Get_isFlying())
+				continue;
+
 			if (Check_Collision_Tile2Obj(_Tile, _Obj, nullptr, nullptr))
 			{
 				// if 충돌하면
 				// 플레이어 좌표를 이전으로 돌리든 뭐든..
-				// 이 부분은 나중에 구현.. ksta
+				// 이 부분은 나중에 구현.. ksta laterEdit
 				
 			}
 
