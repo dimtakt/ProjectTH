@@ -18,6 +18,9 @@ CPlayerBullet::~CPlayerBullet()
 void CPlayerBullet::Initialize()
 {
 	pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+	if (!pPlayer)
+		return;
+
 	Set_Scale(64, 64);
 
 	// ImageLoad

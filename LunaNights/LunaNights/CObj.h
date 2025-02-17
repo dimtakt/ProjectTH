@@ -12,7 +12,8 @@ public:
 	void Set_Pos(float _fX, float _fY)		{ m_tInfo.fX = _fX; m_tInfo.fY = _fY; }
 	void Set_Scale(float _fCX, float _fCY)	{ m_tInfo.fCX = _fCX; m_tInfo.fCY = _fCY; }
 	
-	void Set_State(OBJ_STATE _eState)		{ m_eState = _eState; }
+	void Set_State(OBJ_STATE _eState)		{ m_eCurState = _eState; }
+	OBJ_STATE Get_State()					{ return m_eCurState; }
 	void Set_Angle(float _fAngle)			{ m_fAngle = _fAngle; }
 
 	const RECT* Get_Rect() const			{ return &m_tRect; }
@@ -21,6 +22,19 @@ public:
 
 	bool Get_Dead()							{ return m_isDead; }
 	void Set_Dead()							{ m_isDead = true; }
+
+	
+	int Get_HP()			{ return m_iHp; }
+	void Set_HP(int _iHp)	{ m_iHp = _iHp; }
+	int Get_MP()			{ return m_iMp;	}
+	void Set_MP(int _iMp)	{ m_iMp = _iMp; }
+	float Get_Atk()			{ return m_fAtk;}
+
+	void Set_God()			{ m_isGod = true; }
+	bool Get_God()			{ return m_isGod; }
+
+
+
 	void Set_Target(CObj* pTarget)			{ m_pTarget = pTarget; }	// Auto Aim 구현할 때 필요할 듯
 
 	void Set_PosX(float _fX)					{ m_tInfo.fX += _fX; }
@@ -70,8 +84,9 @@ public:
 	void		Update_Rect_UpStand();
 	void		Update_Rect_UpStand2X();	// 2배크기 렌더 기준 좌표보정
 
-
-	void		Move_Frame();
+	// m_tFrame 이 먼저 적용되어야 사용 가능함. 아니면 타 FRAME 타입이 인자로 필요.
+	// 사용 전에 Set_FrameProperty 으로 적용하거나 직접 지정 후 불러올 것.
+	void		Move_Frame();				
 	void		Move_Frame(FRAME& _tFrame);
 
 	// PlgBlt 를 통해 사진의 돌리기를 위해 만든 함수
@@ -82,13 +97,17 @@ public:
 
 
 
+
+	
+
+
 protected:
 	INFO		m_tInfo;
 	INFO		m_tCollideInfo;
 	RECT		m_tRect;
 	FRAME		m_tFrame;
 	FRAME_PROP	m_tFramePropCur;
-	OBJ_STATE	m_eState;
+	OBJ_STATE	m_eCurState;
 	RENDERID	m_eRender;
 	
 
@@ -105,8 +124,23 @@ protected:
 
 	bool		m_isFlying;
 	bool		m_isJumping;
+	bool		m_isGod;
+	bool		m_isPreGod;
+
 
 	const TCHAR* m_pFrameKey;
+
+
+	// Stats.
+	int m_iHp;
+	int m_iMp;
+	float m_fAtk;
+
+
+	int m_iMaxHp;
+	int m_iMaxMp;
+	int m_iGold;
+
 
 	std::map<TCHAR, FRAME_PROP> m_mapFrameProp;
 

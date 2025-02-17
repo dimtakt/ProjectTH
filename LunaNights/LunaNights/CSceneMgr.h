@@ -6,13 +6,16 @@
 // Scene 만들 때 마다 여기에 #include 로 해당 헤더를 추가해주어야 함
 #include "CLogo.h"
 #include "CStage1_01.h"
+#include "CStage1_02.h"
+#include "CStage1_03.h"
+#include "CStage1_Boss.h"
 
 #include "CEdit.h"
 
 class CSceneMgr
 {
 public:
-	enum SCENEID { SC_LOGO, SC_STAGE1_01, SC_EDIT, SC_END };
+	enum SCENEID { SC_LOGO, SC_STAGE1_01, SC_STAGE1_02, SC_STAGE1_03, SC_STAGE1_BOSS, SC_EDIT, SC_END };
 
 private:
 	CSceneMgr();
@@ -53,6 +56,8 @@ private:
 
 	SCENEID					m_eCurScene;
 	SCENEID					m_ePreScene;
+
+	bool m_isEnterStage;
 
 };
 

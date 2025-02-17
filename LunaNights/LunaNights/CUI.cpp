@@ -87,6 +87,8 @@ int CUI::Update()
 	// MoveFrame으로 스프라이트 갱신	
 	Move_Frame(tFrameHPMP);
 	CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+	if (!pPlayer)
+		return OBJ_NOEVENT;
 
 	if ( !(	(pPlayer->Get_Stat(CPlayer::TIMEMODE) == 2) && (tFrameGauge_Stop.iFrameCur == 0) ||
 			(pPlayer->Get_Stat(CPlayer::TIMEMODE) == 1) && (tFrameGauge_Stop.iFrameCur == 8) ||
@@ -119,6 +121,8 @@ void CUI::Render(HDC hDC)
 	HDC	hMemDC;
 	FRAME_PROP tCurProp = {};
 	CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+	if (!pPlayer)
+		return;
 
 
 

@@ -3,6 +3,8 @@
 #include "CBmpMgr.h"
 #include "CSpritePropertyMgr.h"
 #include "CCameraMgr.h"
+#include "CPlayer.h"
+#include "CObjMgr.h"
 
 CWisp::CWisp()
 {
@@ -17,21 +19,24 @@ void CWisp::Initialize()
 	m_fSpeed = 2.f;
 	m_isFlying = true;
 
-	m_iHp = 20;
+	m_iHp = 10;
 	m_iMp = 5;
 	m_fAtk = 15.f;
 
 
+
 	m_tFrame.iFrameCur = 0;
 
-	m_tFrame.dwSpeed = 100;				// 프레임 전환 속도
+	m_tFrame.dwSpeed = 50;				// 프레임 전환 속도
 	m_tFrame.dwTime = GetTickCount();	// 모션이 바뀌었을 때 흐른 시간을 저장
-
+	m_eRender = RENDER_GAMEOBJECT;
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Monsters/will_o_wisp_sprite/will_o_wisp_sprite.bmp", L"Wisp");				// 64_64_X5Y5_21
 	FRAME_PROP tWisp = { 32 * 2, 32 * 2, 4, 2, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tWisp, L"Wisp");
 	
+	Set_FrameProperty(tWisp);
+
 	m_pFrameKey = L"Wisp";
 }
 
@@ -47,16 +52,48 @@ int CWisp::Update()
 
 
 	// 이미지 파일 크기에 맞게 충돌판정 구성
-	m_tCollideInfo = m_tInfo;
+	m_tCollideInfo = { m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX / 2, m_tInfo.fCY / 2 };
+
 
 	__super::Update_Rect();
+
+
+	// 플레이어 위치를 받아와, 충분히 가까워지면 플레이어를 추적. (화면 안에 있을 때만)
+
+	int iOutX = 0, iOutY = 0;
+	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY);
+
+	if (!((m_tInfo.fX + m_tInfo.fCX < 0 - iOutX || m_tInfo.fX - iOutY - m_tInfo.fCX > WINCX - iOutX) ||
+		(m_tInfo.fY + m_tInfo.fCY < 0 - iOutY || m_tInfo.fY - iOutY - m_tInfo.fCY > WINCY - iOutY)))
+	{
+		CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+		if (pPlayer == nullptr)
+			return OBJ_DEAD;
+
+		INFO tPlayerInfo = *pPlayer->Get_Info();
+		tPlayerInfo.fY -= (tPlayerInfo.fCY / 2);
+
+		float fDirX = tPlayerInfo.fX - m_tInfo.fX;
+		float fDirY = tPlayerInfo.fY - m_tInfo.fY;
+
+		float fAngle = atan2(fDirY, fDirX);
+		float fMoveX = cos(fAngle);
+		float fMoveY = sin(fAngle);
+
+		m_tInfo.fX += fMoveX * m_fSpeed;
+		m_tInfo.fY += fMoveY * m_fSpeed;
+	}
+
+
+
+
 
 	return OBJ_NOEVENT;
 }
 
 void CWisp::Late_Update()
 {
-
+	Move_Frame();
 }
 
 void CWisp::Render(HDC hDC)

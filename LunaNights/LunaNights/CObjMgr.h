@@ -26,6 +26,10 @@ public:
 
 	void Optimize_DeleteOutsideScreen();
 
+	void Save_Data(const TCHAR* _dataFileName);
+	void Load_Data(const TCHAR* _dataFileName);
+
+
 private:
 	std::list<CObj*>	m_ObjList[OBJ_END];	// update ¿ë
 	std::list<CObj*>	m_RenderList[RENDER_END];
@@ -51,12 +55,15 @@ public:
 
 	CObj* Get_Player()
 	{
+		if (m_ObjList[OBJ_PLAYER].size() == 0)
+			return nullptr;
+
 		return *m_ObjList[OBJ_PLAYER].begin();
 	}
 
 private:
 	static CObjMgr* m_pInstance;
-	
+	bool m_bPlayer;
 
 };
 

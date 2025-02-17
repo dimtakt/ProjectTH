@@ -4,9 +4,13 @@
 #include "CKeyMgr.h"
 #include "CPlayer.h"
 #include "CTileMgr.h"
+#include "CObjMgr.h"
 
 #include "CSpritePropertyMgr.h"
 #include "CCameraMgr.h"
+#include "CAbstractFactory.h"
+#include "CWolf.h"
+#include "CWisp.h"
 
 CEdit::CEdit()
 {
@@ -25,6 +29,7 @@ void CEdit::Initialize()
 	LoadImages();
 
 	iSelectedTileIndex = 0;
+	iSelectedMonsterIndex = 0;
 	iEditMode = 1;	// 0은 맵 편집, 1은 콜라이더 편집
 	iEditStage = 1;
 	iTileX = 3;
@@ -53,12 +58,13 @@ void CEdit::Update()
 	default:		break;
 	}
 
-
+	CObjMgr::Get_Instance()->Update();
 	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX * iTileX, TILECY * TILEY * iTileY);
 }
 
 void CEdit::Late_Update()
 {
+	CObjMgr::Get_Instance()->Late_Update();
 	CTileMgr::Get_Instance()->Late_Update();
 }
 
@@ -116,7 +122,7 @@ void CEdit::Render(HDC _DC)
 	else
 	{
 
-		// 타일 렌더
+		// iEditMode 가 1일 때만 타일 렌더
 		CTileMgr::Get_Instance()->Render(_DC);
 
 	}
@@ -138,6 +144,11 @@ void CEdit::Render(HDC _DC)
 			LineTo(_DC, ptRDown.x, ptLUp.y);
 			LineTo(_DC, ptLUp.x, ptLUp.y);
 		}
+
+
+	// 타일 렌더 이후, 그 위에 몬스터 등 CObj 렌더
+	CObjMgr::Get_Instance()->Render(_DC);
+
 }
 
 void CEdit::Release()
@@ -147,18 +158,37 @@ void CEdit::Release()
 void CEdit::Key_Input()
 {
 
+	// 현재 마우스의 위치를 계산하는 부분
+	POINT	ptMouse{};
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
+	float fTmpX, fTmpY;
+	CCameraMgr::Get_Instance()->Get_CameraPos(fTmpX, fTmpY);
+	fTmpX = fTmpX - (WINCX / 2);
+	fTmpY = fTmpY - (WINCY / 2);
+
+	POINT	ptCalcedMouse{ ptMouse.x + fTmpX, ptMouse.y + fTmpY };
+
+
+
+
 	float fCameraMoveSpeed = 5.f;
 	float fCameraX, fCameraY;
 	CCameraMgr::Get_Instance()->Get_CameraPos(fCameraX, fCameraY);
 	
 	int iMaxIndex;	// 선택 가능한 타일의 최대 인덱스
+	int iMaxMonsterIndex;
+
+
 
 	//if (iEditMode == 0)
 	//	iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"BG_Front").iFrameAmount;
 	//else if (iEditMode == 1)
 
-	iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Collision_Tile").iFrameAmount;
 	
+	// 선택한 타일의 변경 부분
+
+	iMaxIndex = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Collision_Tile").iFrameAmount;
 
 	if (CKeyMgr::Get_Instance()->Key_Down(VK_LEFT))
 	{
@@ -182,38 +212,62 @@ void CEdit::Key_Input()
 	}
 
 	
+	
+
+	// 선택한 몬스터의 변경 부분
+
+	iMaxMonsterIndex = 1;	// 0 은 Wolf, 1 은 Wisp
+
+	if (CKeyMgr::Get_Instance()->Key_Down('Q'))
+	{
+		iSelectedMonsterIndex = (iSelectedMonsterIndex > 1) ? iSelectedMonsterIndex - 1 : 0;
+		std::cout << "[INFO][CEdit::Key_Input] Monster Index List.. [0 : Wolf] [1 : Wisp], Press [M] to Create" << std::endl;
+		std::cout << "[INFO][CEdit::Key_Input] Current Selected Monster Index : " << iSelectedMonsterIndex << std::endl;
+	}
+	if (CKeyMgr::Get_Instance()->Key_Down('E'))
+	{
+		iSelectedMonsterIndex = (iSelectedMonsterIndex < iMaxMonsterIndex) ? iSelectedMonsterIndex + 1 : iMaxMonsterIndex;
+		std::cout << "[INFO][CEdit::Key_Input] Monster Index List.. [0 : Wolf] [1 : Wisp], Press [M] to Create" << std::endl;
+		std::cout << "[INFO][CEdit::Key_Input] Current Selected Monster Index : " << iSelectedMonsterIndex << std::endl;
+	}
+
+
+	// ? 키 누를 시 선택된 인덱스의 몬스터를 배치함
+	// 몬스터의 리스트 삽입 방법은 이전 코드 참고하기
+	// ? 키를 누르면 커서 위에 있는 몬스터는 다시 삭제됨 .. 
+	// laterEdit
+	if (CKeyMgr::Get_Instance()->Key_Down('M'))
+	{
+		switch (iSelectedMonsterIndex)
+		{
+		case 0:	// Wolf
+			// 생성만 되고 push_back 이 안된듯?
+			CObjMgr::Get_Instance()->Add_Object(OBJ_MONSTER_WOLF,CAbstractFactory<CWolf>::Create(ptCalcedMouse.x, ptCalcedMouse.y));
+			break;
+
+		case 1:	// Wisp
+			CObjMgr::Get_Instance()->Add_Object(OBJ_MONSTER_WISP, CAbstractFactory<CWisp>::Create(ptCalcedMouse.x, ptCalcedMouse.y));
+			break;
+
+		default:
+			break;
+		}
+
+		//CObjMgr::Get_Instance()->Add_Object();
+	}
+
+
+
 
 
 	// 좌클 시 선택된 인덱스의 타일을 칠함
 	// 우클 시 선택된 인덱스의 타일을 0으로 되돌림
 	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_LBUTTON))
 	{
-		POINT	ptMouse{};
-		GetCursorPos(&ptMouse);
-		ScreenToClient(g_hWnd, &ptMouse);
-
-		float fTmpX, fTmpY;
-		CCameraMgr::Get_Instance()->Get_CameraPos(fTmpX, fTmpY);
-		fTmpX = fTmpX - (WINCX / 2);
-		fTmpY = fTmpY - (WINCY / 2);
-
-		POINT	ptCalcedMouse{ ptMouse.x + fTmpX, ptMouse.y + fTmpY };
-
 		CTileMgr::Get_Instance()->Picking_Tile(ptCalcedMouse, iSelectedTileIndex, 0);
 	}
 	else if (CKeyMgr::Get_Instance()->Key_Pressing(VK_RBUTTON))
 	{
-		POINT	ptMouse{};
-		GetCursorPos(&ptMouse);
-		ScreenToClient(g_hWnd, &ptMouse);
-
-		float fTmpX, fTmpY;
-		CCameraMgr::Get_Instance()->Get_CameraPos(fTmpX, fTmpY);
-		fTmpX = fTmpX - (WINCX / 2);
-		fTmpY = fTmpY - (WINCY / 2);
-
-		POINT	ptCalcedMouse{ ptMouse.x + fTmpX, ptMouse.y + fTmpY };
-
 		CTileMgr::Get_Instance()->Picking_Tile(ptCalcedMouse, 0, 0);
 	}
 
@@ -224,15 +278,29 @@ void CEdit::Key_Input()
 		{
 			switch (iEditStage)
 			{
-			//case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
-			case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
-			case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
-			case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			//case 1:
+			//	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat");
+			//	CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-1.dat");
+			//	break;
+			case 2:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-2.dat");
+				break;
+			case 3:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-3.dat");
+				break;
+			case 4:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-Boss.dat");
+				break;
 			default:	break;
 			}
 			
 			iEditStage = 1;
 			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-1.dat", L"Collision_Tile");
+			CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-1.dat");
+
 		}
 		
 		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
@@ -243,15 +311,29 @@ void CEdit::Key_Input()
 		{
 			switch (iEditStage)
 			{
-			case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
-			//case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
-			case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
-			case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			case 1:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-1.dat");
+				break;
+			//case 2:
+			//	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat");
+			//	CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-2.dat");
+			//	break;
+			case 3:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-3.dat");
+				break;
+			case 4:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-Boss.dat");
+				break;
 			default:	break;
 			}
 			
 			iEditStage = 2;
 			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-2.dat", L"Collision_Tile");
+			CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-2.dat");
+
 		}
 
 		std::cout << "[INFO][CEdit::Key_Input] Current EditStage is " << iEditStage << "!" << std::endl;
@@ -262,15 +344,29 @@ void CEdit::Key_Input()
 		{
 			switch (iEditStage)
 			{
-			case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
-			case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
-			//case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
-			case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			case 1:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-1.dat");
+				break;
+			case 2:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-2.dat");
+				break;
+			//case 3:
+			//	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat");
+			//	CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-3.dat");
+			//	break;
+			case 4:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-Boss.dat");
+				break;
 			default:	break;
 			}
-			
+
 			iEditStage = 3;
 			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-3.dat", L"Collision_Tile");
+			CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-3.dat");
+
 
 		}
 
@@ -282,15 +378,29 @@ void CEdit::Key_Input()
 		{
 			switch (iEditStage)
 			{
-			case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat"); break;
-			case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat"); break;
-			case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat"); break;
-			//case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat"); break;
+			case 1:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-1.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-1.dat");
+				break;
+			case 2:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-2.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-2.dat");
+				break;
+			case 3:
+				CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-3.dat");
+				CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-3.dat");
+				break;
+			//case 4:
+			//	CTileMgr::Get_Instance()->Save_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat");
+			//	CObjMgr::Get_Instance()->Save_Data(L"../Data/TempData_Monster_Info_1-Boss.dat");
+			//	break;
 			default:	break;
 			}
 			
 			iEditStage = 4;
 			CTileMgr::Get_Instance()->Load_Tile(L"../Data/TempData_Tile_Collision_1-Boss.dat", L"Collision_Tile");
+			CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-Boss.dat");
+
 
 		}
 
@@ -313,10 +423,22 @@ void CEdit::Key_Input()
 			{
 				switch (iEditStage)
 				{
-				case 1:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-1.dat"); break;
-				case 2:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-2.dat"); break;
-				case 3:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-3.dat"); break;
-				case 4:	CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-Boss.dat"); break;
+				case 1:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-1.dat");
+					CObjMgr::Get_Instance()->Save_Data(L"../Data/Monster_Info_1-1.dat");
+					break;
+				case 2:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-2.dat");
+					CObjMgr::Get_Instance()->Save_Data(L"../Data/Monster_Info_1-2.dat");
+					break;
+				case 3:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-3.dat");
+					CObjMgr::Get_Instance()->Save_Data(L"../Data/Monster_Info_1-3.dat");
+					break;
+				case 4:
+					CTileMgr::Get_Instance()->Save_Tile(L"../Data/Tile_Collision_1-Boss.dat");
+					CObjMgr::Get_Instance()->Save_Data(L"../Data/Monster_Info_1-Boss.dat");
+					break;
 				default:	break;
 				}
 
@@ -338,10 +460,22 @@ void CEdit::Key_Input()
 			{
 				switch (iEditStage)
 				{
-				case 1:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile"); break;
-				case 2:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-2.dat", L"Collision_Tile"); break;
-				case 3:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-3.dat", L"Collision_Tile"); break;
-				case 4:	CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-Boss.dat", L"Collision_Tile"); break;
+				case 1:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile");
+					CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-1.dat");
+					break;
+				case 2:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-2.dat", L"Collision_Tile");
+					CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-2.dat");
+					break;
+				case 3:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-3.dat", L"Collision_Tile");
+					CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-3.dat");
+					break;
+				case 4:
+					CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision_1-Boss.dat", L"Collision_Tile");
+					CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-Boss.dat");
+					break;
 				default:	break;
 				}
 
@@ -447,5 +581,7 @@ void CEdit::LoadImages()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-Boss_Merge.bmp", L"STAGE1_BOSS_FRONT");
 	FRAME_PROP tSTAGE1_BOSS_FRONT = { 2720, 816 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_BOSS_FRONT, L"STAGE1_BOSS_FRONT");
+
+
 
 }

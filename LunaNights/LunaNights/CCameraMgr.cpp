@@ -25,11 +25,8 @@ void CCameraMgr::Update_CameraPos(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY
 {
 	// 타겟이 존재하는 경우, 카메라의 좌표를 타겟으로 변경
 	// 타겟이 존재는 하나 사망한 경우, 타겟을 해제
-	if (m_pTarget)
+	if (m_pTarget && !m_pTarget->Get_Dead())
 	{
-		if (m_pTarget->Get_Dead())
-			m_pTarget = nullptr;
-
 		m_fCameraX = m_pTarget->Get_Info()->fX;
 		m_fCameraY = m_pTarget->Get_Info()->fY - m_pTarget->Get_Info()->fCY / 2;
 	}

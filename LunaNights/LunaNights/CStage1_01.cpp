@@ -28,8 +28,9 @@ void CStage1_01::Initialize()
 	m_iTileTimesX = 3;
 	m_iTileTimesY = 1;
 
-	// 플레이어 생성
-	CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
+	// 플레이어가 없다면, 생성
+	if (!CObjMgr::Get_Instance()->Get_Player());
+		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
 
 
 	// 이후 몬스터나 타일 등의 생성 및 이미지 불러오기는 여기에..
@@ -38,7 +39,7 @@ void CStage1_01::Initialize()
 	
 	
 	
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_Temp_Image/TempBG.bmp", L"STAGE1_01_BG");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite.bmp", L"STAGE1_01_BG");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-01_Merge0103.bmp", L"STAGE1_01_FRONT");
 	FRAME_PROP tSTAGE1_01_FRONT = { 4080, 816 };							// 타일의 가로세로 길이 정보
@@ -54,33 +55,33 @@ void CStage1_01::Initialize()
 	CTileMgr::Get_Instance()->Load_Tile(nullptr, nullptr, true,
 										L"../Data/Tile_Collision_1-1.dat", L"Collision_Tile");
 	
-	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Front.bmp", L"BG_Front");
-	//FRAME_PROP tBG_Front = { TILECX, TILECY, 28, 29, 800 };							// 타일의 가로세로 길이 정보
-	//CSpritePropertyMgr::Get_Instance()->Insert_Property(tBG_Front, L"BG_Front");
-
-	//CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile.dat", L"BG_Front", true,
-	//									L"../Data/Tile_Collision.dat", L"Collision_Tile");
-
-	
-	
+	// 몬스터 위치, 종류 정보 불러오기
+	CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-1.dat");
 	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
-	// CTileMgr::Get_Instance()->Load_Tile(L"../Data/Tile_Collision.dat", L"Collision_Tile");	// 콜라이더 데이터
+	
 
-	CSoundMgr::Get_Instance()->PlayBGM(L"bgm00.ogg", 0.05f);
 }
 
 void CStage1_01::Update()
 {
-	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX * 3, TILECY * TILEY);
-
 	CTileMgr::Get_Instance()->Update();
 	CObjMgr::Get_Instance()->Update();
+
+	CCameraMgr::Get_Instance()->Update_CameraPos(TILECX * TILEX * 3, TILECY * TILEY);
+	CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+	if (pPlayer->Get_Info()->fX >= 4070)
+	{
+		pPlayer->Set_Pos(20, pPlayer->Get_Info()->fY);
+		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_02);
+	}
 }
 
 void CStage1_01::Late_Update()
 {
 	CTileMgr::Get_Instance()->Late_Update();
 	CObjMgr::Get_Instance()->Late_Update();
+
+
 
 	//CCameraMgr::Get_Instance()->Lock_Camera(TILECX * TILEX, TILECY * TILEY);
 }
@@ -103,21 +104,21 @@ void CStage1_01::Render(HDC _DC)
 	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT");
 	FRAME_PROP tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT");
 	
-	BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+	//BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
 
-	//GdiTransparentBlt(	_DC,
-	//					iOutX,
-	//					iOutY,
-	//					tBGOriginProp.iCX,
-	//					tBGOriginProp.iCY,
-	//					hMemDC,
-	//					0,
-	//					0,
-	//					tBGOriginProp.iCX,
-	//					tBGOriginProp.iCY,
-	//					RGB(255, 0, 255));
+	GdiTransparentBlt(	_DC,
+						iOutX,
+						iOutY,
+						tBGOriginProp.iCX,
+						tBGOriginProp.iCY,
+						hMemDC,
+						0,
+						0,
+						tBGOriginProp.iCX,
+						tBGOriginProp.iCY,
+						RGB(255, 0, 255));
 
-	CTileMgr::Get_Instance()->Render(_DC);
+	//CTileMgr::Get_Instance()->Render(_DC);
 	CObjMgr::Get_Instance()->Render(_DC);
 }
 

@@ -14,9 +14,7 @@ public:
     void Release() override;
 
 private:
-    int m_iHp;
-    int m_iMp;
-    float m_fAtk;
+    
 
 };
 

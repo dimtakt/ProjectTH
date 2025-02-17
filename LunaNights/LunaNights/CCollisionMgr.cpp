@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "CCollisionMgr.h"
+#include "CPlayer.h"
+#include "CObjMgr.h"
+#include "SoundMgr.h"
 
-void CCollisionMgr::Collision_Rect(std::list<CObj*> DstList, std::list<CObj*> SrcList)
+void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::list<CObj*> SrcList)
 {
 	RECT		rc{};
 
@@ -9,10 +12,67 @@ void CCollisionMgr::Collision_Rect(std::list<CObj*> DstList, std::list<CObj*> Sr
 	{
 		for (auto& Src : SrcList)
 		{
-			if (IntersectRect(&rc, Dst->Get_Rect(), Src->Get_Rect()))
+			INFO tDstInfo = *Dst->Get_CollideInfo();
+			INFO tSrcInfo = *Src->Get_CollideInfo();
+
+			RECT tDstRect = { tDstInfo.fX - tDstInfo.fCX / 2, tDstInfo.fY - tDstInfo.fCY / 2,
+							tDstInfo.fX + tDstInfo.fCX / 2, tDstInfo.fY + tDstInfo.fCY / 2 };
+			RECT tSrcRect = { tSrcInfo.fX - tSrcInfo.fCX / 2, tSrcInfo.fY - tSrcInfo.fCY / 2,
+							tSrcInfo.fX + tSrcInfo.fCX / 2, tSrcInfo.fY + tSrcInfo.fCY / 2 };
+
+			if (IntersectRect(&rc, &tDstRect, &tSrcRect))
+			{
+				//Dst->Set_Dead();
+				//Src->Set_Dead();
+				if (Dst->Get_State() != OBJST_DAMAGED && !Dst->Get_God())
+				{
+					Dst->Set_HP(Dst->Get_HP() - Src->Get_Atk());
+					Dst->Set_State(OBJST_DAMAGED);
+					Dst->Set_God();
+					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+				}
+				
+
+				// 일단 죽지 않게
+				if (Dst->Get_HP() < 0)
+					Dst->Set_HP(0);
+			}
+		}
+	}
+
+}
+
+
+void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::list<CObj*> SrcList)
+{
+	RECT		rc{};
+
+	for (auto& Dst : DstList)
+	{
+		for (auto& Src : SrcList)
+		{
+			INFO tDstInfo = *Dst->Get_CollideInfo();
+			INFO tSrcInfo = *Src->Get_CollideInfo();
+
+			RECT tDstRect = { tDstInfo.fX - tDstInfo.fCX / 2, tDstInfo.fY - tDstInfo.fCY / 2,
+							tDstInfo.fX + tDstInfo.fCX / 2, tDstInfo.fY + tDstInfo.fCY / 2 };
+			RECT tSrcRect = { tSrcInfo.fX - tSrcInfo.fCX / 2, tSrcInfo.fY - tSrcInfo.fCY / 2,
+							tSrcInfo.fX + tSrcInfo.fCX / 2, tSrcInfo.fY + tSrcInfo.fCY / 2 };
+
+			if (IntersectRect(&rc, &tDstRect, &tSrcRect))
 			{
 				Dst->Set_Dead();
-				Src->Set_Dead();
+				
+				CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+				Src->Set_HP(Src->Get_HP() - pPlayer->Get_Atk());
+
+				if (Src->Get_HP() <= 0)
+				{
+					Src->Set_Dead();
+					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+				}
 			}
 		}
 	}

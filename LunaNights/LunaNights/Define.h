@@ -58,13 +58,14 @@ extern HWND g_hWnd;
 
 
 // 오브젝트의 종류를 나타내는 열거형
-enum OBJ_ID		{	OBJ_PLAYER,
-					OBJ_PLAYERBULLET,
+enum OBJ_ID		{	OBJ_PLAYER = 0,
+					OBJ_PLAYERBULLET = 10,
 					OBJ_MONSTERBULLET,
-					OBJ_MONSTER,
-					OBJ_ITEM,
-					OBJ_TILE,
-					OBJ_UI,
+					OBJ_MONSTER_WOLF = 20,
+					OBJ_MONSTER_WISP,
+					OBJ_ITEM = 30,
+					OBJ_TILE = 40,
+					OBJ_UI = 50,
 
 					OBJ_END
 				};
@@ -111,7 +112,8 @@ enum RENDERID	{
 // 소리의 유형을 나타내는 열거형
 enum CHANNELID
 {
-	SOUND_EFFECT,
+	SOUND_ATTACK,
+	SOUND_DESTROY,
 	SOUND_BGM,
 	MAXCHANNEL
 };

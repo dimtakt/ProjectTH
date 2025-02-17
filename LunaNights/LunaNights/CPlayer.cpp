@@ -13,11 +13,11 @@
 #include "SoundMgr.h"
 
 CPlayer::CPlayer() :
-	m_eCurState(OBJST_IDLE),
 	m_ePreState(OBJST_END),
 	m_dwTime(GetTickCount()),
 	m_dwStateChangeTime(0),
-	m_isStartStage(false)
+	m_isStartStage(false),
+	m_dwGodTime(0)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -31,6 +31,7 @@ CPlayer::~CPlayer()
 
 void CPlayer::Initialize()
 {
+	m_eCurState = OBJST_IDLE;
 
 	// 변수 초기화
 	m_tInfo = { 100.f, WINCY / 2.f + 100.f, 64.f, 64.f };
@@ -90,6 +91,19 @@ int CPlayer::Update()
 	{
 		m_iMp++;
 		m_dwMpRegenTime = GetTickCount();
+	}
+
+	// 피격된 뒤 iGodModeTime 초간 무적 유지
+	int iGodModeTime = 1500;
+	if (m_isPreGod == false && m_isGod == true)	// 무적이 됨은 플레이어 측에서 감지
+	{
+		m_dwGodTime = GetTickCount();
+		m_isPreGod = true;
+	}
+	if (m_dwGodTime + iGodModeTime <= GetTickCount())
+	{
+		m_isPreGod = false;
+		m_isGod = false;
 	}
 
 
@@ -210,7 +224,26 @@ void CPlayer::Release()
 
 void CPlayer::Key_Input()
 {
+	// ********************
+	// ** 피격중
+	// ********************
+	if (m_eCurState == OBJST_DAMAGED)
+	{
+		if (m_isStretch)	{	m_pFrameKey = L"Player_DAMAGE_R";	m_tInfo.fX += 5;	}
+		else				{	m_pFrameKey = L"Player_DAMAGE";		m_tInfo.fX -= 5;	}
 
+		m_tInfo.fY--;
+		m_dwStateChangeTime = GetTickCount();
+
+		if (m_tFrame.iFrameCur < m_tFrame.iFrameAmount - 1)
+			return;
+		else
+		{
+			m_eCurState = OBJST_IDLE;
+		if (m_isStretch)	{	m_pFrameKey = L"Player_IDLE_R";	}
+		else				{	m_pFrameKey = L"Player_IDLE";	}
+		}
+	}
 
 
 	// ********************
@@ -250,7 +283,8 @@ void CPlayer::Key_Input()
 		{
 			m_iMp -= 3;
 
-			CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_EFFECT, 0.2f);
+			CSoundMgr::Get_Instance()->StopSound(SOUND_ATTACK);
+			CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_ATTACK, 0.2f);
 
 			//┌ 칼날이 날아갈 위치/방향 정하는 부분
 
@@ -765,6 +799,10 @@ void CPlayer::Motion_Change()
 			m_tFrame.dwSpeed = 60;
 			break;
 
+		case OBJ_STATE::OBJST_DAMAGED:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
 
 
 		//case CPlayer::HIT:
@@ -904,6 +942,13 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_RUN_ATTACK4_R = { 128 * 2, 64 * 2, 1, 1, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK4_R, L"Player_RUN_ATTACK4_R");
 
+	// 플레이어 피격
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_damage/player_damage.bmp", L"Player_DAMAGE");
+	FRAME_PROP tPlayer_DAMAGE = { 96 * 2, 64 * 2, 1, 12, 12 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DAMAGE, L"Player_DAMAGE");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_damage/player_damage_R.bmp", L"Player_DAMAGE_R");
+	FRAME_PROP tPlayer_DAMAGE_R = { 96 * 2, 64 * 2, 1, 12, 12 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DAMAGE_R, L"Player_DAMAGE_R");
 
 }
 

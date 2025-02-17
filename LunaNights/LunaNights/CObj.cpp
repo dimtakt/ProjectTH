@@ -3,7 +3,7 @@
 #include "CSpritePropertyMgr.h"
 
 CObj::CObj() :
-	m_eState(OBJST_END),
+	m_eCurState(OBJST_END),
 	m_eRender(RENDER_END),
 	m_pTarget(nullptr),
 	m_fSpeed(0.f),
@@ -13,7 +13,9 @@ CObj::CObj() :
 	m_pFrameKey(nullptr),
 	m_isJumping(false),
 	m_isFlying(false),
-	m_fVelocityY(0)
+	m_fVelocityY(0),
+	m_isGod(false),
+	m_isPreGod(false)
 {
 	ZeroMemory(&m_tInfo, sizeof(INFO));
 	ZeroMemory(&m_tRect, sizeof(RECT));

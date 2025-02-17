@@ -1,5 +1,8 @@
 #pragma once
 #include "CScene.h"
+
+class CObj;
+
 class CEdit :
     public CScene
 {
@@ -20,6 +23,7 @@ private:
 
 private:
     unsigned int iSelectedTileIndex;
+    unsigned int iSelectedMonsterIndex; // 0 은 Wolf, 1 은 Wisp
     TCHAR tTileName;
 
     int iEditMode;  // 0 : 타일 확인 모드, 1 : 콜라이더 편집 모드
@@ -27,5 +31,7 @@ private:
 
     int iTileX; // 스테이지마다 스테이지의 가로/세로 길이가 다름. 그것을 정의.
     int iTileY; // 스테이지마다 스테이지의 가로/세로 길이가 다름. 그것을 정의.
+
+    std::list<CObj*> m_ObjList;
 };
 

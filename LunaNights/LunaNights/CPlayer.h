@@ -42,35 +42,35 @@ public:
 	int Get_Stat(PLAYERSTAT _statType);
 	bool Get_Stretch() { return m_isStretch; }
 
+	
+
 private:
 	float m_fPosinLength;
 
 	float m_fJumpSpeed;
 	float m_fTime;
+
+
 	
-	OBJ_STATE m_eCurState;
+	//OBJ_STATE m_eCurState;
 	OBJ_STATE m_ePreState;
 
 	DWORD m_dwTime;
 	DWORD m_dwStateChangeTime;
 
 	DWORD m_dwMpRegenTime;
+	DWORD m_dwGodTime;
 
 	FPOINT m_tPrePos;
 
 	bool m_isStartStage;
 
-
+	
 
 	// Player Stats.
 
-	int m_iHp;
-	int m_iMaxHp;
-	int m_iMp;
-	int m_iMaxMp;
 	int m_iTp;
-	int m_iGold;
-	float m_fAtk;
+
 	int m_iKnife;
 	bool m_isGetWatch;
 

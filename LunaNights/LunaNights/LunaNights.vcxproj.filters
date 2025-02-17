@@ -103,6 +103,15 @@
     <Filter Include="01. Obj\02. Monster\00. Wolf">
       <UniqueIdentifier>{9d3839b5-077d-493c-ac18-43513e8c422a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Scene\01. Stage1\1_02">
+      <UniqueIdentifier>{1336ef6a-81e7-426e-abd6-a21c3f8a3e0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\01. Stage1\1_03">
+      <UniqueIdentifier>{21b5e219-ecd8-479c-bf81-51e100d2dec5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Scene\01. Stage1\1_Boss">
+      <UniqueIdentifier>{b0dabd99-3e4c-4be0-803d-07ada2ac2141}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -195,6 +204,15 @@
     <ClInclude Include="CWisp.h">
       <Filter>01. Obj\02. Monster\01. Wisp</Filter>
     </ClInclude>
+    <ClInclude Include="CStage1_02.h">
+      <Filter>02. Scene\01. Stage1\1_02</Filter>
+    </ClInclude>
+    <ClInclude Include="CStage1_03.h">
+      <Filter>02. Scene\01. Stage1\1_03</Filter>
+    </ClInclude>
+    <ClInclude Include="CStage1_Boss.h">
+      <Filter>02. Scene\01. Stage1\1_Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -271,6 +289,15 @@
     </ClCompile>
     <ClCompile Include="CWisp.cpp">
       <Filter>01. Obj\02. Monster\01. Wisp</Filter>
+    </ClCompile>
+    <ClCompile Include="CStage1_02.cpp">
+      <Filter>02. Scene\01. Stage1\1_02</Filter>
+    </ClCompile>
+    <ClCompile Include="CStage1_03.cpp">
+      <Filter>02. Scene\01. Stage1\1_03</Filter>
+    </ClCompile>
+    <ClCompile Include="CStage1_Boss.cpp">
+      <Filter>02. Scene\01. Stage1\1_Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -152,6 +152,9 @@
     <ClInclude Include="CSceneMgr.h" />
     <ClInclude Include="CSpritePropertyMgr.h" />
     <ClInclude Include="CStage1_01.h" />
+    <ClInclude Include="CStage1_02.h" />
+    <ClInclude Include="CStage1_03.h" />
+    <ClInclude Include="CStage1_Boss.h" />
     <ClInclude Include="CTile.h" />
     <ClInclude Include="CTileCollisionMgr.h" />
     <ClInclude Include="CUI.h" />
@@ -183,6 +186,9 @@
     <ClCompile Include="CSceneMgr.cpp" />
     <ClCompile Include="CSpritePropertyMgr.cpp" />
     <ClCompile Include="CStage1_01.cpp" />
+    <ClCompile Include="CStage1_02.cpp" />
+    <ClCompile Include="CStage1_03.cpp" />
+    <ClCompile Include="CStage1_Boss.cpp" />
     <ClCompile Include="CTile.cpp" />
     <ClCompile Include="CTileCollisionMgr.cpp" />
     <ClCompile Include="CUI.cpp" />
