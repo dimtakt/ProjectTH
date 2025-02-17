@@ -103,19 +103,19 @@ void CStage1_01::Render(HDC _DC)
 	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT");
 	FRAME_PROP tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT");
 	
-	//BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
 
-	GdiTransparentBlt(	_DC,
-						iOutX,
-						iOutY,
-						tBGOriginProp.iCX,
-						tBGOriginProp.iCY,
-						hMemDC,
-						0,
-						0,
-						tBGOriginProp.iCX,
-						tBGOriginProp.iCY,
-						RGB(255, 0, 255));
+	//GdiTransparentBlt(	_DC,
+	//					iOutX,
+	//					iOutY,
+	//					tBGOriginProp.iCX,
+	//					tBGOriginProp.iCY,
+	//					hMemDC,
+	//					0,
+	//					0,
+	//					tBGOriginProp.iCX,
+	//					tBGOriginProp.iCY,
+	//					RGB(255, 0, 255));
 
 	CTileMgr::Get_Instance()->Render(_DC);
 	CObjMgr::Get_Instance()->Render(_DC);

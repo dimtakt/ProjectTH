@@ -97,39 +97,39 @@ void CTileMgr::Render(HDC hDC)
 
 
 			// **** 충돌 기준정보 확인용 debug
-			if (m_collideVecTile.size() != 0)
-			{
-				int iOutX = 0, iOutY = 0;
-				CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY);
-			
-				CTile* pTile = dynamic_cast<CTile*>(m_collideVecTile[iIndex]);
-			
-				INFO tileInfo = *pTile->Get_Info();
-				int tileIndex = pTile->Get_DrawID();
-			
-				COL_POINT tileColPoint = CTileCollisionMgr::GetColPoint(tileInfo, tileIndex);
-			
-				tileColPoint.ptLUp.x += iOutX;
-				tileColPoint.ptLUp.y += iOutY;
-				tileColPoint.ptRUp.x += iOutX;
-				tileColPoint.ptRUp.y += iOutY;
-				tileColPoint.ptRDown.x += iOutX;
-				tileColPoint.ptRDown.y += iOutY;
-				tileColPoint.ptLDown.x += iOutX;
-				tileColPoint.ptLDown.y += iOutY;
-			
-				HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
-				HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
-			
-				MoveToEx(hDC, tileColPoint.ptLUp.x, tileColPoint.ptLUp.y, nullptr);
-				LineTo(hDC, tileColPoint.ptRUp.x, tileColPoint.ptRUp.y);
-				LineTo(hDC, tileColPoint.ptRDown.x, tileColPoint.ptRDown.y);
-				LineTo(hDC, tileColPoint.ptLDown.x, tileColPoint.ptLDown.y);
-				LineTo(hDC, tileColPoint.ptLUp.x, tileColPoint.ptLUp.y);
-			
-				SelectObject(hDC, hOldPen);
-				DeleteObject(hGreenPen); 
-			}
+			//if (m_collideVecTile.size() != 0)
+			//{
+			//	int iOutX = 0, iOutY = 0;
+			//	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY);
+			//
+			//	CTile* pTile = dynamic_cast<CTile*>(m_collideVecTile[iIndex]);
+			//
+			//	INFO tileInfo = *pTile->Get_Info();
+			//	int tileIndex = pTile->Get_DrawID();
+			//
+			//	COL_POINT tileColPoint = CTileCollisionMgr::GetColPoint(tileInfo, tileIndex);
+			//
+			//	tileColPoint.ptLUp.x += iOutX;
+			//	tileColPoint.ptLUp.y += iOutY;
+			//	tileColPoint.ptRUp.x += iOutX;
+			//	tileColPoint.ptRUp.y += iOutY;
+			//	tileColPoint.ptRDown.x += iOutX;
+			//	tileColPoint.ptRDown.y += iOutY;
+			//	tileColPoint.ptLDown.x += iOutX;
+			//	tileColPoint.ptLDown.y += iOutY;
+			//
+			//	HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+			//	HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
+			//
+			//	MoveToEx(hDC, tileColPoint.ptLUp.x, tileColPoint.ptLUp.y, nullptr);
+			//	LineTo(hDC, tileColPoint.ptRUp.x, tileColPoint.ptRUp.y);
+			//	LineTo(hDC, tileColPoint.ptRDown.x, tileColPoint.ptRDown.y);
+			//	LineTo(hDC, tileColPoint.ptLDown.x, tileColPoint.ptLDown.y);
+			//	LineTo(hDC, tileColPoint.ptLUp.x, tileColPoint.ptLUp.y);
+			//
+			//	SelectObject(hDC, hOldPen);
+			//	DeleteObject(hGreenPen); 
+			//}
 
 
 
