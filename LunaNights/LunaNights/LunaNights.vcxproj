@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -155,6 +155,8 @@
     <ClInclude Include="CTile.h" />
     <ClInclude Include="CTileCollisionMgr.h" />
     <ClInclude Include="CUI.h" />
+    <ClInclude Include="CWisp.h" />
+    <ClInclude Include="CWolf.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LunaNights.h" />
@@ -184,6 +186,8 @@
     <ClCompile Include="CTile.cpp" />
     <ClCompile Include="CTileCollisionMgr.cpp" />
     <ClCompile Include="CUI.cpp" />
+    <ClCompile Include="CWisp.cpp" />
+    <ClCompile Include="CWolf.cpp" />
     <ClCompile Include="LunaNights.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
