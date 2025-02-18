@@ -245,7 +245,7 @@ void CObjMgr::Load_Data(const TCHAR* _dataFileName)
 
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		MessageBox(g_hWnd, _T("Load File"), L"Fail", MB_OKCANCEL);
+		//MessageBox(g_hWnd, _T("Load File"), L"Fail", MB_OKCANCEL);
 		return;
 	}
 
@@ -293,5 +293,5 @@ void CObjMgr::Load_Data(const TCHAR* _dataFileName)
 	}
 
 	CloseHandle(hFile);
-	MessageBox(g_hWnd, _T("Load 완료"), L"성공", MB_OK);
+	//MessageBox(g_hWnd, _T("Load 완료"), L"성공", MB_OK);
 }

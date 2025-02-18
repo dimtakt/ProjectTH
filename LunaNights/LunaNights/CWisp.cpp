@@ -68,7 +68,7 @@ int CWisp::Update()
 	{
 		CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
 		if (pPlayer == nullptr)
-			return OBJ_DEAD;
+			return OBJ_NOEVENT;
 
 		INFO tPlayerInfo = *pPlayer->Get_Info();
 		tPlayerInfo.fY -= (tPlayerInfo.fCY / 2);

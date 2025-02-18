@@ -51,7 +51,7 @@ void CStage1_02::Update()
 	}
 	else if (pPlayer->Get_Info()->fX <= 15)
 	{
-		pPlayer->Set_Pos(4070, pPlayer->Get_Info()->fY);
+		pPlayer->Set_Pos(4060, pPlayer->Get_Info()->fY);
 		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_01);
 	}
 }

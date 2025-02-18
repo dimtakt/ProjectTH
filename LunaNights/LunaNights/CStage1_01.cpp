@@ -29,7 +29,7 @@ void CStage1_01::Initialize()
 	m_iTileTimesY = 1;
 
 	// 플레이어가 없다면, 생성
-	if (!CObjMgr::Get_Instance()->Get_Player());
+	if (CObjMgr::Get_Instance()->Get_Player() == nullptr)
 		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
 
 
