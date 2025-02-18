@@ -16,6 +16,8 @@ public:
     void Release() override;
 
     void Jump();
+    void Motion_Change();
+
 
 private:
     int m_iHp;
@@ -27,5 +29,7 @@ private:
     bool m_isPreAttackReady;
 
     bool m_isStartStage;
+
+    OBJ_STATE m_ePreState;
 };
 

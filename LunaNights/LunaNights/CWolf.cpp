@@ -8,6 +8,7 @@
 #include "CTileCollisionMgr.h"
 
 CWolf::CWolf() :
+	m_ePreState(OBJST_END),
 	dwAttackReady(0),
 	m_isAttackReady(false),
 	m_isPreAttackReady(false)
@@ -20,6 +21,9 @@ CWolf::~CWolf()
 
 void CWolf::Initialize()
 {
+	m_eCurState = OBJST_IDLE;
+
+
 	m_fSpeed = 3.f;
 	m_isFlying = false;
 
@@ -279,4 +283,9 @@ void CWolf::Jump()
 		}
 
 	}
+}
+
+void CWolf::Motion_Change()
+{
+
 }
