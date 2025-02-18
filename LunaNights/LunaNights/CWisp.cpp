@@ -51,7 +51,7 @@ int CWisp::Update()
 	Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
 
 
-	// 이미지 파일 크기에 맞게 충돌판정 구성
+	// 이미지 파일 크기 고려해서 충돌판정 구성
 	m_tCollideInfo = { m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX / 2, m_tInfo.fCY / 2 };
 
 
@@ -93,7 +93,18 @@ int CWisp::Update()
 
 void CWisp::Late_Update()
 {
-	Move_Frame();
+	// 카메라 안에 있을때만 갱신
+	int iOutX = 0, iOutY = 0;
+	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY);
+
+	if (!((m_tInfo.fX + m_tInfo.fCX < 0 - iOutX || m_tInfo.fX - iOutY - m_tInfo.fCX > WINCX - iOutX) ||
+		(m_tInfo.fY + m_tInfo.fCY < 0 - iOutY || m_tInfo.fY - iOutY - m_tInfo.fCY > WINCY - iOutY)))
+	{
+
+		// 실질적 실행부
+		Move_Frame();
+
+	}
 }
 
 void CWisp::Render(HDC hDC)
