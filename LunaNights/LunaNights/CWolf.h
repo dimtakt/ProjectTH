@@ -20,16 +20,19 @@ public:
 
 
 private:
-    int m_iHp;
-    int m_iMp;
-    int m_fAtk;
-
     DWORD dwAttackReady;
     bool m_isAttackReady;
     bool m_isPreAttackReady;
 
     bool m_isStartStage;
 
+    bool m_isJumpDirStretch;
+
     OBJ_STATE m_ePreState;
+
+    FPOINT m_tPrePos;
+
 };
+
+
 

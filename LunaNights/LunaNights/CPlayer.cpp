@@ -235,7 +235,8 @@ void CPlayer::Key_Input()
 		m_tInfo.fY--;
 		m_dwStateChangeTime = GetTickCount();
 
-		if (m_tFrame.iFrameCur < m_tFrame.iFrameAmount - 1)
+		// m_tFrame 이 Jump 프로퍼티일 때에 문제가 발생하였음
+		if ((m_tFrame.iFrameCur < m_tFrame.iFrameAmount - 1)  || (m_tFrame.iFrameAmount != 12))	// 12 는 데미지 받은 상태 프로퍼티의 iFrameAmount를 의미
 			return;
 		else
 		{
@@ -625,17 +626,13 @@ void CPlayer::Jump()
 	// 7. 착지 완료했다면, isJumping = false 로 전환
 	
 
-
-
-	// y축을 즉시 대입하는 게 아니라, 복사한 변수를 대입하고, 조건에 따라 해당 값을 원본 값에 대입하는 식으로 바꿔야 함
-	// 444번째 줄 확인해보고 조건을 주는 식으로 수정해야 함
 	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
 	float fMargin = 20.f;					// 자연스러운 착지를 위한 마진값
 
 	float fMaxVelocityY = 20;				// 최대 낙하속도 제한
 	float fGravityConst = GRAVITY * 0.12;	// 대충 자연스러운 중력가속도 및 계수
 
-	// 플레이어 Y축 속도. 30 안넘게 조절
+	// 플레이어 Y축 속도. 20 안넘게 조절
 	m_fVelocityY = ((m_fVelocityY + fGravityConst) >= fMaxVelocityY) ?
 		fMaxVelocityY : m_fVelocityY + fGravityConst;
 

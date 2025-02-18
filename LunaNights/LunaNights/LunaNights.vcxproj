@@ -140,6 +140,7 @@
     <ClInclude Include="CCameraMgr.h" />
     <ClInclude Include="CCollisionMgr.h" />
     <ClInclude Include="CEdit.h" />
+    <ClInclude Include="CEffect.h" />
     <ClInclude Include="CKeyMgr.h" />
     <ClInclude Include="CLogo.h" />
     <ClInclude Include="CMainGame.h" />
@@ -174,6 +175,7 @@
     <ClCompile Include="CCameraMgr.cpp" />
     <ClCompile Include="CCollisionMgr.cpp" />
     <ClCompile Include="CEdit.cpp" />
+    <ClCompile Include="CEffect.cpp" />
     <ClCompile Include="CKeyMgr.cpp" />
     <ClCompile Include="CLogo.cpp" />
     <ClCompile Include="CMainGame.cpp" />

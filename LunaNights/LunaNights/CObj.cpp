@@ -13,9 +13,16 @@ CObj::CObj() :
 	m_pFrameKey(nullptr),
 	m_isJumping(false),
 	m_isFlying(false),
+	m_fVelocityX(0),
 	m_fVelocityY(0),
 	m_isGod(false),
-	m_isPreGod(false)
+	m_isPreGod(false),
+	m_iHp(0),
+	m_iMp(0),
+	m_fAtk(0.f),
+	m_iMaxHp(0),
+	m_iMaxMp(0),
+	m_iGold(0)
 {
 	ZeroMemory(&m_tInfo, sizeof(INFO));
 	ZeroMemory(&m_tRect, sizeof(RECT));

@@ -112,6 +112,9 @@
     <Filter Include="02. Scene\01. Stage1\1_Boss">
       <UniqueIdentifier>{b0dabd99-3e4c-4be0-803d-07ada2ac2141}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Obj\06. Effect">
+      <UniqueIdentifier>{d21be6b2-b0a0-45e4-8b31-2bbab6e6fefe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -213,6 +216,9 @@
     <ClInclude Include="CStage1_Boss.h">
       <Filter>02. Scene\01. Stage1\1_Boss</Filter>
     </ClInclude>
+    <ClInclude Include="CEffect.h">
+      <Filter>01. Obj\06. Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -298,6 +304,9 @@
     </ClCompile>
     <ClCompile Include="CStage1_Boss.cpp">
       <Filter>02. Scene\01. Stage1\1_Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="CEffect.cpp">
+      <Filter>01. Obj\06. Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

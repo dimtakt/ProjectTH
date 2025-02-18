@@ -116,6 +116,7 @@ protected:
 	
 
 	float		m_fSpeed;
+	float		m_fVelocityX;
 	float		m_fVelocityY;
 	bool		m_isDead;
 	float		m_fAngle;

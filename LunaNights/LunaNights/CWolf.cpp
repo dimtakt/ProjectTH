@@ -6,13 +6,16 @@
 #include "CObjMgr.h"
 #include "CCameraMgr.h"
 #include "CTileCollisionMgr.h"
+#include "SoundMgr.h"
 
 CWolf::CWolf() :
 	m_ePreState(OBJST_END),
 	dwAttackReady(0),
 	m_isAttackReady(false),
-	m_isPreAttackReady(false)
+	m_isPreAttackReady(false),
+	m_isJumpDirStretch(false)
 {
+	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
 
 CWolf::~CWolf()
@@ -102,13 +105,13 @@ int CWolf::Update()
 		INFO tPlayerInfo = *pPlayer->Get_Info();
 
 		// 1. 일정 거리(iDistToPlayer)까지 접근 (도약 준비 변수가 false 일 때만)
-		if (!m_isAttackReady)
+		if (!m_isAttackReady && !m_isJumping)
 		{
-			int iDistToPlayer = 300;
-			float fDistanceX = abs(tPlayerInfo.fX - m_tInfo.fX);
+			int iDistToPlayer = 250;
+			float fDistanceX = abs(abs(tPlayerInfo.fX) - abs(m_tInfo.fX));
 		
 
-			if (!(iDistToPlayer <= fDistanceX)) // 거리가 멀다면 붙음
+			if (iDistToPlayer <= fDistanceX) // 거리가 멀다면 붙음
 			{
 				if (tPlayerInfo.fX > m_tInfo.fX)	m_tInfo.fX += m_fSpeed;
 				else								m_tInfo.fX -= m_fSpeed;
@@ -121,8 +124,10 @@ int CWolf::Update()
 		}
 		else
 		{
-			int iAttackDelay = 1000;
-			if (dwAttackReady - GetTickCount() >= iAttackDelay)
+			DWORD dwCurrentTime = GetTickCount();
+
+			int iAttackDelay = 1500;
+			if (((dwCurrentTime - dwAttackReady) >= iAttackDelay) && dwAttackReady != 0) // unsigned 값임에 유의. 음수가 될 상황이 생기면 안됨
 			{
 				// 플레이어를 향해 30도가량 높이로 점프함
 				// m_eCurState도 변경해야함
@@ -133,7 +138,16 @@ int CWolf::Update()
 				dwAttackReady = 0;
 				//m_isJumping = true;
 
+				m_isJumping = true;
 
+				// Y 값은 점프 할 때 처럼 주고,
+				// X 값은 그냥 점프 중 계속 플레이어를 향해 이동하게 하면 되려나 
+				m_fVelocityY = -15.f;
+				CSoundMgr::Get_Instance()->StopSound(SOUND_WOLF);
+				CSoundMgr::Get_Instance()->PlaySound(L"s1006_cat.wav", SOUND_WOLF, 0.2f);
+				
+				m_isAttackReady = false;
+				m_isPreAttackReady = false;
 
 			}
 		}
@@ -143,11 +157,21 @@ int CWolf::Update()
 		{
 			m_isPreAttackReady = true;
 			dwAttackReady = GetTickCount();
+
+			if (tPlayerInfo.fX > m_tInfo.fX)	m_isJumpDirStretch = false;
+			else								m_isJumpDirStretch = true;
+		}
+
+		if (m_isJumping)
+		{
+			if (!m_isJumpDirStretch)			m_tInfo.fX += m_fSpeed * 5;
+			else								m_tInfo.fX -= m_fSpeed * 5;
 		}
 		// 2. 도약 준비 변수가 true일 때, 타이머 온
 		//    이후 일정 시간 후에 30도가량 높이로 도약
 		//    도약 이후, 땅에 착지할 때 (m_isJumping  이 false가 될 때)
 		//    도약 준비 변수의 false화, 다시 1 패턴으로 돌아감
+
 
 		
 	}
@@ -167,7 +191,7 @@ void CWolf::Late_Update()
 
 		// 실질적 실행부
 
-		//Jump();
+		Jump();
 		Move_Frame();
 		//Motion_Change();
 
@@ -176,25 +200,38 @@ void CWolf::Late_Update()
 
 void CWolf::Render(HDC hDC)
 {
-	int iOutX = m_tRect.left;
-	int iOutY = m_tRect.top;
-	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+	// 카메라 안에 있을때만 갱신
+	int iOutX = 0, iOutY = 0;
+	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY);
 
-	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
+	if (!((m_tInfo.fX + m_tInfo.fCX < 0 - iOutX || m_tInfo.fX - iOutY - m_tInfo.fCX > WINCX - iOutX) ||
+		(m_tInfo.fY + m_tInfo.fCY < 0 - iOutY || m_tInfo.fY - iOutY - m_tInfo.fCY > WINCY - iOutY)))
+	{
 
-	GdiTransparentBlt(hDC,					// 최종적으로 그릴 DC
-		iOutX,					// 복사받을 위치 X, Y좌표
-		iOutY,
-		//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
-		//iOutY - m_tInfo.fCY,
-		m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
-		m_tInfo.fCY,
-		hMemDC,					// 비트맵을 가지고 있는 DC
-		m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
-		m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
-		m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
-		m_tInfo.fCY,
-		RGB(255, 0, 255));		// 제거할 색상
+		// 실질적 실행부
+
+		int iOutX = m_tRect.left;
+		int iOutY = m_tRect.top;
+		CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+
+		HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
+
+		GdiTransparentBlt(hDC,					// 최종적으로 그릴 DC
+			iOutX,					// 복사받을 위치 X, Y좌표
+			iOutY,
+			//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
+			//iOutY - m_tInfo.fCY,
+			m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+			m_tInfo.fCY,
+			hMemDC,					// 비트맵을 가지고 있는 DC
+			m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+			m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
+			m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
+			m_tInfo.fCY,
+			RGB(255, 0, 255));		// 제거할 색상
+
+
+	}
 }
 
 void CWolf::Release()
@@ -203,7 +240,7 @@ void CWolf::Release()
 
 void CWolf::Jump()
 {
-	// 플레이어 Jump 함수 활용
+	// 플레이어 Jump 함수 재사용
 
 	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
 	float fMargin = 20.f;					// 자연스러운 착지를 위한 마진값
@@ -211,13 +248,21 @@ void CWolf::Jump()
 	float fMaxVelocityY = 20;				// 최대 낙하속도 제한
 	float fGravityConst = GRAVITY * 0.12;	// 대충 자연스러운 중력가속도 및 계수
 
-	// 플레이어 Y축 속도. 30 안넘게 조절
+	// 플레이어 Y축 속도. 20 안넘게 조절
 	m_fVelocityY = ((m_fVelocityY + fGravityConst) >= fMaxVelocityY) ?
 		fMaxVelocityY : m_fVelocityY + fGravityConst;
 
 
 
 	float fDiffY;							// 전 프레임, 현 프레임 간의 Y축 차이
+
+	if (m_tPrePos.x == 0 && m_tPrePos.y == 0)
+		fDiffY = 0;
+	else
+		fDiffY = m_tInfo.fY - m_tPrePos.y;
+
+	m_tPrePos = { m_tInfo.fX, m_tInfo.fY };	// 이전 프레임 정보 저장
+
 
 	bool isFoundLine = false;
 	if (m_isStartStage)						// 스테이지 시작 1회에 한해 실행
