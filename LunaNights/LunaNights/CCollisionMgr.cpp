@@ -3,6 +3,8 @@
 #include "CPlayer.h"
 #include "CObjMgr.h"
 #include "SoundMgr.h"
+#include "CAbstractFactory.h"
+#include "CEffect.h"
 
 void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::list<CObj*> SrcList)
 {
@@ -25,7 +27,12 @@ void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::
 				//Dst->Set_Dead();
 				//Src->Set_Dead();
 				if (Dst->Get_State() != OBJST_DAMAGED && !Dst->Get_God())
-				{
+				{					
+					INFO tPlayerInfo = *Dst->Get_Info();
+
+					// 문제는 이걸, m_pFrameKey를 지정해줘야만 함
+					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY/2, 0.f, L"Effect_Damage"));
+
 					Dst->Set_HP(Dst->Get_HP() - Src->Get_Atk());
 					Dst->Set_State(OBJST_DAMAGED);
 					Dst->Set_God();
@@ -69,9 +76,26 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 
 				if (Src->Get_HP() <= 0)
 				{
+					// 몬스터가 플레이어에 의해 죽었을 때
 					Src->Set_Dead();
+
+					INFO tMonsterInfo = *Src->Get_Info();
+
+					srand((unsigned int)time(NULL));
+					for (int i = 0; i < 5; i++)
+					{
+						int iTmpX = ((rand() % (int)tMonsterInfo.fCX) - (int)tMonsterInfo.fCX / 2) * 2;
+						int iTmpY = ((rand() % (int)tMonsterInfo.fCY) - (int)tMonsterInfo.fCY / 2) * 2;
+						CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+							CAbstractFactory<CEffect>::Create(tMonsterInfo.fX + iTmpX, (tMonsterInfo.fY) + iTmpY, 0.f, L"Effect_Bomb"));
+					}
+
+
 					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
 					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+
+
+
 				}
 			}
 		}

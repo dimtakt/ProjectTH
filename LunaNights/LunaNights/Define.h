@@ -59,8 +59,9 @@ extern HWND g_hWnd;
 
 // 오브젝트의 종류를 나타내는 열거형
 enum OBJ_ID		{	OBJ_PLAYER = 0,
-					OBJ_PLAYERBULLET = 10,
+					OBJ_PLAYERBULLET = 1,
 					OBJ_MONSTERBULLET,
+					OBJ_EFFECT = 5,
 					OBJ_MONSTER_WOLF = 20,
 					OBJ_MONSTER_WISP,
 					OBJ_ITEM = 30,
@@ -104,6 +105,7 @@ enum RENDERID	{
 					RENDER_TILE_BACKGROUND,			// 배경 (타일)
 					RENDER_GAMEOBJECT,				// GAMEOBJECT
 					RENDER_UI,						// UI
+					RENDER_EFFECT,					// 이펙트
 					RENDER_PRIORITY,				// 가장 우선순위 높게 렌더링
 					RENDER_END
 				};
@@ -115,6 +117,8 @@ enum CHANNELID
 	SOUND_ATTACK,
 	SOUND_DESTROY,
 	SOUND_WOLF,
+	SOUND_TIME_SLOW,
+	SOUND_TIME_SKILL,
 	SOUND_BGM,
 	MAXCHANNEL
 };

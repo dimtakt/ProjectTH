@@ -59,7 +59,7 @@ void CStage1_01::Initialize()
 	CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-1.dat");
 	CObjMgr::Get_Instance()->Update();		// ¤»¤»;
 	
-
+	
 }
 
 void CStage1_01::Update()

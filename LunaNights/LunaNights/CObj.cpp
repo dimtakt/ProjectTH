@@ -22,7 +22,8 @@ CObj::CObj() :
 	m_fAtk(0.f),
 	m_iMaxHp(0),
 	m_iMaxMp(0),
-	m_iGold(0)
+	m_iGold(0),
+	isWorldFix(true)
 {
 	ZeroMemory(&m_tInfo, sizeof(INFO));
 	ZeroMemory(&m_tRect, sizeof(RECT));

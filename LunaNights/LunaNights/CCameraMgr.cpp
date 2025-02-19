@@ -3,6 +3,7 @@
 #include "CObj.h"
 
 #include "CKeyMgr.h"
+#include "CSceneMgr.h"
 
 CCameraMgr* CCameraMgr::m_pInstance = nullptr;
 
@@ -33,15 +34,20 @@ void CCameraMgr::Update_CameraPos(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY
 
 #pragma region Camera Test Code with WASD
 
-	int iCameraSpeed = 5.f;
-	if (CKeyMgr::Get_Instance()->Key_Pressing('W'))
-		m_fCameraY -= iCameraSpeed;
-	if (CKeyMgr::Get_Instance()->Key_Pressing('S'))
-		m_fCameraY += iCameraSpeed;
-	if (CKeyMgr::Get_Instance()->Key_Pressing('A'))
-		m_fCameraX -= iCameraSpeed;
-	if (CKeyMgr::Get_Instance()->Key_Pressing('D'))
-		m_fCameraX += iCameraSpeed;
+	// Edit Mode 에서만 카메라 조작 가능
+	if (CSceneMgr::Get_Instance()->Get_CurScene() == CSceneMgr::SC_EDIT)
+	{
+
+		int iCameraSpeed = 5.f;
+		if (CKeyMgr::Get_Instance()->Key_Pressing('W'))
+			m_fCameraY -= iCameraSpeed;
+		if (CKeyMgr::Get_Instance()->Key_Pressing('S'))
+			m_fCameraY += iCameraSpeed;
+		if (CKeyMgr::Get_Instance()->Key_Pressing('A'))
+			m_fCameraX -= iCameraSpeed;
+		if (CKeyMgr::Get_Instance()->Key_Pressing('D'))
+			m_fCameraX += iCameraSpeed;
+	}
 
 #pragma endregion
 

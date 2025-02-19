@@ -11,13 +11,16 @@
 #include "CTileCOllisionMgr.h"
 #include "CPlayerBullet.h"
 #include "SoundMgr.h"
+#include "CEffect.h"
 
 CPlayer::CPlayer() :
 	m_ePreState(OBJST_END),
 	m_dwTime(GetTickCount()),
 	m_dwStateChangeTime(0),
 	m_isStartStage(false),
-	m_dwGodTime(0)
+	m_dwGodTime(0),
+	m_dwSnailReadyTime(0),
+	m_dwSnailTime(0)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -48,11 +51,11 @@ void CPlayer::Initialize()
 	m_iMaxHp = 100;
 	m_iMp = 100;
 	m_iMaxMp = 100;
-	m_iTp = 85;
+	m_fTp = 85;
 	m_iGold = 50;
 	m_fAtk = 5.2;
 	m_iKnife = 18;
-	m_isGetWatch = 0;
+	m_isGetWatch = true;
 
 	m_iTimeMode = 0;	// 0 Idle, 1 Snail, 2 Stop
 
@@ -75,6 +78,7 @@ void CPlayer::Initialize()
 	m_eRender = RENDER_GAMEOBJECT;
 
 	m_dwMpRegenTime = GetTickCount();
+	m_dwTpRegenTime = GetTickCount();
 
 	CCameraMgr::Get_Instance()->Set_Target(this);
 }
@@ -87,11 +91,63 @@ int CPlayer::Update()
 	Key_Input();
 
 	// 마나 자연회복
-	if (m_dwMpRegenTime + 500 <= GetTickCount() && !(m_iMp >= 100))
+	if (m_dwMpRegenTime + 500 <= GetTickCount() && !(m_iMp >= m_iMaxMp))
 	{
 		m_iMp++;
-		m_dwMpRegenTime = GetTickCount();
+		m_dwMpRegenTime = GetTickCount(); 
 	}
+
+	// TP 소모 및 회복
+	if (m_dwTpRegenTime + 200 <= GetTickCount() && (m_fTp <= 85))
+	{
+
+		if		(m_iTimeMode == 0 && m_fTp < 85)		{ m_fTp += 1.f; }
+		else if (m_iTimeMode == 2)						{ m_fTp -= 1.f; }
+
+		m_dwTpRegenTime = GetTickCount();
+
+		if (m_fTp >= 85)				{ m_fTp = 85; }
+	
+		// Tp가 없으면 정지모드 해제
+		if (m_fTp <= 0)
+		{
+			m_fTp = 0;
+			m_iTimeMode = 0;
+		}
+	}
+	if (m_isJumping && m_iTimeMode == 2)
+		m_fTp -= 0.05f;
+
+	
+
+	// 스네일 모드 발동 시 처음 1회 발동
+	if (m_iTimeMode == 1 && m_dwSnailTime == 0)
+	{
+		m_dwSnailTime = GetTickCount();
+	}
+	// 스네일 모드 발동은 3초간 지속
+	else if (m_iTimeMode == 1 && m_dwSnailTime != 0)
+	{
+		DWORD dwSnailMaxTime = 3000;
+		if (m_dwSnailTime + dwSnailMaxTime <= GetTickCount())
+		{
+			m_dwSnailTime = 0;
+			m_iTimeMode = 0;
+
+			std::cout << "[INFO][CPlayer::Key_Input] Snail Mode Deactivated!" << std::endl;
+		}
+	}
+
+
+
+	// vo_04fx.wav : 타임 MAX 효과음
+	// vo_02fx.wav : 마나 MAX 효과음
+	// vo_05fx.wav : 그레이즈 흡수 효과음
+
+
+
+
+
 
 	// 피격된 뒤 iGodModeTime 초간 무적 유지
 	int iGodModeTime = 1500;
@@ -141,24 +197,59 @@ void CPlayer::Render(HDC hDC)
 	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
 
 	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
-	
+
 
 	// ** 여기서 좌표는 1배 기준으로 잡아놓고 렌더는 2배 크기로 하니까 안맞았지..
 	// 그래서 2배크기 렌더용 Update_Rect ... 2X 함수들을 새로 만듦.
 
 	GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
-		 				iOutX,					// 복사받을 위치 X, Y좌표
-		 				iOutY,
+						iOutX,					// 복사받을 위치 X, Y좌표
+						iOutY,
 						//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
 						//iOutY - m_tInfo.fCY,
-		 				m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
-		 				m_tInfo.fCY,
-		 				hMemDC,					// 비트맵을 가지고 있는 DC
+						m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+						m_tInfo.fCY,
+						hMemDC,					// 비트맵을 가지고 있는 DC
 						m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
 						m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
 						m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
-		 				m_tInfo.fCY,
-		 				RGB(255, 0, 255));		// 제거할 색상
+						m_tInfo.fCY,
+						RGB(255, 0, 255));		// 제거할 색상
+
+
+
+
+	// snail gauge
+	if (m_iTimeMode == 0 && m_dwSnailReadyTime != 0)
+	{	
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_SNAILSOCKET");
+		FRAME_PROP tCurProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"UI_SNAILSOCKET");
+
+		// snail socket image
+		GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+							iOutX + m_tInfo.fCX/2 - 25,					// 복사받을 위치 X, Y좌표
+							iOutY - 50,
+							//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
+							//iOutY - m_tInfo.fCY,
+							tCurProp.iCX,	// 복사 받을 가로, 세로 길이.
+							tCurProp.iCY,
+							hMemDC,					// 비트맵을 가지고 있는 DC
+							0,	// 출력하려는 스트라이트 이미지 내에서의 좌표
+							0,
+							tCurProp.iCX,	// 비트맵을 출력할 가로, 세로 길이
+							tCurProp.iCY,
+							RGB(255, 0, 255));		// 제거할 색상
+
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_SNAILGAUGE");
+		tCurProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"UI_SNAILGAUGE");
+
+		// snail gauge image
+		int iCurFrameSnail = m_dwSnailReadyTime / 100 * tCurProp.iFrameAmount;
+
+
+
+	}
+
 
 
 	// 충돌 기준 확인용
@@ -206,9 +297,9 @@ void CPlayer::Render(HDC hDC)
 		//std::cout << "Player Scale: \t" << m_tInfo.fCX << "\t" << m_tInfo.fCY << std::endl;
 		//std::cout << "Player Info : \t" << m_tInfo.fX << "\t" << m_tInfo.fY << std::endl;
 
-		std::cout << "CurrentState: \t" << m_eCurState << std::endl;
-		std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
-		std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
+		//std::cout << "CurrentState: \t" << m_eCurState << std::endl;
+		//std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
+		//std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
 
 	}
 
@@ -229,20 +320,20 @@ void CPlayer::Key_Input()
 	// ********************
 	if (m_eCurState == OBJST_DAMAGED)
 	{
-		if (m_isStretch)	{	m_pFrameKey = L"Player_DAMAGE_R";	m_tInfo.fX += 5;	}
-		else				{	m_pFrameKey = L"Player_DAMAGE";		m_tInfo.fX -= 5;	}
+		if (m_isStretch) { m_pFrameKey = L"Player_DAMAGE_R";	m_tInfo.fX += 5; }
+		else { m_pFrameKey = L"Player_DAMAGE";		m_tInfo.fX -= 5; }
 
 		m_tInfo.fY--;
 		m_dwStateChangeTime = GetTickCount();
 
 		// m_tFrame 이 Jump 프로퍼티일 때에 문제가 발생하였음
-		if ((m_tFrame.iFrameCur < m_tFrame.iFrameAmount - 1)  || (m_tFrame.iFrameAmount != 12))	// 12 는 데미지 받은 상태 프로퍼티의 iFrameAmount를 의미
+		if ((m_tFrame.iFrameCur < m_tFrame.iFrameAmount - 1) || (m_tFrame.iFrameAmount != 12))	// 12 는 데미지 받은 상태 프로퍼티의 iFrameAmount를 의미
 			return;
 		else
 		{
 			m_eCurState = OBJST_IDLE;
-		if (m_isStretch)	{	m_pFrameKey = L"Player_IDLE_R";	}
-		else				{	m_pFrameKey = L"Player_IDLE";	}
+			if (m_isStretch) { m_pFrameKey = L"Player_IDLE_R"; }
+			else { m_pFrameKey = L"Player_IDLE"; }
 		}
 	}
 
@@ -256,7 +347,7 @@ void CPlayer::Key_Input()
 		// 꾹 누르는 중에 천천히 내려가며 활공하는 조건도 따로 만들어줘야 함
 		// later
 
-		
+
 		m_eCurState = OBJST_JUMP;
 		m_fVelocityY = -20.f;	// 임시값. Jump()
 
@@ -278,11 +369,21 @@ void CPlayer::Key_Input()
 	// ********************
 	// ** 공격 키
 	// ********************
-	if (	CKeyMgr::Get_Instance()->Key_Down('Z'))
+	if (CKeyMgr::Get_Instance()->Key_Down('Z'))
 	{
 		if (m_iMp >= 3)
 		{
-			m_iMp -= 3;
+			if (m_iTimeMode != 2)
+			{
+				m_iMp -= 3;
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(173, 91, 0.f, L"Effect_MPDown", false));
+			}
+			else
+			{
+				m_fTp -= 8;
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(560, 40, 0.f, L"Effect_TPDown", false));
+
+			}
 
 			CSoundMgr::Get_Instance()->StopSound(SOUND_ATTACK);
 			CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_ATTACK, 0.2f);
@@ -417,26 +518,53 @@ void CPlayer::Key_Input()
 
 		}
 
-
-
-
-		//}
-		//else
-		//{
-		//	if (m_eCurState == OBJST_JUMP)
-		//	{
-		//		m_dwStateChangeTime = GetTickCount();
-		//		if (m_isStretch)	m_pFrameKey = L"Player_ACTION_R";
-		//		else				m_pFrameKey = L"Player_ACTION";
-		//		m_eCurState = OBJST_JUMP_ATTACK1;
-		//	}
-		//	else if (m_eCurState == OBJST_JUMP_ATTACK1)
-		//	{
-
-		//	}
-		//}
-
 	}
+
+
+	if (CKeyMgr::Get_Instance()->Key_Pressing('Z') &&
+		m_iTimeMode == 0)
+	{
+		m_dwSnailReadyTime += 1;
+
+		std::cout << "[INFO][CPlayer::Key_Input] Current SnailReady Stack : " << m_dwSnailReadyTime << std::endl;
+	}
+	else if (CKeyMgr::Get_Instance()->Key_Up('Z'))
+	{
+		DWORD dwSnailReadyTime = 100;
+		if (m_dwSnailReadyTime >= dwSnailReadyTime)
+		{
+			// 스네일 모드 발동
+			m_iTimeMode = 1;
+			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SLOW);
+			CSoundMgr::Get_Instance()->PlaySound(L"s1017_slow_motion.wav", SOUND_TIME_SLOW, 0.2f);
+
+			std::cout << "[INFO][CPlayer::Key_Input] Snail Mode Activated!" << std::endl;
+		}
+
+		m_dwSnailReadyTime = 0;
+	}
+
+
+
+	// ********************
+	// ** 시간 정지 키
+	// ********************
+	if (CKeyMgr::Get_Instance()->Key_Down('A'))
+	{
+		if (m_iTimeMode == 0)
+		{
+			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SKILL);
+			CSoundMgr::Get_Instance()->PlaySound(L"s06_skill.wav", SOUND_TIME_SKILL, 0.2f);
+			m_iTimeMode = 2;
+		}
+		else if (m_iTimeMode == 2)
+		{
+			m_iTimeMode = 0;
+		}
+	}
+
+
+
 
 
 
@@ -483,6 +611,7 @@ void CPlayer::Key_Input()
 		}
 
 		m_tInfo.fX -= m_fSpeed;
+		if (m_iTimeMode == 2) m_fTp -= 0.05f;
 		m_isStretch = true;
 		m_fAngle = 180.f;
 		return;
@@ -549,6 +678,7 @@ void CPlayer::Key_Input()
 		}
 
 		m_tInfo.fX += m_fSpeed;
+		if (m_iTimeMode == 2) m_fTp -= 0.05f;
 		m_isStretch = false;
 		m_fAngle = 0.f;
 		return;
@@ -947,6 +1077,13 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_DAMAGE_R = { 96 * 2, 64 * 2, 1, 12, 12 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_DAMAGE_R, L"Player_DAMAGE_R");
 
+	// 플레이어 스네일 게이지 및 소켓
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/snail_gauge_soket/snail_gauge_soket.bmp", L"UI_SNAILSOCKET");
+	FRAME_PROP tUI_SNAILSOCKET = { 32 * 2, 32 * 2 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tUI_SNAILSOCKET, L"UI_SNAILSOCKET");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/snail_gauge/snail_gauge.bmp", L"UI_SNAILGAUGE");
+	FRAME_PROP tUI_SNAILGAUGE = { 32 * 2, 32 * 2, 14, 4, 56 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tUI_SNAILGAUGE, L"UI_SNAILGAUGE");
 }
 
 int CPlayer::Get_Stat(PLAYERSTAT _statType)
@@ -957,7 +1094,7 @@ int CPlayer::Get_Stat(PLAYERSTAT _statType)
 	case CPlayer::MAXHP:			return m_iMaxHp;
 	case CPlayer::MP:				return m_iMp;
 	case CPlayer::MAXMP:			return m_iMaxMp;
-	case CPlayer::TP:				return m_iTp;
+	case CPlayer::TP:				return m_fTp;
 	case CPlayer::GOLD:				return m_iGold;
 	case CPlayer::ATK:				return (int)m_fAtk;
 	case CPlayer::KNIFE:			return m_iKnife;

@@ -51,9 +51,9 @@ int CPlayerBullet::Update()
 
 	// Info 정보에 따라 Rect 값 갱신
 	__super::Update_Rect();
-	m_tPoint[0] = { m_tRect.left, m_tRect.top };
-	m_tPoint[1] = { m_tRect.right, m_tRect.top };
-	m_tPoint[2] = { m_tRect.left, m_tRect.bottom };
+	//m_tPoint[0] = { m_tRect.left, m_tRect.top };
+	//m_tPoint[1] = { m_tRect.right, m_tRect.top };
+	//m_tPoint[2] = { m_tRect.left, m_tRect.bottom };
 
 
 
@@ -66,24 +66,23 @@ void CPlayerBullet::Late_Update()
 
 void CPlayerBullet::Render(HDC hDC)
 {
-	// laterEdit
 	int iOutX = m_tRect.left;
 	int iOutY = m_tRect.top;
 	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
 
 	HDC	hMemDC;
-	POINT tmpPoint[3] = { m_tPoint[0], m_tPoint[1], m_tPoint[2]};
+	//POINT tmpPoint[3] = { m_tPoint[0], m_tPoint[1], m_tPoint[2]};
 	INFO tPlayerInfo = *pPlayer->Get_Info();
 
 	if (m_isStretch)
 	{
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_R");
-		RotatePoints(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY / 2, tmpPoint, 30);
+		//RotatePoints(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY / 2, tmpPoint, 30);
 	}
 	else
 	{ 
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet");
-		RotatePoints(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY / 2, tmpPoint, 30);
+		//RotatePoints(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY / 2, tmpPoint, 30);
 	}
 	HDC	hPlgDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_Plg");
 	HDC	hResetDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_Reset");

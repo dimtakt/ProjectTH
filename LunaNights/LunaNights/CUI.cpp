@@ -200,14 +200,17 @@ void CUI::Render(HDC hDC)
 	{
 		int iTp = pPlayer->Get_Stat(CPlayer::TP);
 		int iTpCharNum = log10(iTp) + 1;	// 자릿수
+		if (iTpCharNum <= 0) iTpCharNum = 1;
+
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_Time_Number");
 
 		int iFirstCharX = 605 + (tFrameTime_Number.iCX / 2) * (3 - iTpCharNum);	// 자릿수에 따른 위치 보정
-		
+
 		for (int i = 0; i < iTpCharNum; i++) // 자릿수만큼만 남은시간 표시
 		{
 			int iTpChar = (iTp % (int)pow(10, i + 1)) / (pow(10, i));							// 출력하려는 수
-						
+			if (iTp <= 0) iTpChar = 0;
+
 			GdiTransparentBlt(	hDC,											// 최종적으로 그릴 DC
 								605 + (iTpCharNum * 0.5 - i + 0.5) * tFrameTime_Number.iCX,	// 복사받을 위치 X, Y좌표
 		 						103,

@@ -9,6 +9,7 @@
 #include "CAbstractFactory.h"
 #include "CWolf.h"
 #include "CWisp.h"
+#include "CPlayer.h"
 
 CObjMgr* CObjMgr::m_pInstance = nullptr;
 
@@ -64,22 +65,111 @@ void CObjMgr::Update()
 
 	for (unsigned int i = 0; i < OBJ_END; ++i)
 	{
-		for (auto iter = m_ObjList[i].begin();
-			iter != m_ObjList[i].end(); )
-		{
-			int iResult = (*iter)->Update();
+		CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pInstance->Get_Player());
 
-			if (OBJ_DEAD == iResult)
+
+		if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
+			pPlayer->Get_Stat(CPlayer::TIMEMODE) == 1)
+		{
+			// 만약 스네일모드인데, 플레이어가 아니라면
+			if (GetTickCount() % 2)
 			{
-				Safe_Delete<CObj*>(*iter);
-				iter = m_ObjList[i].erase(iter);
+				// 2배 느리게
+				for (auto iter = m_ObjList[i].begin();
+					iter != m_ObjList[i].end(); )
+				{
+					int iResult = (*iter)->Update();
+
+					if (OBJ_DEAD == iResult)
+					{
+						Safe_Delete<CObj*>(*iter);
+						iter = m_ObjList[i].erase(iter);
+					}
+					else
+						++iter;
+				}
 			}
-			else
-				++iter;
 		}
+
+
+
+		else if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
+			pPlayer->Get_Stat(CPlayer::TIMEMODE) == 2)
+		{
+			// nothing.
+			// Player Bullet만 Rect 갱신 (Render를 위함)
+			if (i == OBJ_PLAYERBULLET)
+			{
+				for (auto iter = m_ObjList[i].begin();
+					iter != m_ObjList[i].end(); )
+				{
+					(*iter)->Update_Rect();
+					++iter;
+				}
+			}
+
+		}
+
+		else
+		{
+			// 원래대로.
+			for (auto iter = m_ObjList[i].begin();
+				iter != m_ObjList[i].end(); )
+			{
+				int iResult = (*iter)->Update();
+
+				if (OBJ_DEAD == iResult)
+				{
+					Safe_Delete<CObj*>(*iter);
+					iter = m_ObjList[i].erase(iter);
+				}
+				else
+					++iter;
+			}
+		}
+
+
+
+
 	}
 
 }
+
+#pragma region old Update 0220-0356
+
+//void CObjMgr::Update()
+//{
+//	Optimize_DeleteOutsideScreen();
+//
+//
+//
+//	for (unsigned int i = 0; i < OBJ_END; ++i)
+//	{
+//
+//
+//		for (auto iter = m_ObjList[i].begin();
+//			iter != m_ObjList[i].end(); )
+//		{
+//			int iResult = (*iter)->Update();
+//
+//			if (OBJ_DEAD == iResult)
+//			{
+//				Safe_Delete<CObj*>(*iter);
+//				iter = m_ObjList[i].erase(iter);
+//			}
+//			else
+//				++iter;
+//		}
+//
+//
+//
+//	}
+//
+//}
+
+#pragma endregion
+
+
 
 void CObjMgr::Late_Update()
 {

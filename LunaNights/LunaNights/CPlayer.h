@@ -59,7 +59,11 @@ private:
 	DWORD m_dwStateChangeTime;
 
 	DWORD m_dwMpRegenTime;
+	DWORD m_dwTpRegenTime;
 	DWORD m_dwGodTime;
+
+	DWORD m_dwSnailReadyTime;
+	DWORD m_dwSnailTime;
 
 	FPOINT m_tPrePos;
 
@@ -69,12 +73,12 @@ private:
 
 	// Player Stats.
 
-	int m_iTp;
+	float m_fTp;
 
 	int m_iKnife;
 	bool m_isGetWatch;
 
-	int m_iTimeMode;
+	int m_iTimeMode;	// 0 Idle, 1 Snail, 2 Stop
 
 
 

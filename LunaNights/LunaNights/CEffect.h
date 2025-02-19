@@ -14,5 +14,9 @@ public:
     void Render(HDC hDC) override;
     void Release() override;
 
+private:
+    bool isLoop;
+    int iLoopTimes;
+
 };
 

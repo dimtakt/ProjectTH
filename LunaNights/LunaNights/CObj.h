@@ -40,6 +40,7 @@ public:
 	void Set_PosX(float _fX)					{ m_tInfo.fX += _fX; }
 	void Set_PosY(float _fY)					{ m_tInfo.fY += _fY; }
 	void Set_FrameKey(const TCHAR* pFrameKey)	{ m_pFrameKey = pFrameKey; }
+	void Set_WorldFix(bool _isWorldFix)			{ isWorldFix = _isWorldFix; }
 
 	RENDERID Get_RenderID()					{ return m_eRender; }
 
@@ -129,8 +130,11 @@ protected:
 	bool		m_isPreGod;
 
 
+	
+	
 	const TCHAR* m_pFrameKey;
 
+	bool isWorldFix;    // 만약 이펙트라면, 월드 좌표에 고정시킬 것인가?
 
 	// Stats.
 	int m_iHp;

@@ -83,7 +83,7 @@ int CWolf::Update()
 
 
 	// 이미지 파일 크기에 맞게 충돌판정 구성
-	m_tCollideInfo = { m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX / 2, m_tInfo.fCY / 2 };
+	m_tCollideInfo = { m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 0.25f, m_tInfo.fCX * 0.7f, m_tInfo.fCY * 0.5f};
 
 
 	__super::Update_Rect_UpStand();
@@ -109,17 +109,24 @@ int CWolf::Update()
 		{
 			int iDistToPlayer = 250;
 			float fDistanceX = abs(abs(tPlayerInfo.fX) - abs(m_tInfo.fX));
-		
+			m_eCurState = OBJST_RUN;
+			if (m_isStretch)	{ m_pFrameKey = L"Wolf_Run"; }
+			else				{ m_pFrameKey = L"Wolf_Run_R"; }
 
 			if (iDistToPlayer <= fDistanceX) // 거리가 멀다면 붙음
 			{
-				if (tPlayerInfo.fX > m_tInfo.fX)	m_tInfo.fX += m_fSpeed;
-				else								m_tInfo.fX -= m_fSpeed;
+				if (tPlayerInfo.fX > m_tInfo.fX)	{ m_tInfo.fX += m_fSpeed; m_isStretch = false; }
+				else								{ m_tInfo.fX -= m_fSpeed; m_isStretch = true;  }
 			}
 			else
 			{
 				// 도약 준비 변수를 true로.
 				m_isAttackReady = true;
+				m_eCurState = OBJST_IDLE;
+
+			if (m_isStretch)	{ m_pFrameKey = L"Wolf_Stand"; }
+			else				{ m_pFrameKey = L"Wolf_Stand_R"; }
+
 			}
 		}
 		else
@@ -135,6 +142,8 @@ int CWolf::Update()
 				// 착지까지 했으면 다시 도약 준비 변수 두 개 false로 해제함
 				// laterEdit
 				m_eCurState = OBJST_JUMP;
+				//m_pFrameKey = L"Wolf_Jump";
+
 				dwAttackReady = 0;
 				//m_isJumping = true;
 
@@ -164,8 +173,9 @@ int CWolf::Update()
 
 		if (m_isJumping)
 		{
-			if (!m_isJumpDirStretch)			m_tInfo.fX += m_fSpeed * 5;
-			else								m_tInfo.fX -= m_fSpeed * 5;
+			// Jump_R 이미지는 정방향이 왼쪽이기에 이미지 조건을 반대로 줌.
+			if (!m_isJumpDirStretch)			{ m_tInfo.fX += m_fSpeed * 5; m_pFrameKey = L"Wolf_Jump_R"; }
+			else								{ m_tInfo.fX -= m_fSpeed * 5; m_pFrameKey = L"Wolf_Jump"; }
 		}
 		// 2. 도약 준비 변수가 true일 때, 타이머 온
 		//    이후 일정 시간 후에 30도가량 높이로 도약
@@ -193,7 +203,7 @@ void CWolf::Late_Update()
 
 		Jump();
 		Move_Frame();
-		//Motion_Change();
+		Motion_Change();
 
 	}
 }
@@ -332,5 +342,27 @@ void CWolf::Jump()
 
 void CWolf::Motion_Change()
 {
+	if (m_ePreState != m_eCurState)
+	{
+		switch (m_eCurState)
+		{
+		case OBJ_STATE::OBJST_IDLE:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 100;
+			break;
 
+		case OBJ_STATE::OBJST_JUMP:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 200;
+			break;
+
+		case OBJ_STATE::OBJST_RUN:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 100;
+			break;
+		}
+
+		m_ePreState = m_eCurState;
+		m_tFrame.iFrameCur = 0;
+	}
 }
