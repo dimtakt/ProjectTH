@@ -3,6 +3,7 @@
 #include "CCollisionMgr.h"
 #include "CTileCollisionMgr.h"
 #include "CTileMgr.h"
+#include "CSceneMgr.h"
 
 #include "CCameraMgr.h"
 #include "CPlayerBullet.h"
@@ -67,14 +68,53 @@ void CObjMgr::Update()
 	{
 		CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pInstance->Get_Player());
 
-
-		if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
-			pPlayer->Get_Stat(CPlayer::TIMEMODE) == 1)
+		// 스테이지 내에서만.
+		if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_LOGO &&
+			CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT)
 		{
-			// 만약 스네일모드인데, 플레이어가 아니라면
-			if (GetTickCount() % 2)
+
+			// 스네일모드 : 플레이어/이펙트/UI 제외 2배 느리게.
+			if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
+				pPlayer->Get_Stat(CPlayer::TIMEMODE) == 1)
 			{
-				// 2배 느리게
+				if (GetTickCount() % 2)
+				{
+					for (auto iter = m_ObjList[i].begin();
+						iter != m_ObjList[i].end(); )
+					{
+						int iResult = (*iter)->Update();
+
+						if (OBJ_DEAD == iResult)
+						{
+							Safe_Delete<CObj*>(*iter);
+							iter = m_ObjList[i].erase(iter);
+						}
+						else
+							++iter;
+					}
+				}
+			}
+
+			// 시간정지모드 : 플레이어/이펙트/UI 제외 정지. 단 플레이어 칼날은 Rect만 업데이트 (안하면 렌더가 안됨)
+			else if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
+				pPlayer->Get_Stat(CPlayer::TIMEMODE) == 2)
+			{
+				if (i == OBJ_PLAYERBULLET)
+				{
+					for (auto iter = m_ObjList[i].begin();
+						iter != m_ObjList[i].end(); )
+					{
+						(*iter)->Update_Rect();
+						++iter;
+					}
+				}
+
+			}
+
+			// 일반모드
+			else
+			{
+				// 원래대로.
 				for (auto iter = m_ObjList[i].begin();
 					iter != m_ObjList[i].end(); )
 				{
@@ -89,30 +129,14 @@ void CObjMgr::Update()
 						++iter;
 				}
 			}
-		}
 
-
-
-		else if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
-			pPlayer->Get_Stat(CPlayer::TIMEMODE) == 2)
-		{
-			// nothing.
-			// Player Bullet만 Rect 갱신 (Render를 위함)
-			if (i == OBJ_PLAYERBULLET)
-			{
-				for (auto iter = m_ObjList[i].begin();
-					iter != m_ObjList[i].end(); )
-				{
-					(*iter)->Update_Rect();
-					++iter;
-				}
-			}
 
 		}
-
+		
+		// 스테이지가 아닌경우.
 		else
 		{
-			// 원래대로.
+
 			for (auto iter = m_ObjList[i].begin();
 				iter != m_ObjList[i].end(); )
 			{
@@ -127,7 +151,6 @@ void CObjMgr::Update()
 					++iter;
 			}
 		}
-
 
 
 

@@ -7,6 +7,7 @@
 #include "CCameraMgr.h"
 #include "CTileCollisionMgr.h"
 #include "SoundMgr.h"
+#include "CSceneMgr.h"
 
 CWolf::CWolf() :
 	m_ePreState(OBJST_END),
@@ -250,6 +251,12 @@ void CWolf::Release()
 
 void CWolf::Jump()
 {
+	if (CSceneMgr::Get_Instance()->Get_CurScene() == CSceneMgr::SC_EDIT)
+		return;
+
+
+
+
 	// 플레이어 Jump 함수 재사용
 
 	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
