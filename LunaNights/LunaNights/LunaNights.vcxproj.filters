@@ -219,6 +219,9 @@
     <ClInclude Include="CEffect.h">
       <Filter>01. Obj\06. Effect</Filter>
     </ClInclude>
+    <ClInclude Include="CCollideRect.h">
+      <Filter>01. Obj\04. Tile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -307,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="CEffect.cpp">
       <Filter>01. Obj\06. Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollideRect.cpp">
+      <Filter>01. Obj\04. Tile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

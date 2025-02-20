@@ -223,11 +223,19 @@ void CObjMgr::Late_Update()
 	//CCollisionMgr::Collision_Circle(m_ObjList[BULLET], m_ObjList[MONSTER]);
 	//CCollisionMgr::Collision_RectEx(m_ObjList[MONSTER], m_ObjList[PLAYER]);
 
+
+	// 플레이어와 몬스터의 충돌 확인, 충돌 시 플레이어만 데미지를 입음
 	CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_MONSTER_WISP]);
 	CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_MONSTER_WOLF]);
 
+	// 플레이어 총알과 몬스터의 충돌 확인, 충돌 시 총알은 삭제 및 몬스터는 데미지를 입음
 	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WISP]);
 	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WOLF]);
+
+	// 지상에 서 있어야 하는 객체와 충돌체의 충돌 확인, 충돌 시 해당 충돌체는 벽처럼 작용하여 객체의 이동을 막음 
+	CCollisionMgr::Collision_RectEx(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_COLLIDERECT]);
+	CCollisionMgr::Collision_RectEx(m_ObjList[OBJ_MONSTER_WOLF], m_ObjList[OBJ_COLLIDERECT]);
+
 }
 
 void CObjMgr::Render(HDC hDC)

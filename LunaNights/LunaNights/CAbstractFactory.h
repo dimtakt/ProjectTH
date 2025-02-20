@@ -46,5 +46,23 @@ public:
 
 		return pObj;
 	}
+
+	// 콜라이더 객체 생성 전용. 다른 객체 생성할 땐 사용 X
+	// 좌상, 우하 좌표 정보를 받아와 해당 정보 기반으로 Info 정보를 갖는 객체 생성
+	static CObj* CreateRectCollider(float _fX, float _fY, float _fX2, float _fY2)
+	{
+		CObj* pObj = new T;
+
+		pObj->Initialize();
+
+		// fX fY는 시작점, fX2 fY2 는 끝점 기준
+		// 해당 값을 기준으로 하는 Info 위치를 계산하여 반영해야 함
+		pObj->Set_Pos((_fX + _fX2) / 2, (_fY + _fY2) / 2);
+		pObj->Set_Scale(abs(_fX - _fX2), abs(_fY - _fY2));
+
+		
+		return pObj;
+	}
+
 };
 

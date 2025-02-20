@@ -65,7 +65,6 @@ void CCameraMgr::CalcDiff()
 	m_fDiffY = m_fCameraY - fCenterY;	// 카메라 좌표가 Y만큼 더해지면 오브젝트들은 -Y만큼 이동해야 함
 }
 
-// Run on LateUpdate
 void CCameraMgr::Lock_Camera(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY)
 {
 	//int iMargin = 30;

@@ -106,6 +106,7 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 
 
 // 나중에 좌우 충돌시에 써야할 듯
+// 
 void CCollisionMgr::Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> SrcList)
 {
 	float		fWidth(0.f), fHeight(0.f);

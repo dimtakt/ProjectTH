@@ -11,6 +11,7 @@
 #include "CAbstractFactory.h"
 #include "CWolf.h"
 #include "CWisp.h"
+#include "CCollideRect.h"
 
 CEdit::CEdit()
 {
@@ -79,6 +80,10 @@ void CEdit::Render(HDC _DC)
 	int iOutY = 0;
 	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
 
+	// 마우스 위치
+	POINT	ptMouse{};
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
 
 
 	if (iEditMode == 0)
@@ -152,10 +157,12 @@ void CEdit::Render(HDC _DC)
 	CObjMgr::Get_Instance()->Render(_DC);
 
 
-	//if (CKeyMgr::Get_Instance()->Key_Pressing('R'))
-	//{
-	//	Rectangle(_DC, );
-	//}
+
+	// 사각 콜라이더 설치할 곳 보여주기
+	if (CKeyMgr::Get_Instance()->Key_Pressing('R'))
+	{
+		Rectangle(_DC, m_ptPressedRectStart.x, m_ptPressedRectStart.y, ptMouse.x, ptMouse.y); // 대신 LineTo로?
+	}
 }
 
 void CEdit::Release()
@@ -220,14 +227,30 @@ void CEdit::Key_Input()
 
 	
 
-	//if (CKeyMgr::Get_Instance()->Key_Down('R'))
-	//{
-	//	// 임의의 콜라이더 박스 시작점 생성
-	//}
-	//if (CKeyMgr::Get_Instance()->Key_Up('R'))
-	//{
-	//	// 임의의 콜라이더 박스 끝점 생성
-	//}
+
+
+	if (CKeyMgr::Get_Instance()->Key_Down('R'))
+	{
+		// 임의의 콜라이더 박스 시작점 생성
+		m_isPressedRect = true;
+		m_ptPressedRectStart = ptMouse;
+	}
+	if (CKeyMgr::Get_Instance()->Key_Up('R'))
+	{
+		// 임의의 콜라이더 박스 끝점 생성
+		m_isPressedRect = false;
+		INFO tTmpInfo = { (	ptMouse.x + m_ptPressedRectStart.x) / 2, (ptMouse.y + m_ptPressedRectStart.y) / 2,
+							abs(ptMouse.x - m_ptPressedRectStart.x), abs(ptMouse.y - m_ptPressedRectStart.y)};
+
+		// m_ptPressedRectStart 와 뗄 당시의 ptMouse 값을 비교하여 나온 사각형의 Info 정보를 Create에 대입하면 될 듯
+		// Create 함수를 수정해서라도 넣어야 할 것 같음
+		CObjMgr::Get_Instance()->Add_Object(OBJ_COLLIDERECT, CAbstractFactory<CCollideRect>::CreateRectCollider(m_ptPressedRectStart.x, m_ptPressedRectStart.y, ptMouse.x, ptMouse.y));
+	}
+
+
+
+
+
 
 	// 선택한 몬스터의 변경 부분
 
