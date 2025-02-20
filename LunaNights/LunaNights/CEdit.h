@@ -33,5 +33,9 @@ private:
     int iTileY; // 스테이지마다 스테이지의 가로/세로 길이가 다름. 그것을 정의.
 
     std::list<CObj*> m_ObjList;
+
+
+    bool m_isPressedRect;
+    POINT m_ptPressedRectStart;
 };
 

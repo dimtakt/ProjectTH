@@ -220,17 +220,16 @@ void CPlayer::Render(HDC hDC)
 
 
 	// snail gauge
-	if (m_iTimeMode == 0 && m_dwSnailReadyTime != 0)
+	if (m_iTimeMode == 0 && m_dwSnailReadyTime >= 20)
 	{	
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_SNAILSOCKET");
 		FRAME_PROP tCurProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"UI_SNAILSOCKET");
 
+
 		// snail socket image
 		GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
-							iOutX + m_tInfo.fCX/2 - 25,					// 복사받을 위치 X, Y좌표
+							iOutX + m_tInfo.fCX/2 - 23,					// 복사받을 위치 X, Y좌표
 							iOutY - 50,
-							//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
-							//iOutY - m_tInfo.fCY,
 							tCurProp.iCX,	// 복사 받을 가로, 세로 길이.
 							tCurProp.iCY,
 							hMemDC,					// 비트맵을 가지고 있는 DC
@@ -240,13 +239,29 @@ void CPlayer::Render(HDC hDC)
 							tCurProp.iCY,
 							RGB(255, 0, 255));		// 제거할 색상
 
+
+
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_SNAILGAUGE");
 		tCurProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"UI_SNAILGAUGE");
 
+		
 		// snail gauge image
-		int iCurFrameSnail = m_dwSnailReadyTime / 100 * tCurProp.iFrameAmount;
+		int iCurFrameSnail = ((m_dwSnailReadyTime - 20) / 80.f * tCurProp.iFrameAmount) - 1;
 
+		if (iCurFrameSnail > tCurProp.iFrameAmount - 1)		{ iCurFrameSnail = tCurProp.iFrameAmount - 1; }
+		else if (iCurFrameSnail < 0)						{ iCurFrameSnail = 0; }
 
+		GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+							iOutX + m_tInfo.fCX/2 - 23,					// 복사받을 위치 X, Y좌표
+							iOutY - 50,
+							tCurProp.iCX,	// 복사 받을 가로, 세로 길이.
+							tCurProp.iCY,
+							hMemDC,					// 비트맵을 가지고 있는 DC
+							tCurProp.iCX * (iCurFrameSnail % (tCurProp.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+							tCurProp.iCY * (iCurFrameSnail / (tCurProp.iFrameMaxX)),
+							tCurProp.iCX,	// 비트맵을 출력할 가로, 세로 길이
+							tCurProp.iCY,
+							RGB(255, 0, 255));		// 제거할 색상
 
 	}
 

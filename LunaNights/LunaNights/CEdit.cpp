@@ -35,6 +35,8 @@ void CEdit::Initialize()
 	iTileX = 3;
 	iTileY = 1;
 	
+	m_isPressedRect = false;
+
 	CTileMgr::Get_Instance()->Initialize();
 	CTileMgr::Get_Instance()->Set_PropName(L"Collision_Tile");
 
@@ -149,6 +151,11 @@ void CEdit::Render(HDC _DC)
 	// 타일 렌더 이후, 그 위에 몬스터 등 CObj 렌더
 	CObjMgr::Get_Instance()->Render(_DC);
 
+
+	//if (CKeyMgr::Get_Instance()->Key_Pressing('R'))
+	//{
+	//	Rectangle(_DC, );
+	//}
 }
 
 void CEdit::Release()
@@ -212,7 +219,15 @@ void CEdit::Key_Input()
 	}
 
 	
-	
+
+	//if (CKeyMgr::Get_Instance()->Key_Down('R'))
+	//{
+	//	// 임의의 콜라이더 박스 시작점 생성
+	//}
+	//if (CKeyMgr::Get_Instance()->Key_Up('R'))
+	//{
+	//	// 임의의 콜라이더 박스 끝점 생성
+	//}
 
 	// 선택한 몬스터의 변경 부분
 
