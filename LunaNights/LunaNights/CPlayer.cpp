@@ -312,9 +312,9 @@ void CPlayer::Render(HDC hDC)
 		//std::cout << "Player Scale: \t" << m_tInfo.fCX << "\t" << m_tInfo.fCY << std::endl;
 		//std::cout << "Player Info : \t" << m_tInfo.fX << "\t" << m_tInfo.fY << std::endl;
 
-		//std::cout << "CurrentState: \t" << m_eCurState << std::endl;
-		//std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
-		//std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
+		std::cout << "CurrentState: \t" << m_eCurState << std::endl;
+		std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
+		std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
 
 	}
 
@@ -399,10 +399,10 @@ void CPlayer::Key_Input()
 	if (m_dwFallTime >= 3)
 	{
 		// 활공 상태
-		m_eCurState = OBJST_FALL;
+		m_eCurState = OBJST_GLIDE;
 
-		//if (m_isStretch)	m_pFrameKey = L"Player_FALL_R";
-		//else				m_pFrameKey = L"Player_FALL";
+		if (m_isStretch)	m_pFrameKey = L"Player_GLIDE_R";
+		else				m_pFrameKey = L"Player_GLIDE";
 
 		m_fVelocityY = +3.f;
 	}
@@ -973,6 +973,10 @@ void CPlayer::Motion_Change()
 			m_tFrame.dwSpeed = 60;
 			break;
 
+		case OBJ_STATE::OBJST_GLIDE:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
 
 		//case CPlayer::HIT:
 		//	m_tFrame.iFrameStart = 0;
@@ -1049,6 +1053,14 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_JUMP_R = { 64 * 2, 64 * 2, 2, 1, 2 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_JUMP_R, L"Player_JUMP_R");
 
+	// ..플레이어 활공
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_gliding/player_gliding.bmp", L"Player_GLIDE");
+	FRAME_PROP tPlayer_GLIDE = { 96 * 2, 64 * 2, 1, 6, 6, 3 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_GLIDE, L"Player_GLIDE");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_gliding/player_gliding_R.bmp", L"Player_GLIDE_R");
+	FRAME_PROP tPlayer_GLIDE_R = { 96 * 2, 64 * 2, 1, 6, 6, 3 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_GLIDE_R, L"Player_GLIDE_R");
+
 	// ..플레이어 앉기
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_down/player_down.bmp", L"Player_DOWN");				// 64_64_X4
 	FRAME_PROP tPlayer_DOWN = { 64 * 2, 64 * 2, 4, 1, 4 };
@@ -1110,6 +1122,8 @@ void CPlayer::LoadImages()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack4/player_run_attack4_R.bmp", L"Player_RUN_ATTACK4_R");
 	FRAME_PROP tPlayer_RUN_ATTACK4_R = { 128 * 2, 64 * 2, 1, 1, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK4_R, L"Player_RUN_ATTACK4_R");
+
+	
 
 	// 플레이어 피격
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_damage/player_damage.bmp", L"Player_DAMAGE");
