@@ -161,7 +161,7 @@ void CEdit::Render(HDC _DC)
 	// 사각 콜라이더 설치할 곳 보여주기
 	if (CKeyMgr::Get_Instance()->Key_Pressing('R'))
 	{
-		Rectangle(_DC, m_ptPressedRectStart.x, m_ptPressedRectStart.y, ptMouse.x, ptMouse.y); // 대신 LineTo로?
+		Rectangle(_DC, m_ptPressedRectStart.x + iOutX, m_ptPressedRectStart.y + iOutY, ptMouse.x, ptMouse.y); // 대신 LineTo로?
 	}
 }
 
@@ -186,9 +186,9 @@ void CEdit::Key_Input()
 
 
 
-	float fCameraMoveSpeed = 5.f;
-	float fCameraX, fCameraY;
-	CCameraMgr::Get_Instance()->Get_CameraPos(fCameraX, fCameraY);
+	//float fCameraMoveSpeed = 5.f;
+	//float fCameraX, fCameraY;
+	//CCameraMgr::Get_Instance()->Get_CameraPos(fCameraX, fCameraY);
 	
 	int iMaxIndex;	// 선택 가능한 타일의 최대 인덱스
 	int iMaxMonsterIndex;
@@ -244,7 +244,7 @@ void CEdit::Key_Input()
 
 		// m_ptPressedRectStart 와 뗄 당시의 ptMouse 값을 비교하여 나온 사각형의 Info 정보를 Create에 대입하면 될 듯
 		// Create 함수를 수정해서라도 넣어야 할 것 같음
-		CObjMgr::Get_Instance()->Add_Object(OBJ_COLLIDERECT, CAbstractFactory<CCollideRect>::CreateRectCollider(m_ptPressedRectStart.x, m_ptPressedRectStart.y, ptMouse.x, ptMouse.y));
+		CObjMgr::Get_Instance()->Add_Object(OBJ_COLLIDERECT, CAbstractFactory<CCollideRect>::CreateRectCollider(m_ptPressedRectStart.x, m_ptPressedRectStart.y, ptMouse.x + fTmpX, ptMouse.y + fTmpY));
 	}
 
 
