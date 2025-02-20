@@ -379,6 +379,33 @@ void CPlayer::Key_Input()
 	}
 
 
+	// 활공 만들어야 함
+	if (CKeyMgr::Get_Instance()->Key_Pressing('X') &&
+		m_isJumping &&
+		!m_eCurState != OBJST_DAMAGED)
+	{
+		float fDiffY;							// 전 프레임, 현 프레임 간의 Y축 차이
+
+		if (m_tPrePos.x == 0 && m_tPrePos.y == 0)	fDiffY = 0;
+		else										fDiffY = m_tInfo.fY - m_tPrePos.y;
+
+		if (fDiffY > 0)								m_dwFallTime++;
+	}
+	else
+	{
+		m_dwFallTime = 0;
+	}
+
+	if (m_dwFallTime >= 3)
+	{
+		// 활공 상태
+		m_eCurState = OBJST_FALL;
+
+		//if (m_isStretch)	m_pFrameKey = L"Player_FALL_R";
+		//else				m_pFrameKey = L"Player_FALL";
+
+		m_fVelocityY = +3.f;
+	}
 
 
 	// ********************

@@ -65,6 +65,9 @@ private:
 	DWORD m_dwSnailReadyTime;
 	DWORD m_dwSnailTime;
 
+	DWORD m_dwFallTime;
+
+
 	FPOINT m_tPrePos;
 
 	bool m_isStartStage;
