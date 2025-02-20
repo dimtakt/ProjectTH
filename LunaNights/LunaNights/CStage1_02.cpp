@@ -30,6 +30,9 @@ void CStage1_02::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-02_Merge0405.bmp", L"STAGE1_02_FRONT");
 	FRAME_PROP tSTAGE1_02_FRONT = { 2720, 816 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_02_FRONT, L"STAGE1_02_FRONT");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-02_Merge0405_GRAY.bmp", L"STAGE1_02_FRONT_GRAY");
+	FRAME_PROP tSTAGE1_02_FRONT_GRAY = { 2720, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_02_FRONT_GRAY, L"STAGE1_02_FRONT_GRAY");
 
 	CTileMgr::Get_Instance()->Load_Tile(nullptr, nullptr, true,
 										L"../Data/Tile_Collision_1-2.dat", L"Collision_Tile");
@@ -66,18 +69,30 @@ void CStage1_02::Late_Update()
 
 void CStage1_02::Render(HDC _DC)
 {
-	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG");
-	BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
-
-
-
 	int iOutX = 0;
 	int iOutY = 0;
 	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+	HDC	hMemDC;
+	FRAME_PROP tBGOriginProp;
 
 
-	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_02_FRONT");
-	FRAME_PROP tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_02_FRONT");
+	if (dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) == 2)
+	{
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG_GRAY");
+		BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
+
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_02_FRONT_GRAY");
+		tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_02_FRONT_GRAY");
+	}
+	else
+	{
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG");
+		BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
+
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_02_FRONT");
+		tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_02_FRONT");
+	}
+
 	
 	//BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
 

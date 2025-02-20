@@ -369,7 +369,7 @@ void CPlayer::Key_Input()
 		m_isJumping = true;
 	}
 
-	if (m_isJumping)
+	if (m_isJumping && m_eCurState != OBJST_JUMP_ATTACK1) // 아닐수도
 	{
 		if (m_isStretch)	m_pFrameKey = L"Player_JUMP_R";
 		else				m_pFrameKey = L"Player_JUMP";
@@ -379,7 +379,6 @@ void CPlayer::Key_Input()
 	}
 
 
-	// 활공 만들어야 함
 	if (CKeyMgr::Get_Instance()->Key_Pressing('X') &&
 		m_isJumping &&
 		!m_eCurState != OBJST_DAMAGED)
@@ -399,10 +398,14 @@ void CPlayer::Key_Input()
 	if (m_dwFallTime >= 3)
 	{
 		// 활공 상태
-		m_eCurState = OBJST_GLIDE;
+		if (m_eCurState != OBJST_JUMP_ATTACK1)
+		{
+			if (m_isStretch)	m_pFrameKey = L"Player_GLIDE_R";
+			else				m_pFrameKey = L"Player_GLIDE";
+			
+			m_eCurState = OBJST_GLIDE;
+		}
 
-		if (m_isStretch)	m_pFrameKey = L"Player_GLIDE_R";
-		else				m_pFrameKey = L"Player_GLIDE";
 
 		m_fVelocityY = +3.f;
 	}
@@ -551,6 +554,15 @@ void CPlayer::Key_Input()
 					m_eCurState = OBJST_RUN_ATTACK1;
 				}
 			}
+			else if (m_isJumping)
+			{
+				// 점프 공격
+				m_dwStateChangeTime = GetTickCount();
+				if (m_isStretch)	m_pFrameKey = L"Player_JUMP_ATTACK_R";
+				else				m_pFrameKey = L"Player_JUMP_ATTACK";
+				m_eCurState = OBJST_JUMP_ATTACK1;
+			}
+
 
 		}
 
@@ -951,21 +963,26 @@ void CPlayer::Motion_Change()
 			m_tFrame.dwSpeed = 60;
 			break;
 
+		case OBJ_STATE::OBJST_RUN_ATTACK1:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_RUN_ATTACK2:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_RUN_ATTACK3:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+		case OBJ_STATE::OBJST_RUN_ATTACK4:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 60;
+			break;
+
 		case OBJ_STATE::OBJST_JUMP_ATTACK1:
 			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 60;
-			break;
-		case OBJ_STATE::OBJST_JUMP_ATTACK2:
-			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 60;
-			break;
-		case OBJ_STATE::OBJST_JUMP_ATTACK3:
-			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 60;
-			break;
-		case OBJ_STATE::OBJST_JUMP_ATTACK4:
-			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 60;
+			m_tFrame.dwSpeed = 30;
 			break;
 
 		case OBJ_STATE::OBJST_DAMAGED:
@@ -1096,7 +1113,7 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_ACTION4_R = { 128 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_ACTION4_R, L"Player_ACTION4_R");
 
-	// ..플레이어 공격 (점프 중)
+	// ..플레이어 공격 (달리기 중)
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack/player_run_attack.bmp", L"Player_RUN_ATTACK");
 	FRAME_PROP tPlayer_RUN_ATTACK = { 160 * 2, 64 * 2, 2, 5, 10 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK, L"Player_RUN_ATTACK");
@@ -1104,10 +1121,10 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_RUN_ATTACK2 = { 128 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK2, L"Player_RUN_ATTACK2");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack3/player_run_attack3.bmp", L"Player_RUN_ATTACK3");
-	FRAME_PROP tPlayer_RUN_ATTACK3 = { 160 * 2, 64 * 2, 1, 1, 9 };
+	FRAME_PROP tPlayer_RUN_ATTACK3 = { 160 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK3, L"Player_RUN_ATTACK3");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack4/player_run_attack4.bmp", L"Player_RUN_ATTACK4");
-	FRAME_PROP tPlayer_RUN_ATTACK4 = { 128 * 2, 64 * 2, 1, 1, 9 };
+	FRAME_PROP tPlayer_RUN_ATTACK4 = { 128 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK4, L"Player_RUN_ATTACK4");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack/player_run_attack_R.bmp", L"Player_RUN_ATTACK_R");
@@ -1117,12 +1134,19 @@ void CPlayer::LoadImages()
 	FRAME_PROP tPlayer_RUN_ATTACK2_R = { 128 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK2_R, L"Player_RUN_ATTACK2_R");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack3/player_run_attack3_R.bmp", L"Player_RUN_ATTACK3_R");
-	FRAME_PROP tPlayer_RUN_ATTACK3_R = { 160 * 2, 64 * 2, 1, 1, 9 };
+	FRAME_PROP tPlayer_RUN_ATTACK3_R = { 160 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK3_R, L"Player_RUN_ATTACK3_R");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_run_attack4/player_run_attack4_R.bmp", L"Player_RUN_ATTACK4_R");
-	FRAME_PROP tPlayer_RUN_ATTACK4_R = { 128 * 2, 64 * 2, 1, 1, 9 };
+	FRAME_PROP tPlayer_RUN_ATTACK4_R = { 128 * 2, 64 * 2, 1, 9, 9 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_RUN_ATTACK4_R, L"Player_RUN_ATTACK4_R");
 
+	// 플레이어 공격 (점프 중)
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_jump_attack/player_jump_attack.bmp", L"Player_JUMP_ATTACK");
+	FRAME_PROP tPlayer_JUMP_ATTACK = { 128 * 2, 64 * 2, 1, 6, 6 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_JUMP_ATTACK, L"Player_JUMP_ATTACK");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Player/player_jump_attack/player_jump_attack_R.bmp", L"Player_JUMP_ATTACK_R");
+	FRAME_PROP tPlayer_JUMP_ATTACK_R = { 128 * 2, 64 * 2, 1, 6, 6 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_JUMP_ATTACK_R, L"Player_JUMP_ATTACK_R");
 	
 
 	// 플레이어 피격

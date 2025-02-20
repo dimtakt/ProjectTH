@@ -40,11 +40,14 @@ void CStage1_01::Initialize()
 	
 	
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite.bmp", L"STAGE1_01_BG");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite_GRAY.bmp", L"STAGE1_01_BG_GRAY");
 
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-01_Merge0103.bmp", L"STAGE1_01_FRONT");
 	FRAME_PROP tSTAGE1_01_FRONT = { 4080, 816 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_01_FRONT, L"STAGE1_01_FRONT");
-
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-01_Merge0103_GRAY.bmp", L"STAGE1_01_FRONT_GRAY");
+	FRAME_PROP tSTAGE1_01_FRONT_GRAY = { 4080, 816 };							// 타일의 가로세로 길이 정보
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_01_FRONT, L"STAGE1_01_FRONT_GRAY");
 
 	CTileMgr::Get_Instance()->Initialize();
 
@@ -91,18 +94,31 @@ void CStage1_01::Render(HDC _DC)
 	// 카메라에 따른 몬스터 좌표의 계산은 몬스터 클래스에서 구현. (Player처럼. Update_Rect 함수 종류 선택에 유의)
 	// 카메라에 따른 타일 좌표의 계산은 여기에서 진행.
 
-	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG");
-	BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
-
-
 
 	int iOutX = 0;
 	int iOutY = 0;
 	CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+	HDC	hMemDC;
+	FRAME_PROP tBGOriginProp;
+	
 
+	if (dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) == 2)
+	{
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG_GRAY");
+		BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
 
-	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT");
-	FRAME_PROP tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT");
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT_GRAY");
+		tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT_GRAY");
+	}
+	else
+	{
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_BG");
+		BitBlt(_DC, 0, 0, WINCX, WINCY, hMemDC, 0, 0, SRCCOPY);
+
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"STAGE1_01_FRONT");
+		tBGOriginProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"STAGE1_01_FRONT");
+	}
+
 	
 	//BitBlt(_DC, iOutX, iOutY, tBGOriginProp.iCX, tBGOriginProp.iCY, hMemDC, 0, 0, SRCCOPY);
 
