@@ -16,6 +16,8 @@ public:
 	// 충돌 여부를 반환 및 겹치는 사각의 크기를 확인 가능한 함수
 	static bool	Check_Rect(CObj* pDst, CObj* pSrc, float* pX, float* pY);
 
+	static bool Check_CollideRect(CObj* pDst, CObj* pSrc, float* pX, float* pY);
+
 
 	// 원 충돌이 확인될 시 양 쪽의 오브젝트를 사망처리하는 함수
 	static void	Collision_Circle(std::list<CObj*> DstList, std::list<CObj*> SrcList);

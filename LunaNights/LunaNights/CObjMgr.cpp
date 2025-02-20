@@ -11,6 +11,7 @@
 #include "CWolf.h"
 #include "CWisp.h"
 #include "CPlayer.h"
+#include "CCollideRect.h"
 
 CObjMgr* CObjMgr::m_pInstance = nullptr;
 
@@ -355,6 +356,7 @@ void CObjMgr::Load_Data(const TCHAR* _dataFileName)
 	// 몬스터가 추가될 때 마다 새로 해줘야할듯?
 	Delete_ID(OBJ_MONSTER_WISP);
 	Delete_ID(OBJ_MONSTER_WOLF);
+	Delete_ID(OBJ_COLLIDERECT);
 
 	HANDLE	hFile = CreateFile(_dataFileName, // 파일 이름을 포함한 경로
 		GENERIC_READ,		// 파일 접근 모드 (쓰기 : GENERIC_WRITE, 읽기 : GENERIC_READ)
@@ -379,6 +381,14 @@ void CObjMgr::Load_Data(const TCHAR* _dataFileName)
 	{
 		ReadFile(hFile, &tInfo, sizeof(INFO), &dwByte, nullptr);
 		ReadFile(hFile, &iTmp, sizeof(unsigned int), &dwByte, nullptr);
+
+
+		if (iTmp != OBJ_COLLIDERECT)
+			std::cout << "[INFO][CObjMgr::LoadData] Obj Load.. : [Kind : " << iTmp << "] [Pos : " << tInfo.fX << ", " << tInfo.fY << "]" << std::endl;
+		else
+			std::cout << "[INFO][CObjMgr::LoadData] CollideRect Load.. : [Pos : " << tInfo.fX << ", " << tInfo.fY << "]" << std::endl;
+
+
 
 		if (0 == dwByte)
 			break;
@@ -406,6 +416,10 @@ void CObjMgr::Load_Data(const TCHAR* _dataFileName)
 
 		case OBJ_MONSTER_WISP:
 			Add_Object(static_cast<OBJ_ID>(iTmp), CAbstractFactory<CWisp>::Create(tInfo.fX, tInfo.fY));
+			break;
+
+		case OBJ_COLLIDERECT:
+			Add_Object(static_cast<OBJ_ID>(iTmp), CAbstractFactory<CCollideRect>::CreateRectCollider(tInfo.fX - tInfo.fCX / 2, tInfo.fY - tInfo.fCY / 2, tInfo.fX + tInfo.fCX / 2, tInfo.fY + tInfo.fCY / 2));
 			break;
 
 		default:

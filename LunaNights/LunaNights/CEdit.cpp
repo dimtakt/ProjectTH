@@ -233,14 +233,12 @@ void CEdit::Key_Input()
 	{
 		// 임의의 콜라이더 박스 시작점 생성
 		m_isPressedRect = true;
-		m_ptPressedRectStart = ptMouse;
+		m_ptPressedRectStart = { ptMouse.x + (LONG)fTmpX, ptMouse.y + (LONG)fTmpY };
 	}
 	if (CKeyMgr::Get_Instance()->Key_Up('R'))
 	{
 		// 임의의 콜라이더 박스 끝점 생성
 		m_isPressedRect = false;
-		INFO tTmpInfo = { (	ptMouse.x + m_ptPressedRectStart.x) / 2, (ptMouse.y + m_ptPressedRectStart.y) / 2,
-							abs(ptMouse.x - m_ptPressedRectStart.x), abs(ptMouse.y - m_ptPressedRectStart.y)};
 
 		// m_ptPressedRectStart 와 뗄 당시의 ptMouse 값을 비교하여 나온 사각형의 Info 정보를 Create에 대입하면 될 듯
 		// Create 함수를 수정해서라도 넣어야 할 것 같음

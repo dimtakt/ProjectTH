@@ -67,6 +67,11 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 			RECT tSrcRect = { tSrcInfo.fX - tSrcInfo.fCX / 2, tSrcInfo.fY - tSrcInfo.fCY / 2,
 							tSrcInfo.fX + tSrcInfo.fCX / 2, tSrcInfo.fY + tSrcInfo.fCY / 2 };
 
+
+
+
+
+
 			if (IntersectRect(&rc, &tDstRect, &tSrcRect))
 			{
 				Dst->Set_Dead();
@@ -106,7 +111,7 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 
 
 // 나중에 좌우 충돌시에 써야할 듯
-// 
+// 좌에는 플레이어나 몬스터(CollideInfo 기반), 우에는 CollideRect(Info 기반)를 사용해야 함
 void CCollisionMgr::Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> SrcList)
 {
 	float		fWidth(0.f), fHeight(0.f);
@@ -115,13 +120,16 @@ void CCollisionMgr::Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> 
 	{
 		for (auto& Src : SrcList)
 		{
-			if (Check_Rect(Dst, Src, &fWidth, &fHeight))
+
+			// 플레이어는 CollideInfo 에 기반한 정보를 사용해야 함
+			
+			if (Check_CollideRect(Dst, Src, &fWidth, &fHeight))
 			{
 				// 상, 하 충돌
 				if (fWidth > fHeight)
 				{
 					// 상 충돌
-					if (Dst->Get_Info()->fY < Src->Get_Info()->fY)
+					if (Dst->Get_CollideInfo()->fY < Src->Get_Info()->fY)
 					{
 						Dst->Set_PosY(-fHeight);
 					}
@@ -137,7 +145,7 @@ void CCollisionMgr::Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> 
 				else
 				{
 					// 좌 충돌
-					if (Dst->Get_Info()->fX < Src->Get_Info()->fX)
+					if (Dst->Get_CollideInfo()->fX < Src->Get_Info()->fX)
 					{
 						Dst->Set_PosX(-fWidth);
 					}
@@ -153,9 +161,62 @@ void CCollisionMgr::Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> 
 	}
 }
 
+#pragma region old
+
+//void CCollisionMgr::Collision_RectEx(std::list<CObj*> DstList, std::list<CObj*> SrcList)
+//{
+//	float		fWidth(0.f), fHeight(0.f);
+//
+//	for (auto& Dst : DstList)
+//	{
+//		for (auto& Src : SrcList)
+//		{
+//			if (Check_Rect(Dst, Src, &fWidth, &fHeight))
+//			{
+//				// 상, 하 충돌
+//				if (fWidth > fHeight)
+//				{
+//					// 상 충돌
+//					if (Dst->Get_Info()->fY < Src->Get_Info()->fY)
+//					{
+//						Dst->Set_PosY(-fHeight);
+//					}
+//
+//					// 하 충돌
+//					else
+//					{
+//						Dst->Set_PosY(fHeight);
+//					}
+//
+//				}
+//				// 좌 우 충돌
+//				else
+//				{
+//					// 좌 충돌
+//					if (Dst->Get_Info()->fX < Src->Get_Info()->fX)
+//					{
+//						Dst->Set_PosX(-fWidth);
+//					}
+//
+//					// 우 충돌
+//					else
+//					{
+//						Dst->Set_PosX(fWidth);
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
+
+#pragma endregion
+
+
+
+
 bool CCollisionMgr::Check_Rect(CObj* pDst, CObj* pSrc, float* pX, float* pY)
 {
-	float		fWidth = abs(pDst->Get_Info()->fX - pSrc->Get_Info()->fX);
+	float		fWidth  = abs(pDst->Get_Info()->fX - pSrc->Get_Info()->fX);
 	float		fHeight = abs(pDst->Get_Info()->fY - pSrc->Get_Info()->fY);
 
 	float		fRadiusX = (pDst->Get_Info()->fCX + pSrc->Get_Info()->fCX) * 0.5f;
@@ -173,6 +234,29 @@ bool CCollisionMgr::Check_Rect(CObj* pDst, CObj* pSrc, float* pX, float* pY)
 	
 	return false;
 }
+
+bool CCollisionMgr::Check_CollideRect(CObj* pDst, CObj* pSrc, float* pX, float* pY)
+{
+	float		fWidth  = abs(pDst->Get_CollideInfo()->fX - pSrc->Get_Info()->fX);
+	float		fHeight = abs(pDst->Get_CollideInfo()->fY - pSrc->Get_Info()->fY);
+
+	float		fRadiusX = (pDst->Get_CollideInfo()->fCX + pSrc->Get_Info()->fCX) * 0.5f;
+	float		fRadiusY = (pDst->Get_CollideInfo()->fCY + pSrc->Get_Info()->fCY) * 0.5f;
+
+	if ((fRadiusX > fWidth) && (fRadiusY > fHeight))
+	{
+		if (pX && pY)
+		{
+			*pX = fRadiusX - fWidth;
+			*pY = fRadiusY - fHeight;
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
 
 void CCollisionMgr::Collision_Circle(std::list<CObj*> DstList, std::list<CObj*> SrcList)
 {
