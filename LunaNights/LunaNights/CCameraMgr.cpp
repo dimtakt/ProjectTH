@@ -16,6 +16,12 @@ CCameraMgr::CCameraMgr()
 
 	m_fDiffX = 0;
 	m_fDiffY = 0;
+
+	m_fShakedCameraX = 0;
+	m_fShakedCameraY = 0;
+	m_fShakeStrength = 0;
+	m_isShaking = false;
+	m_iShakeProgress = 0;
 }
 
 CCameraMgr::~CCameraMgr()
@@ -52,6 +58,21 @@ void CCameraMgr::Update_CameraPos(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY
 #pragma endregion
 
 	Lock_Camera(_iMaxX, _iMaxY, _iMinX, _iMinY);
+	
+	if (m_fShakeStrength > 3)		{ m_isShaking = true;	}
+	else							{ m_isShaking = false;	m_iShakeProgress = 0; }
+
+	if (m_isShaking)
+	{
+		float fShakeDecrease = m_iShakeProgress * 0.15;
+		m_fShakeStrength = (m_fShakeStrength - fShakeDecrease > 0) ? m_fShakeStrength - fShakeDecrease : 0;
+
+		if (m_iShakeProgress % 2)			m_fCameraY += m_fShakeStrength;
+		else								m_fCameraY -= m_fShakeStrength;
+		
+		m_iShakeProgress++;
+	}
+
 	CCameraMgr::CalcDiff();
 }
 

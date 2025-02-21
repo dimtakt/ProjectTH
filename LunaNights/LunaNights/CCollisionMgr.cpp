@@ -5,6 +5,7 @@
 #include "SoundMgr.h"
 #include "CAbstractFactory.h"
 #include "CEffect.h"
+#include "CCameraMgr.h"
 
 void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::list<CObj*> SrcList)
 {
@@ -99,7 +100,7 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
 					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
 
-
+					CCameraMgr::Get_Instance()->Set_ShakeStrength(20);
 
 				}
 			}

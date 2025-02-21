@@ -43,6 +43,7 @@ public:
 		_rX = _rX - static_cast<int>(m_fDiffX);
 		_rY = _rY - static_cast<int>(m_fDiffY);
 	}
+	void Set_ShakeStrength(float _strength) { m_fShakeStrength = _strength; }
 
 public:
 	static CCameraMgr*	Get_Instance()
@@ -77,9 +78,16 @@ private:
 	
 	float				m_fCameraX;		// 카메라 자체가 보는 X좌표
 	float				m_fCameraY;		// 카메라 자체가 보는 Y좌표
+	float				m_fShakedCameraX;		// 카메라 자체가 보는 X좌표
+	float				m_fShakedCameraY;		// 카메라 자체가 보는 Y좌표
+	float				m_fShakeStrength;
+	bool				m_isShaking;
+	int					m_iShakeProgress;
 
 	CObj*				m_pTarget;		// 카메라가 타겟으로 삼을 오브젝트
 
 	float				m_fDiffX;		// 카메라 기준좌표와 타겟 오브젝트 간의 X좌표 차이
 	float				m_fDiffY;		// 카메라 기준좌표와 타겟 오브젝트 간의 Y좌표 차이
+
+	
 };
