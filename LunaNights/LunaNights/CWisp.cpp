@@ -21,6 +21,8 @@ void CWisp::Initialize()
 
 	m_iHp = 10;
 	m_iMp = 5;
+	m_iGold = 50;
+
 	m_fAtk = 15.f;
 
 

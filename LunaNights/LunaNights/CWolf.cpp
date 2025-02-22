@@ -33,6 +33,8 @@ void CWolf::Initialize()
 
 	m_iHp = 20;
 	m_iMp = 5;
+	m_iGold = 100;
+
 	m_fAtk = 20.f;
 
 

@@ -87,6 +87,7 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 
 					INFO tMonsterInfo = *Src->Get_Info();
 
+					// ÆÄ±« ÀÌÆåÆ® Ãâ·Â
 					srand((unsigned int)time(NULL));
 					for (int i = 0; i < 5; i++)
 					{
@@ -96,6 +97,9 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 							CAbstractFactory<CEffect>::Create(tMonsterInfo.fX + iTmpX, (tMonsterInfo.fY) + iTmpY, 0.f, L"Effect_Bomb"));
 					}
 
+					// ÆÄ±« ½Ã Ã³¸® (°ñµå È¹µæ, »ç¿îµå Àç»ý, Ä«¸Þ¶ó ¼ÎÀÌÅ©)
+
+					pPlayer->Set_Gold(pPlayer->Get_Gold() + Src->Get_Gold());
 
 					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
 					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);

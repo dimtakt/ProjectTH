@@ -30,6 +30,9 @@ public:
 	void Set_MP(int _iMp)	{ m_iMp = _iMp; }
 	float Get_Atk()			{ return m_fAtk;}
 
+	void Set_Gold(int _iGold)	{ m_iGold = _iGold; }
+	int Get_Gold()			{ return m_iGold; }
+
 	void Set_God()			{ m_isGod = true; }
 	bool Get_God()			{ return m_isGod; }
 
