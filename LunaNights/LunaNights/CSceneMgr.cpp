@@ -49,9 +49,9 @@ void CSceneMgr::Scene_Change(SCENEID eScene)
 			m_pScene = new CStage1_03;
 			break;
 
-		//case SC_STAGE1_Boss:
-		//	m_pScene = new CStage1_Boss;
-		//	break;
+		case SC_STAGE1_BOSS:
+			m_pScene = new CStage1_Boss;
+			break;
 
 		case SC_EDIT:
 			m_pScene = new CEdit;

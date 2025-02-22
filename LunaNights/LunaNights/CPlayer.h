@@ -71,6 +71,8 @@ private:
 	FPOINT m_tPrePos;
 
 	bool m_isStartStage;
+	bool m_isMaxTP;
+	bool m_isMaxMP;
 
 	
 

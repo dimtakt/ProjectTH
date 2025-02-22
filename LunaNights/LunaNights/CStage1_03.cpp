@@ -49,8 +49,8 @@ void CStage1_03::Update()
 	CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
 	if (pPlayer->Get_Info()->fX >= 1340)
 	{
-		pPlayer->Set_Pos(20, pPlayer->Get_Info()->fY);
-		//CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_Boss);
+		pPlayer->Set_Pos(25, pPlayer->Get_Info()->fY);
+		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_BOSS);
 	}
 	else if (pPlayer->Get_Info()->fX <= 10)
 	{
@@ -63,8 +63,6 @@ void CStage1_03::Late_Update()
 {
 	CTileMgr::Get_Instance()->Late_Update();
 	CObjMgr::Get_Instance()->Late_Update();
-
-
 }
 
 void CStage1_03::Render(HDC _DC)

@@ -63,8 +63,6 @@ void CStage1_02::Late_Update()
 {
 	CTileMgr::Get_Instance()->Late_Update();
 	CObjMgr::Get_Instance()->Late_Update();
-
-
 }
 
 void CStage1_02::Render(HDC _DC)

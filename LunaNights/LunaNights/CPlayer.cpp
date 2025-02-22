@@ -20,7 +20,10 @@ CPlayer::CPlayer() :
 	m_isStartStage(false),
 	m_dwGodTime(0),
 	m_dwSnailReadyTime(0),
-	m_dwSnailTime(0)
+	m_dwSnailTime(0),
+	m_isMaxTP(true),
+	m_isMaxMP(true)
+
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -90,12 +93,26 @@ int CPlayer::Update()
 
 	Key_Input();
 
+
+
 	// 마나 자연회복
 	if (m_dwMpRegenTime + 500 <= GetTickCount() && !(m_iMp >= m_iMaxMp))
 	{
 		m_iMp++;
-		m_dwMpRegenTime = GetTickCount(); 
+		m_dwMpRegenTime = GetTickCount();
 	}
+
+	// MP MAX 사운드재생
+	if (m_iMp == m_iMaxMp && m_isMaxMP == false)
+	{
+		CSoundMgr::Get_Instance()->PlaySound(L"vo_02fx.wav", SOUND_VO_MPMAX, 0.2f);
+		m_isMaxMP = true;
+	}
+	if (m_iMp < m_iMaxMp)
+	{
+		m_isMaxMP = false;
+	}
+
 
 	// TP 소모 및 회복
 	if (m_dwTpRegenTime + 200 <= GetTickCount() && (m_fTp <= 85))
@@ -106,7 +123,7 @@ int CPlayer::Update()
 
 		m_dwTpRegenTime = GetTickCount();
 
-		if (m_fTp >= 85)				{ m_fTp = 85; }
+		if (m_fTp >= 85)	{	m_fTp = 85;		}
 	
 		// Tp가 없으면 정지모드 해제
 		if (m_fTp <= 0)
@@ -118,7 +135,19 @@ int CPlayer::Update()
 	if (m_isJumping && m_iTimeMode == 2)
 		m_fTp -= 0.05f;
 
-	
+	// TP MAX 사운드재생
+	if (m_fTp == 85 && m_isMaxTP == false)
+	{
+		CSoundMgr::Get_Instance()->PlaySound(L"vo_04fx.wav", SOUND_VO_TPMAX, 0.2f);
+		m_isMaxTP = true;
+	}
+	if (m_fTp < 85)
+	{
+		m_isMaxTP = false;
+	}
+
+
+
 
 	// 스네일 모드 발동 시 처음 1회 발동
 	if (m_iTimeMode == 1 && m_dwSnailTime == 0)
@@ -140,9 +169,7 @@ int CPlayer::Update()
 
 
 
-	// vo_04fx.wav : 타임 MAX 효과음
-	// vo_02fx.wav : 마나 MAX 효과음
-	// vo_05fx.wav : 그레이즈 흡수 효과음
+
 
 
 
@@ -591,6 +618,7 @@ void CPlayer::Key_Input()
 			m_iTimeMode = 1;
 			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SLOW);
 			CSoundMgr::Get_Instance()->PlaySound(L"s1017_slow_motion.wav", SOUND_TIME_SLOW, 0.2f);
+			CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
 
 			std::cout << "[INFO][CPlayer::Key_Input] Snail Mode Activated!" << std::endl;
 		}
@@ -681,7 +709,7 @@ void CPlayer::Key_Input()
 		m_eCurState = OBJST_DOWN;
 		if (m_isStretch)	m_pFrameKey = L"Player_DOWN_R";
 		else				m_pFrameKey = L"Player_DOWN";
-		m_dwStateChangeTime = GetTickCount();
+		//m_dwStateChangeTime = GetTickCount();
 
 		return;
 	}
