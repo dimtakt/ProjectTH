@@ -49,6 +49,7 @@ void CStage1_01::Initialize()
 	FRAME_PROP tSTAGE1_01_FRONT_GRAY = { 4080, 816 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_01_FRONT, L"STAGE1_01_FRONT_GRAY");
 
+
 	CTileMgr::Get_Instance()->Initialize();
 
 

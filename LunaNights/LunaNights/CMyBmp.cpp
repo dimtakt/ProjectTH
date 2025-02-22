@@ -17,7 +17,7 @@ void CMyBmp::Load_Bmp(const TCHAR* pFilePath)
 
 	ReleaseDC(g_hWnd, hDC);
 
-	m_hBitmap = (HBITMAP)LoadImage(NULL,		// 프로그램 인스턴스 핸들
+	m_hBitmap = (HBITMAP)LoadImage(	NULL,		// 프로그램 인스턴스 핸들
 									pFilePath,  // 파일의 경로
 									IMAGE_BITMAP, // 어떤 타입으로 읽어올지 전달
 									0, 0,		// 가로, 세로 크기
@@ -33,5 +33,4 @@ void CMyBmp::Release()
 	DeleteObject(m_hBitmap);
 
 	DeleteDC(m_hMemDC);
-
 }

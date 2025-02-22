@@ -105,8 +105,9 @@ enum RENDERID	{
 					REDDER_FRONT_BACKGROUND,		// 배경 (타일 뒤의 나무와 같은, 배경보단 위의 이미지)
 					RENDER_TILE_BACKGROUND,			// 배경 (타일)
 					RENDER_GAMEOBJECT,				// GAMEOBJECT
-					RENDER_UI,						// UI
 					RENDER_EFFECT,					// 이펙트
+					RENDER_UI,						// UI
+					RENDER_UI_EFFECT,				// UI보다 위에 위치하여야 하는 이펙트
 					RENDER_PRIORITY,				// 가장 우선순위 높게 렌더링
 					RENDER_END
 				};

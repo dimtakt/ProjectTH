@@ -60,6 +60,11 @@ int CEffect::Update()
 		return OBJ_DEAD;
 
 
+	if (m_pFrameKey == L"Effect_TPDown" ||
+		m_pFrameKey == L"Effect_MPDown")
+		m_eRender = RENDER_UI_EFFECT;
+
+
 
 	CSceneMgr::SCENEID tCurScene = CSceneMgr::Get_Instance()->Get_CurScene();
 
