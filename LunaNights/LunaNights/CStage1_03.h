@@ -16,5 +16,8 @@ public:
     void Release()          override;
 
 private:
+
+    FPOINT ptAkyuuPos;
+    FPOINT ptNitoriPos;
 };
 

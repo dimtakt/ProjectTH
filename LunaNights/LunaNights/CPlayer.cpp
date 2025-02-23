@@ -136,6 +136,8 @@ int CPlayer::Update()
 			m_iTimeMode = 0;
 			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
 				CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOTIME, 1.5f));
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
+
 		}
 	}
 	if (m_isJumping && m_iTimeMode == 2)
@@ -347,9 +349,9 @@ void CPlayer::Render(HDC hDC)
 		//std::cout << "Player Scale: \t" << m_tInfo.fCX << "\t" << m_tInfo.fCY << std::endl;
 		//std::cout << "Player Info : \t" << m_tInfo.fX << "\t" << m_tInfo.fY << std::endl;
 
-		std::cout << "CurrentState: \t" << m_eCurState << std::endl;
-		std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
-		std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
+		//std::cout << "CurrentState: \t" << m_eCurState << std::endl;
+		//std::cout << "CurrentFrame: \t" << m_tFrame.iFrameCur + 1 << " / " << m_tFrame.iFrameAmount << std::endl;
+		//std::cout << "OriginSpriteIndex: \t" << ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)) << "\t" << ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)) << std::endl;
 
 	}
 
@@ -628,6 +630,9 @@ void CPlayer::Key_Input()
 			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SLOW);
 			CSoundMgr::Get_Instance()->PlaySound(L"s1017_slow_motion.wav", SOUND_TIME_SLOW, 0.2f);
 			CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY/2, 0.f, L"Effect_SkillUse", true));
+
+
 
 			std::cout << "[INFO][CPlayer::Key_Input] Snail Mode Activated!" << std::endl;
 		}
@@ -646,11 +651,13 @@ void CPlayer::Key_Input()
 		{
 			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SKILL);
 			CSoundMgr::Get_Instance()->PlaySound(L"s06_skill.wav", SOUND_TIME_SKILL, 0.2f);
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
 			m_iTimeMode = 2;
 		}
 		else if (m_iTimeMode == 2)
 		{
 			m_iTimeMode = 0;
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
 		}
 	}
 

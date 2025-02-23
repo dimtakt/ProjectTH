@@ -65,6 +65,7 @@ public:
 		return pObj;
 	}
 
+	// 숫자(데미지) 이펙트 객체 생성 전용. 다른 객체 생성할 땐 사용 X
 	static CObj* CreateNumEffect(float _fX, float _fY, float _fAngle = 0.f, bool _isWorldFix = true, int _damageType = 0, int _damageAmount = 0, float _loopTimes = 1.5f)
 	{
 		CObj* pObj = new T;
@@ -87,6 +88,7 @@ public:
 		return pObj;
 	}
 
+	// 스테이터스 이펙트 객체 생성 전용. 다른 객체 생성할 땐 사용 X
 	static CObj* CreateStatusEffect(float _fX, float _fY, float _fAngle = 0.f, bool _isWorldFix = true, int _statusType = 0, float _loopTimes = 1.5f)
 	{
 		CObj* pObj = new T;

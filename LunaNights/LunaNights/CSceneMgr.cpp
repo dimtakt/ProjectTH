@@ -64,6 +64,8 @@ void CSceneMgr::Scene_Change(SCENEID eScene)
 
 
 		m_pScene->Initialize();
+		m_pScene->Update();
+
 
 		m_ePreScene = m_eCurScene;
 	}

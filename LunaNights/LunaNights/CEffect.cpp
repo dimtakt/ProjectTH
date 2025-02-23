@@ -46,6 +46,11 @@ void CEffect::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/time_down_sprite/time_down_sprite.bmp", L"Effect_TPDown");
 	FRAME_PROP tEffect_TPDown = { 80 * 2, 80 * 2, 6, 1, 6 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_TPDown, L"Effect_TPDown");
+	// 스킬 사용 이펙트
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/ring_effect_sprite/ring_effect_sprite.bmp", L"Effect_SkillUse");
+	FRAME_PROP tEffect_SkillUse = { 192 * 2, 192 * 2, 4, 4, 16 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_SkillUse, L"Effect_SkillUse");
+
 	
 
 	// 숫자 폰트
@@ -93,7 +98,11 @@ int CEffect::Update()
 	Set_FrameProperty(m_tFramePropCur);	// 현재 프레임에 현 상태에 맞는 정보를 반영
 	Set_Scale(m_tFrame.iCX, m_tFrame.iCY);
 	
-	m_tFrame.dwSpeed = 40.f; // 프레임 전환 속도
+
+	if (m_pFrameKey == L"Effect_SkillUse")
+		m_tFrame.dwSpeed = 20.f;
+	else
+		m_tFrame.dwSpeed = 40.f; // 프레임 전환 속도
 
 
 

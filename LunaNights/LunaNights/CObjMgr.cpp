@@ -10,6 +10,7 @@
 #include "CAbstractFactory.h"
 #include "CWolf.h"
 #include "CWisp.h"
+#include "CNpc.h"
 #include "CPlayer.h"
 #include "CCollideRect.h"
 
@@ -357,6 +358,7 @@ void CObjMgr::Load_Data(const TCHAR* _dataFileName)
 	Delete_ID(OBJ_MONSTER_WISP);
 	Delete_ID(OBJ_MONSTER_WOLF);
 	Delete_ID(OBJ_COLLIDERECT);
+	Delete_ID(OBJ_NPC);
 
 	HANDLE	hFile = CreateFile(_dataFileName, // 파일 이름을 포함한 경로
 		GENERIC_READ,		// 파일 접근 모드 (쓰기 : GENERIC_WRITE, 읽기 : GENERIC_READ)

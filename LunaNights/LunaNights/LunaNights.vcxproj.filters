@@ -115,6 +115,9 @@
     <Filter Include="01. Obj\06. Effect">
       <UniqueIdentifier>{d21be6b2-b0a0-45e4-8b31-2bbab6e6fefe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Obj\07. Npc">
+      <UniqueIdentifier>{ab5b4a2d-27b2-4fb6-b273-f30d3ceba283}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -222,6 +225,9 @@
     <ClInclude Include="CCollideRect.h">
       <Filter>01. Obj\04. Tile</Filter>
     </ClInclude>
+    <ClInclude Include="CNpc.h">
+      <Filter>01. Obj\07. Npc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -313,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="CCollideRect.cpp">
       <Filter>01. Obj\04. Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="CNpc.cpp">
+      <Filter>01. Obj\07. Npc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

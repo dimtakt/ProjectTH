@@ -35,7 +35,7 @@ void CCameraMgr::Update_CameraPos(int _iMaxX, int _iMaxY, int _iMinX, int _iMinY
 	if (m_pTarget && !m_pTarget->Get_Dead())
 	{
 		m_fCameraX = m_pTarget->Get_Info()->fX;
-		m_fCameraY = m_pTarget->Get_Info()->fY - m_pTarget->Get_Info()->fCY / 2;
+		m_fCameraY = m_pTarget->Get_Info()->fY - m_pTarget->Get_Info()->fCY / 2 - 50;
 	}
 
 #pragma region Camera Test Code with WASD

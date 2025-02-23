@@ -106,6 +106,7 @@ enum RENDERID	{
 					RENDER_BACKGROUND,				// 배경	(하늘과 같은, 제일 뒤쪽의 이미지)
 					REDDER_FRONT_BACKGROUND,		// 배경 (타일 뒤의 나무와 같은, 배경보단 위의 이미지)
 					RENDER_TILE_BACKGROUND,			// 배경 (타일)
+					RENDER_NPC,						// NPC
 					RENDER_GAMEOBJECT,				// GAMEOBJECT
 					RENDER_EFFECT,					// 이펙트
 					RENDER_UI,						// UI
