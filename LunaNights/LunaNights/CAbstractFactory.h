@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CObj.h"
+#include "CEffect.h"
 
 template<typename T>
 class CAbstractFactory	// CObj 생성용 추상 팩토리
@@ -61,6 +62,49 @@ public:
 		pObj->Set_Scale(abs(_fX - _fX2), abs(_fY - _fY2));
 
 		
+		return pObj;
+	}
+
+	static CObj* CreateNumEffect(float _fX, float _fY, float _fAngle = 0.f, bool _isWorldFix = true, int _damageType = 0, int _damageAmount = 0, float _loopTimes = 1.5f)
+	{
+		CObj* pObj = new T;
+
+		// 준 뎀인지 받은 뎀인지 구분하는 인자 추가
+		// 데미지의 수치를 받는 인자 추가
+
+		pObj->Initialize();
+		pObj->Set_Pos(_fX, _fY);
+		pObj->Set_Angle(_fAngle);
+
+		dynamic_cast<CEffect*>(pObj)->Set_DamageType(_damageType);
+		dynamic_cast<CEffect*>(pObj)->Set_DamageAmount(_damageAmount);
+		dynamic_cast<CEffect*>(pObj)->Set_LoopTimes(_loopTimes);
+
+		pObj->Set_FrameKey(L"Effect_Number");
+
+		pObj->Set_WorldFix(_isWorldFix);
+
+		return pObj;
+	}
+
+	static CObj* CreateStatusEffect(float _fX, float _fY, float _fAngle = 0.f, bool _isWorldFix = true, int _statusType = 0, float _loopTimes = 1.5f)
+	{
+		CObj* pObj = new T;
+
+		// 준 뎀인지 받은 뎀인지 구분하는 인자 추가
+		// 데미지의 수치를 받는 인자 추가
+
+		pObj->Initialize();
+		pObj->Set_Pos(_fX, _fY);
+		pObj->Set_Angle(_fAngle);
+
+		dynamic_cast<CEffect*>(pObj)->Set_StatusType(_statusType);
+		dynamic_cast<CEffect*>(pObj)->Set_LoopTimes(_loopTimes);
+
+		pObj->Set_FrameKey(L"Effect_Status");
+
+		pObj->Set_WorldFix(_isWorldFix);
+
 		return pObj;
 	}
 

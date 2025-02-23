@@ -39,6 +39,9 @@ void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::
 					Dst->Set_God();
 					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
 					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+					
+					// 데미지 출력
+					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::CreateNumEffect(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY, 0.f, true, CEffect::DMG_ATK_MONSTER, Src->Get_Atk()));
 				}
 				
 
@@ -69,15 +72,20 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 							tSrcInfo.fX + tSrcInfo.fCX / 2, tSrcInfo.fY + tSrcInfo.fCY / 2 };
 
 
-
-
-
-
 			if (IntersectRect(&rc, &tDstRect, &tSrcRect))
 			{
+				INFO tMonsterInfo = *Src->Get_Info();
+				CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+
+				// 데미지 이펙트 출력
+
+				int iTmpDmgX = (rand() % 64 - 64);
+				int iTmpDmgY = (rand() % 32 - 32);
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+					CAbstractFactory<CEffect>::CreateNumEffect(tMonsterInfo.fX + iTmpDmgX, tMonsterInfo.fY - tMonsterInfo.fCY + iTmpDmgY, 0.f, true, CEffect::DMG_ATK_PLAYER, pPlayer->Get_Atk()));
+
 				Dst->Set_Dead();
 				
-				CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
 				Src->Set_HP(Src->Get_HP() - pPlayer->Get_Atk());
 
 				if (Src->Get_HP() <= 0)
@@ -85,19 +93,21 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 					// 몬스터가 플레이어에 의해 죽었을 때
 					Src->Set_Dead();
 
-					INFO tMonsterInfo = *Src->Get_Info();
-
 					// 파괴 이펙트 출력
 					srand((unsigned int)time(NULL));
 					for (int i = 0; i < 5; i++)
 					{
-						int iTmpX = ((rand() % (int)tMonsterInfo.fCX) - (int)tMonsterInfo.fCX / 2) * 2;
-						int iTmpY = ((rand() % (int)tMonsterInfo.fCY) - (int)tMonsterInfo.fCY / 2) * 2;
+						int iTmpX = (rand() % 64 - 64);
+						int iTmpY = (rand() % 64 - 64);
 						CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
 							CAbstractFactory<CEffect>::Create(tMonsterInfo.fX + iTmpX, (tMonsterInfo.fY) + iTmpY, 0.f, L"Effect_Bomb"));
 					}
 
 					// 파괴 시 처리 (골드 획득, 사운드 재생, 카메라 셰이크)
+
+					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+						CAbstractFactory<CEffect>::CreateStatusEffect(tMonsterInfo.fX, tMonsterInfo.fY - tMonsterInfo.fCY / 2, 0.f, true, CEffect::STT_DESTROY, 1.5f));
+
 
 					pPlayer->Set_Gold(pPlayer->Get_Gold() + Src->Get_Gold());
 

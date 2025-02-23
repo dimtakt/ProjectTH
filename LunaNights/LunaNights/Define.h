@@ -47,6 +47,7 @@
 
 
 extern HWND g_hWnd;
+extern bool g_isStop;	// UI 및 이펙트를 제외하고 일시정지하는 변수. 메세지에 활용할 것
 
 
 #pragma endregion
@@ -59,7 +60,8 @@ extern HWND g_hWnd;
 
 // 오브젝트의 종류를 나타내는 열거형
 enum OBJ_ID		{	OBJ_PLAYER = 0,
-					OBJ_PLAYERBULLET = 1,
+					OBJ_NPC = 1,
+					OBJ_PLAYERBULLET = 2,
 					OBJ_MONSTERBULLET,
 					OBJ_EFFECT = 5,
 					OBJ_MONSTER_WOLF = 20,

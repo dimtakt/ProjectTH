@@ -11,7 +11,10 @@
 
 CEffect::CEffect() :
 	isLoop(false),
-    iLoopTimes(0)
+	fLoopTimes(0),
+	iDamageType(0),
+    iDamageAmount(0),
+	dwStartTime(0)
 {
 	//ZeroMemory(&, sizeof(FRAME));
 }
@@ -43,10 +46,21 @@ void CEffect::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/time_down_sprite/time_down_sprite.bmp", L"Effect_TPDown");
 	FRAME_PROP tEffect_TPDown = { 80 * 2, 80 * 2, 6, 1, 6 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_TPDown, L"Effect_TPDown");
-
 	
 
+	// 숫자 폰트
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/number_status_font_merged/number_status_font_merged.bmp", L"Effect_Number");
+	FRAME_PROP tEffect_Number = { 7 * 2, 8 * 2, 10, 9, 86 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_Number, L"Effect_Number");
+	// 스테이터스
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/status_vision_sprite/status_vision_sprite.bmp", L"Effect_Status");
+	FRAME_PROP tEffect_Status = { 81 * 2, 8 * 2, 1, 14, 14 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_Status, L"Effect_Status");
 
+
+
+
+	dwStartTime = GetTickCount();
 
 	Set_Pos(WINCX / 2, WINCY / 2);
 
@@ -98,10 +112,19 @@ void CEffect::Late_Update()
 {
 	// 이펙트 출력이 끝까지 되면 삭제
 
-	if (m_tFrame.iFrameCur == m_tFrame.iFrameAmount - 1)
-		m_isDead = true;
-
-	Move_Frame();
+	if (m_pFrameKey == L"Effect_Number" ||
+		m_pFrameKey == L"Effect_Status")
+	{
+		if (dwStartTime + fLoopTimes * 1000 < GetTickCount())
+			m_isDead = true;
+	}
+	else
+	{
+		if (m_tFrame.iFrameCur == m_tFrame.iFrameAmount - 1)
+			m_isDead = true;
+		
+		Move_Frame();
+	}
 
 }
 
@@ -118,6 +141,68 @@ void CEffect::Render(HDC hDC)
 
 	// TransparentBlt 를 이용하여 이펙트 출력
 	// 위치는 생성 당시 CObjMgr 을 통해 받아와서 저장될 m_tInfo 를 기반으로 해야할 듯
+
+	if (m_pFrameKey == L"Effect_Number")
+	{
+		// 받아온 데미지값에 기반하여 루프돌며 데미지 숫자 출력
+
+		int iOutX = m_tRect.left;
+		int iOutY = m_tRect.top;
+		CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+
+		HDC	hMemDC;
+		FRAME_PROP tCurProp = {};
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
+
+		int iDmgCharNum = log10(iDamageAmount) + 1;	// 자릿수
+		int iFirstCharX = 605 + (m_tFrame.iCX / 2) * (3 - iDmgCharNum);	// 자릿수에 따른 위치 보정
+
+
+		for (int i = 0; i < iDmgCharNum; i++)
+		{
+			int iDmgChar = (iDamageAmount % (int)pow(10, i + 1)) / (pow(10, i));
+
+			GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+		 						iOutX + (iDmgCharNum * 0.5 - i + 0.5) * m_tFrame.iCX,					// 복사받을 위치 X, Y좌표
+		 						iOutY,
+								m_tFrame.iCX,	// 복사 받을 가로, 세로 길이.
+								m_tFrame.iCY,
+		 						hMemDC,					// 비트맵을 가지고 있는 DC
+								m_tFrame.iCX * ((iDmgChar) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+								m_tFrame.iCY * iDamageType,
+								m_tFrame.iCX,	// 비트맵을 출력할 가로, 세로 길이
+								m_tFrame.iCY,
+		 						RGB(255, 0, 255));		// 제거할 색상
+		}
+		return;	// 숫자 이펙트였다면 종료
+	}
+
+	else if (m_pFrameKey == L"Effect_Status")
+	{
+		// 받아온 속성에 기반하여 루프돌며 스테이터스 상태 전환 출력
+
+		int iOutX = m_tRect.left;
+		int iOutY = m_tRect.top;
+		CCameraMgr::Get_Instance()->Get_RenderPos(iOutX, iOutY); // 최종적으로 렌더시킬 좌표.
+
+		HDC	hMemDC;
+		FRAME_PROP tCurProp = {};
+		hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
+
+		GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+							iOutX,					// 복사받을 위치 X, Y좌표
+							iOutY,
+							m_tFrame.iCX,	// 복사 받을 가로, 세로 길이.
+							m_tFrame.iCY,
+							hMemDC,					// 비트맵을 가지고 있는 DC
+							0,	// 출력하려는 스트라이트 이미지 내에서의 좌표
+							m_tFrame.iCY * (2 * iStatusType + GetTickCount() % 2),
+							m_tFrame.iCX,	// 비트맵을 출력할 가로, 세로 길이
+							m_tFrame.iCY,
+							RGB(255, 0, 255));		// 제거할 색상
+		return;	// 숫자 이펙트였다면 종료
+	}
+
 
 	if (isWorldFix)
 	{
@@ -164,6 +249,8 @@ void CEffect::Render(HDC hDC)
 							RGB(255, 0, 255));		// 제거할 색상
 	}
 
+
+	
 
 }
 

@@ -93,7 +93,9 @@ int CPlayer::Update()
 
 	Key_Input();
 
-
+	// 화면 밖으로 떨어질 시 되돌림
+	if (m_tInfo.fY > WINCY)
+		m_tInfo.fY = WINCY / 2;
 
 	// 마나 자연회복
 	if (m_dwMpRegenTime + 500 <= GetTickCount() && !(m_iMp >= m_iMaxMp))
@@ -106,6 +108,8 @@ int CPlayer::Update()
 	if (m_iMp == m_iMaxMp && m_isMaxMP == false)
 	{
 		CSoundMgr::Get_Instance()->PlaySound(L"vo_02fx.wav", SOUND_VO_MPMAX, 0.2f);
+		CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+			CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_MPRECOVERY, 1.5f));
 		m_isMaxMP = true;
 	}
 	if (m_iMp < m_iMaxMp)
@@ -130,6 +134,8 @@ int CPlayer::Update()
 		{
 			m_fTp = 0;
 			m_iTimeMode = 0;
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+				CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOTIME, 1.5f));
 		}
 	}
 	if (m_isJumping && m_iTimeMode == 2)
@@ -139,6 +145,8 @@ int CPlayer::Update()
 	if (m_fTp == 85 && m_isMaxTP == false)
 	{
 		CSoundMgr::Get_Instance()->PlaySound(L"vo_04fx.wav", SOUND_VO_TPMAX, 0.2f);
+		CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+			CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_TIMEMAX, 1.5f));
 		m_isMaxTP = true;
 	}
 	if (m_fTp < 85)
@@ -596,7 +604,8 @@ void CPlayer::Key_Input()
 		else
 		{
 			// nomp 출력 laterEdit
-
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+				CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOMP, 1.5f));
 		}
 
 	}
