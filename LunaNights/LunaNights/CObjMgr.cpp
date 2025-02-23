@@ -98,7 +98,7 @@ void CObjMgr::Update()
 			}
 
 			// 시간정지모드 : 플레이어/이펙트/UI 제외 정지. 단 플레이어 칼날은 Rect만 업데이트 (안하면 렌더가 안됨)
-			else if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
+			else if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI && i != OBJ_NPC) &&
 				pPlayer->Get_Stat(CPlayer::TIMEMODE) == 2)
 			{
 				if (i == OBJ_PLAYERBULLET)

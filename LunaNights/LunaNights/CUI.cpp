@@ -61,6 +61,10 @@ void CUI::Initialize()
 	Set_FrameProperty(tUI_Time_Number, tFrameTime_Number);
 
 
+	// 대화창
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/_non_grouped_things/message_window_sprite/message_window_sprite.bmp", L"UI_Message");
+	FRAME_PROP tUI_Message = { 1200, 150, 1, 5, 5 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tUI_Message, L"UI_Message");
 
 
 
@@ -294,6 +298,66 @@ void CUI::Render(HDC hDC)
 	}
 
 
+	if (pPlayer->Get_MessageWith() != 0)
+	{
+	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_Message");
+	tCurProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"UI_Message");
+	
+	GdiTransparentBlt(	hDC,											// 최종적으로 그릴 DC
+		 				40,					// 복사받을 위치 X, Y좌표
+		 				540,
+		 				tCurProp.iCX,									// 복사 받을 가로, 세로 길이.
+		 				tCurProp.iCY,
+		 				hMemDC,											// 비트맵을 가지고 있는 DC
+						0,												// 출력하려는 스트라이트 이미지 내에서의 좌표
+						(pPlayer->Get_MessageWith() - 1) * tCurProp.iCY,
+						tCurProp.iCX,									// 비트맵을 출력할 가로, 세로 길이
+		 				tCurProp.iCY,
+		 				RGB(255, 0, 255));								// 제거할 색상
+
+		CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+		if (pPlayer->Get_MessageWith() != 0)
+		{
+			//  250, 570 쯤에 글씨 출력.,>
+			RECT rect = { 250, 570, WINCX - 250, 800 };
+			SetBkMode(hDC, TRANSPARENT);
+			SetTextColor(hDC, RGB(255, 255, 255));
+			
+			switch (pPlayer->Get_MessageWith())
+			{
+			case 3:	// 아큐
+				if (pPlayer->Get_MessageOrder() == 0)
+					DrawText(hDC, TEXT("대화 테스트 (아큐)"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				else
+				{
+					pPlayer->Set_MessageWith(0);
+					pPlayer->Set_MessageOrder(0);
+				}
+				break;
+
+			case 4: // 니토리
+				if (pPlayer->Get_MessageOrder() == 0)
+					DrawText(hDC, TEXT("손님, 지금 자기 능력 제대로 못 쓰지? 강한 마력이 담긴 시계가 있는데, 관심 있어?"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				else if (pPlayer->Get_MessageOrder() == 1)
+					DrawText(hDC, TEXT("500 골드만 모아와. 그럼 그 가격에 주도록 할 게."), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				else
+				{
+					pPlayer->Set_MessageWith(0);
+					pPlayer->Set_MessageOrder(0);
+				}
+
+				break;
+
+			default:
+				break;
+			}
+			
+
+			
+		}
+
+
+	}
 
 
 }

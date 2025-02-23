@@ -77,23 +77,60 @@ void CStage1_03::Update()
 
 	// Npc와 근접한 상태에서 플레이어가 윗 방향키를 누르면 이벤트
 
+	// 대화는 다음과 같은 순서로 이루어짐
+	// 1. 위치에 맞는 상태에서 윗방향키 누르면, 플레이어의 m_iMessegeWith 가 바뀜
+	// 2. CUI 에서 m_iMessageWith 가 0이 아닌 경우를 감지하고 대화창 및 대화내용 출력
+	// 3. 윗방향키를 다시 누르면, m_iMessageOrder 가 1씩 올라가며 CUI에서 다음 대화내용 출력
+	// 4. 위치를 벗어나거나 대화가 끝나면 m_iMessageWith, m_iMessageOrder 둘 다 0으로 초기화
+
 	if (CKeyMgr::Get_Instance()->Key_Down(VK_UP))
+	{
 		if (pPlayer->Get_Info()->fX >= ptAkyuuPos.x - 200 &&
 			pPlayer->Get_Info()->fX <= ptAkyuuPos.x + 200)
 		{
 			// 아큐 대화 이벤트
-
+			if (pPlayer->Get_MessageWith() != 3)
+				pPlayer->Set_MessageWith(3);
+			else // 다음 대화로 넘기기
+				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+			
 			std::cout << "!!!!!!!!!!!!!!!!!!!!! 아큐 대화!" << std::endl;
+
 		}
-		else if (	pPlayer->Get_Info()->fX >= ptNitoriPos.x - 200 &&
-					pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200)
+		else if (pPlayer->Get_Info()->fX >= ptNitoriPos.x - 200 &&
+				pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200)
 		{
-			// 니토리 대화 이벤트
-
-
+			// 아큐 대화 이벤트
+			if (pPlayer->Get_MessageWith() != 4)
+				pPlayer->Set_MessageWith(4);
+			else // 다음 대화로 넘기기
+				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
 			std::cout << "!!!!!!!!!!!!!!!!!!!!! 니토리 대화!" << std::endl;
 
 		}
+	}
+	else
+	{
+		if (pPlayer->Get_MessageWith() == 3)
+		{
+			if (not (pPlayer->Get_Info()->fX >= ptAkyuuPos.x - 200 &&
+					pPlayer->Get_Info()->fX <= ptAkyuuPos.x + 200))
+			{
+				pPlayer->Set_MessageWith(0);
+				pPlayer->Set_MessageOrder(0);
+			}
+		}
+		else if (pPlayer->Get_MessageWith() == 4)
+		{
+			if (not (pPlayer->Get_Info()->fX >= ptNitoriPos.x - 200 &&
+					pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200))
+			{
+				pPlayer->Set_MessageWith(0);
+				pPlayer->Set_MessageOrder(0);
+			}
+		}
+	}
+
 
 
 
@@ -145,6 +182,9 @@ void CStage1_03::Render(HDC _DC)
 						tBGOriginProp.iCX,
 						tBGOriginProp.iCY,
 						RGB(255, 0, 255));
+
+
+
 
 
 	

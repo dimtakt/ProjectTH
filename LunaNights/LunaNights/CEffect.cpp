@@ -38,6 +38,13 @@ void CEffect::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/damage_effect/damage_effect.bmp", L"Effect_Damage");
 	FRAME_PROP tEffect_Damage = { 180 * 2, 180 * 2, 4, 2, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_Damage, L"Effect_Damage");
+	// 공격 적중 이펙트
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/impact_sprite/impact_sprite.bmp", L"Effect_Impact");
+	FRAME_PROP tEffect_Impact = { 180 * 2, 180 * 2, 4, 2, 8 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_Impact, L"Effect_Impact");
+
+
+
 	// MP 소모 이펙트
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/mp_down_sprite/mp_down_sprite.bmp", L"Effect_MPDown");
 	FRAME_PROP tEffect_MPDown = { 128 * 2, 17 * 2, 1, 6, 6 };
@@ -50,6 +57,10 @@ void CEffect::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/ring_effect_sprite/ring_effect_sprite.bmp", L"Effect_SkillUse");
 	FRAME_PROP tEffect_SkillUse = { 192 * 2, 192 * 2, 4, 4, 16 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_SkillUse, L"Effect_SkillUse");
+	// 공격 이펙트
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/Effects/arrow_ring_sprite/arrow_ring_sprite.bmp", L"Effect_AtkRing");
+	FRAME_PROP tEffect_AtkRing = { 48 * 2, 96 * 2, 8, 1, 8 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_AtkRing, L"Effect_AtkRing");
 
 	
 
@@ -61,6 +72,7 @@ void CEffect::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/status_vision_sprite/status_vision_sprite.bmp", L"Effect_Status");
 	FRAME_PROP tEffect_Status = { 81 * 2, 8 * 2, 1, 14, 14 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_Status, L"Effect_Status");
+
 
 
 
@@ -101,6 +113,9 @@ int CEffect::Update()
 
 	if (m_pFrameKey == L"Effect_SkillUse")
 		m_tFrame.dwSpeed = 20.f;
+	else if (m_pFrameKey == L"Effect_Impact" ||
+			m_pFrameKey == L"Effect_Damage")
+		m_tFrame.dwSpeed = 30.f;
 	else
 		m_tFrame.dwSpeed = 40.f; // 프레임 전환 속도
 

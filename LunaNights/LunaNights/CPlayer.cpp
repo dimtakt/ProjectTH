@@ -22,7 +22,9 @@ CPlayer::CPlayer() :
 	m_dwSnailReadyTime(0),
 	m_dwSnailTime(0),
 	m_isMaxTP(true),
-	m_isMaxMP(true)
+	m_isMaxMP(true),
+	m_iMessageWith(0),
+	m_iMessageOrder(1)
 
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
@@ -137,7 +139,10 @@ int CPlayer::Update()
 			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
 				CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOTIME, 1.5f));
 			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
-
+			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END);
+			CSoundMgr::Get_Instance()->PlaySound(L"s21_magicout.wav", SOUND_TIME_END, 0.2f);
+			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END2);
+			CSoundMgr::Get_Instance()->PlaySound(L"time_stop_end.wav", SOUND_TIME_END2, 0.2f);
 		}
 	}
 	if (m_isJumping && m_iTimeMode == 2)
@@ -174,6 +179,9 @@ int CPlayer::Update()
 			m_iTimeMode = 0;
 
 			std::cout << "[INFO][CPlayer::Key_Input] Snail Mode Deactivated!" << std::endl;
+
+			HDC tmpDC = GetDC(g_hWnd);
+			Rectangle(tmpDC, 0, 0, WINCX, WINCY);
 		}
 	}
 
@@ -257,7 +265,7 @@ void CPlayer::Render(HDC hDC)
 
 
 	// snail gauge
-	if (m_iTimeMode == 0 && m_dwSnailReadyTime >= 20)
+	if (m_iTimeMode != 2 && m_dwSnailReadyTime >= 20)
 	{	
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_SNAILSOCKET");
 		FRAME_PROP tCurProp = CSpritePropertyMgr::Get_Instance()->Find_Property(L"UI_SNAILSOCKET");
@@ -464,11 +472,17 @@ void CPlayer::Key_Input()
 			{
 				m_fTp -= 8;
 				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(560, 40, 0.f, L"Effect_TPDown", false));
-
 			}
 
 			CSoundMgr::Get_Instance()->StopSound(SOUND_ATTACK);
 			CSoundMgr::Get_Instance()->PlaySound(L"s800_kengeki00.wav", SOUND_ATTACK, 0.2f);
+
+			int iAtkEffectSpaceX = 60;
+			if (m_isStretch)	iAtkEffectSpaceX *= -1;
+			else				iAtkEffectSpaceX *= +1;
+
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX + iAtkEffectSpaceX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_AtkRing", true));
+
 
 			//┌ 칼날이 날아갈 위치/방향 정하는 부분
 
@@ -614,10 +628,15 @@ void CPlayer::Key_Input()
 
 
 	if (CKeyMgr::Get_Instance()->Key_Pressing('Z') &&
-		m_iTimeMode == 0)
+		m_iTimeMode != 2)
 	{
 		m_dwSnailReadyTime += 1;
+		if (m_iTimeMode == 1 && m_dwSnailReadyTime >= 80)
+			m_dwSnailReadyTime = 80;
 
+		if (m_dwSnailReadyTime == 100)
+			CSoundMgr::Get_Instance()->PlaySound(L"s811_jumpbonus.wav", SOUND_TIME_SLOWREADY, 0.2f);
+			
 		std::cout << "[INFO][CPlayer::Key_Input] Current SnailReady Stack : " << m_dwSnailReadyTime << std::endl;
 	}
 	else if (CKeyMgr::Get_Instance()->Key_Up('Z'))
@@ -633,8 +652,10 @@ void CPlayer::Key_Input()
 			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY/2, 0.f, L"Effect_SkillUse", true));
 
 
-
 			std::cout << "[INFO][CPlayer::Key_Input] Snail Mode Activated!" << std::endl;
+
+			HDC tmpDC = GetDC(g_hWnd);
+			Rectangle(tmpDC, 0, 0, WINCX, WINCY);
 		}
 
 		m_dwSnailReadyTime = 0;
@@ -656,6 +677,12 @@ void CPlayer::Key_Input()
 		}
 		else if (m_iTimeMode == 2)
 		{
+
+			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END);
+			CSoundMgr::Get_Instance()->PlaySound(L"s21_magicout.wav", SOUND_TIME_END, 0.2f);
+			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END2);
+			CSoundMgr::Get_Instance()->PlaySound(L"time_stop_end.wav", SOUND_TIME_END2, 0.2f);
+			
 			m_iTimeMode = 0;
 			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
 		}

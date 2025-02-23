@@ -31,7 +31,6 @@ void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::
 				{					
 					INFO tPlayerInfo = *Dst->Get_Info();
 
-					// 문제는 이걸, m_pFrameKey를 지정해줘야만 함
 					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY/2, 0.f, L"Effect_Damage"));
 
 					Dst->Set_HP(Dst->Get_HP() - Src->Get_Atk());
@@ -83,6 +82,9 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 				int iTmpDmgY = (rand() % 32 - 32);
 				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
 					CAbstractFactory<CEffect>::CreateNumEffect(tMonsterInfo.fX + iTmpDmgX, tMonsterInfo.fY - tMonsterInfo.fCY + iTmpDmgY, 0.f, true, CEffect::DMG_ATK_PLAYER, pPlayer->Get_Atk()));
+
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(tMonsterInfo.fX, tMonsterInfo.fY - tMonsterInfo.fCY / 2, 0.f, L"Effect_Impact"));
+
 
 				Dst->Set_Dead();
 				

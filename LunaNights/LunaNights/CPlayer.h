@@ -23,6 +23,14 @@ private:
 
 	void LoadImages();
 
+public:
+	// 0 Idle, 1 시스템, 2 본인, 3 아큐, 4 니토리, 5 메이린
+	void Set_MessageWith(int _with)		{ m_iMessageWith = _with; }
+	// 0 Idle, 1 시스템, 2 본인, 3 아큐, 4 니토리, 5 메이린
+	int Get_MessageWith()				{ return m_iMessageWith; }
+
+	void Set_MessageOrder(int _order)	{ m_iMessageOrder = _order; }
+	int Get_MessageOrder()				{ return m_iMessageOrder; }
 
 public:
 	enum PLAYERSTAT
@@ -74,7 +82,8 @@ private:
 	bool m_isMaxTP;
 	bool m_isMaxMP;
 
-	
+	int m_iMessageWith;	// 0 Idle, 1 System, 2 본인, 3 아큐, 4 니토리, 5 메이린
+	int m_iMessageOrder; // 메세지가 여러 개일 경우, 현재 확인중인 메세지의 번째를 나타냄
 
 	// Player Stats.
 
