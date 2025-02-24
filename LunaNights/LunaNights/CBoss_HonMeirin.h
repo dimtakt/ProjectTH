@@ -19,6 +19,8 @@ private:
     void LoadImages();
     void Jump();
 
+    void Motion_Change();
+
 
 private:
     bool m_isStartStage;

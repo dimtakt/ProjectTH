@@ -90,7 +90,10 @@ void CStage1_03::Update()
 		{
 			// 아큐 대화 이벤트
 			if (pPlayer->Get_MessageWith() != 3)
+			{
+				pPlayer->Set_MessagePic(3);
 				pPlayer->Set_MessageWith(3);
+			}
 			else // 다음 대화로 넘기기
 				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
 			
@@ -102,7 +105,10 @@ void CStage1_03::Update()
 		{
 			// 니토리 대화 이벤트
 			if (pPlayer->Get_MessageWith() != 4)
+			{
+				pPlayer->Set_MessagePic(4);
 				pPlayer->Set_MessageWith(4);
+			}
 			else // 다음 대화로 넘기기
 			{
 				if (pPlayer->Get_Stat(CPlayer::ISGETWATCH) == false &&
@@ -130,6 +136,7 @@ void CStage1_03::Update()
 					pPlayer->Get_Info()->fX <= ptAkyuuPos.x + 200))
 			{
 				pPlayer->Set_MessageWith(0);
+				pPlayer->Set_MessagePic(0);
 				pPlayer->Set_MessageOrder(0);
 			}
 		}
@@ -139,6 +146,7 @@ void CStage1_03::Update()
 					pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200))
 			{
 				pPlayer->Set_MessageWith(0);
+				pPlayer->Set_MessagePic(0);
 				pPlayer->Set_MessageOrder(0);
 			}
 		}

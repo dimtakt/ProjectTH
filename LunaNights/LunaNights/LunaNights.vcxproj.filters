@@ -118,6 +118,9 @@
     <Filter Include="01. Obj\07. Npc">
       <UniqueIdentifier>{ab5b4a2d-27b2-4fb6-b273-f30d3ceba283}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Obj\08. Boss_HonMeirin">
+      <UniqueIdentifier>{cc99f862-fef9-47f6-97cc-418c59b8b63e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -228,6 +231,9 @@
     <ClInclude Include="CNpc.h">
       <Filter>01. Obj\07. Npc</Filter>
     </ClInclude>
+    <ClInclude Include="CBoss_HonMeirin.h">
+      <Filter>01. Obj\08. Boss_HonMeirin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -322,6 +328,9 @@
     </ClCompile>
     <ClCompile Include="CNpc.cpp">
       <Filter>01. Obj\07. Npc</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoss_HonMeirin.cpp">
+      <Filter>01. Obj\08. Boss_HonMeirin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

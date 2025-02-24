@@ -310,7 +310,7 @@ void CUI::Render(HDC hDC)
 		 				tCurProp.iCY,
 		 				hMemDC,											// 비트맵을 가지고 있는 DC
 						0,												// 출력하려는 스트라이트 이미지 내에서의 좌표
-						(pPlayer->Get_MessageWith() - 1) * tCurProp.iCY,
+						(pPlayer->Get_MessagePic() - 1) * tCurProp.iCY,
 						tCurProp.iCX,									// 비트맵을 출력할 가로, 세로 길이
 		 				tCurProp.iCY,
 		 				RGB(255, 0, 255));								// 제거할 색상
@@ -333,6 +333,7 @@ void CUI::Render(HDC hDC)
 				else
 				{
 					pPlayer->Set_MessageWith(0);
+					pPlayer->Set_MessagePic(0);
 					pPlayer->Set_MessageOrder(0);
 				}
 				break;
@@ -346,7 +347,63 @@ void CUI::Render(HDC hDC)
 				else
 				{
 					pPlayer->Set_MessageWith(0);
+					pPlayer->Set_MessagePic(0);
 					pPlayer->Set_MessageOrder(0);
+				}
+
+				break;
+
+			case 5: // 메이린
+				if (pPlayer->Get_MessageOrder() == 0)
+					DrawText(hDC, TEXT("거기까지입니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				else if (pPlayer->Get_MessageOrder() == 1)
+					DrawText(hDC, TEXT("이 이상은 한 발짝도 못 들어오십니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				else if (pPlayer->Get_MessageOrder() == 2)
+				{
+					pPlayer->Set_MessagePic(2);
+					DrawText(hDC, TEXT("......뭘 하고 있는 거지, 메이링?"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 3)
+				{
+					pPlayer->Set_MessagePic(5);
+					DrawText(hDC, TEXT("죄송합니다, 아가씨께서 내리신 명령이라......"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 4)
+				{
+					pPlayer->Set_MessagePic(2);
+					DrawText(hDC, TEXT("아하 그렇군, 당신은 진짜인 모양이네."), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 5)
+				{
+					pPlayer->Set_MessagePic(5);
+					DrawText(hDC, TEXT("꼭 지나가야겠다면 저를 쓰러뜨리고 가세요!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 6)
+				{
+					pPlayer->Set_MessagePic(2);
+					DrawText(hDC, TEXT("평상시라면 당신한테 질 일은 없겠지만......"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 7)
+				{
+					pPlayer->Set_MessagePic(2);
+					DrawText(hDC, TEXT("지금 상태라면 조금 힘겨운 싸움이 될 것 같네."), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 8)
+				{
+					pPlayer->Set_MessagePic(5);
+					DrawText(hDC, TEXT("아가씨께서 봐줄 필요 없다고 하셨으니, 각오하십시오!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else if (pPlayer->Get_MessageOrder() == 9)
+				{
+					pPlayer->Set_MessagePic(2);
+					DrawText(hDC, TEXT("봐줄 것 없어. 자, 덤벼."), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
+				else // 대화 종료, 보스전 시작
+				{
+					pPlayer->Set_MessageWith(0);
+					pPlayer->Set_MessagePic(0);
+					pPlayer->Set_MessageOrder(0);
+					pPlayer->Set_isBossStart(true);
 				}
 
 				break;

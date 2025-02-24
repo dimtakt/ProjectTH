@@ -12,6 +12,7 @@
 #include "CObjMgr.h"
 #include "CAbstractFactory.h"
 #include "CUI.h"
+#include "CBoss_HonMeirin.h"
 
 CStage1_Boss::CStage1_Boss()
 {
@@ -27,7 +28,7 @@ void CStage1_Boss::Initialize()
 	m_iTileTimesX = 2;
 	m_iTileTimesY = 1;
 
-
+	CObjMgr::Get_Instance()->Add_Object(OBJ_BOSS, CAbstractFactory<CBoss_HonMeirin>::Create(1480, 440));
 
 	// 보스전 임시 확인용.
 	// 나중에 완성 시 이 부분들 지우고 SceneMgr 초기 진입 부분도 스테이지 1-01로 바꾸기
@@ -73,6 +74,27 @@ void CStage1_Boss::Update()
 	{
 		pPlayer->Set_Pos(1335, pPlayer->Get_Info()->fY);
 		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_03);
+	}
+
+
+
+	// 보스전 시작 판정
+
+
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_UP) && !pPlayer->Get_isBossStart())
+	{
+		if (pPlayer->Get_Info()->fX >= 1200)
+		{
+			if (pPlayer->Get_MessageWith() != 5)
+			{
+				pPlayer->Set_MessageWith(5);
+				pPlayer->Set_MessagePic(5);
+			}
+			else
+				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+
+
+		}
 	}
 }
 

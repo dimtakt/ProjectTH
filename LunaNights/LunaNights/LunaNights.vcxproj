@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="CAbstractFactory.h" />
     <ClInclude Include="CBmpMgr.h" />
+    <ClInclude Include="CBoss_HonMeirin.h" />
     <ClInclude Include="CCameraMgr.h" />
     <ClInclude Include="CCollideRect.h" />
     <ClInclude Include="CCollisionMgr.h" />
@@ -174,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CBmpMgr.cpp" />
+    <ClCompile Include="CBoss_HonMeirin.cpp" />
     <ClCompile Include="CCameraMgr.cpp" />
     <ClCompile Include="CCollideRect.cpp" />
     <ClCompile Include="CCollisionMgr.cpp" />

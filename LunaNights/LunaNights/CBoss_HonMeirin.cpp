@@ -23,6 +23,8 @@ CBoss_HonMeirin::~CBoss_HonMeirin()
 
 void CBoss_HonMeirin::Initialize()
 {
+	Set_Scale(128, 128);
+
 	m_eCurState = OBJST_IDLE;
 	m_fSpeed = 3.f;
 	m_isFlying = false;
@@ -42,6 +44,10 @@ void CBoss_HonMeirin::Initialize()
 
 	LoadImages();
 
+
+	FRAME_PROP tMeirin_Stand_R = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Meirin_Stand_R");
+	Set_FrameProperty(tMeirin_Stand_R);
+	m_pFrameKey = L"Meirin_Stand_R";
 }
 
 int CBoss_HonMeirin::Update()
@@ -56,9 +62,24 @@ int CBoss_HonMeirin::Update()
 	INFO tPlayerInfo = *pPlayer->Get_Info();
 
 
+	// 패턴 진행
 
-
-
+	// 패턴 진행 순서
+	// 0. [준비] 대화 진행 중 준비 
+	
+	
+	
+	// 1. 대기
+	// 2. 패턴1 (공격준비 - 공격(투사체 1))
+	// 3. 대기
+	// 4. 패턴2 (점프 - 자리잡기 - 공격(45도 투사체*6) - 착지 
+	// 5. 대기
+	// 6. 패턴3 (점프 - 공격(빠른착지))
+	// 7. 대기
+	// 8. 패턴3
+	// 9. 대기
+	// 10. 패턴2 (광폭이라면 ++, 아니라면 1로)
+	// 11. [광폭] 패턴4 (차징 - 공격(강한 투사체))
 
 
 	__super::Update_Rect_UpStand();
@@ -104,10 +125,10 @@ void CBoss_HonMeirin::Release()
 void CBoss_HonMeirin::LoadImages()
 {
 	// 패턴 시작 전 : 대화 중 스탠드 모션
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_gurd/honmeirin_stand.bmp", L"Meirin_Stand");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_stand/honmeirin_stand.bmp", L"Meirin_Stand");
 	FRAME_PROP tMeirin_Stand = { 64 * 2, 64 * 2, 4, 4, 16 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Stand, L"Meirin_Stand");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_gurd/honmeirin_stand_R.bmp", L"Meirin_Stand_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_stand/honmeirin_stand_R.bmp", L"Meirin_Stand_R");
 	FRAME_PROP tMeirin_Stand_R = { 64 * 2, 64 * 2, 4, 4, 16 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Stand_R, L"Meirin_Stand_R");
 

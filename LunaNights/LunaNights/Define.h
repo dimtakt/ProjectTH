@@ -69,6 +69,7 @@ enum OBJ_ID		{	OBJ_PLAYER = 0,
 					OBJ_ITEM = 30,
 					OBJ_TILE = 40,
 					OBJ_COLLIDERECT = 41,
+					OBJ_BOSS = 45,
 					OBJ_UI = 50,
 
 					OBJ_END
