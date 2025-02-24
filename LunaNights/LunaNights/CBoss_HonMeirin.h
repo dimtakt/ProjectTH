@@ -13,4 +13,22 @@ public:
     void Late_Update() override;
     void Render(HDC hDC) override;
     void Release() override;
+
+
+private:
+    void LoadImages();
+    void Jump();
+
+
+private:
+    bool m_isStartStage;
+
+    bool m_isReady;
+    int m_iPattern;
+
+    OBJ_STATE m_ePreState;
+
+
+    FPOINT m_tPrePos;
+
 };

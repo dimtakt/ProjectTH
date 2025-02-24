@@ -14,6 +14,9 @@ public:
     void Release() override;
 
 private:
+    OBJ_STATE m_ePreState;
+
+    FPOINT m_tPrePos;
     
 
 };

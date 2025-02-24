@@ -229,19 +229,17 @@ void CWolf::Render(HDC hDC)
 
 		HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
 
-		GdiTransparentBlt(hDC,					// 최종적으로 그릴 DC
-			iOutX,					// 복사받을 위치 X, Y좌표
-			iOutY,
-			//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
-			//iOutY - m_tInfo.fCY,
-			m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
-			m_tInfo.fCY,
-			hMemDC,					// 비트맵을 가지고 있는 DC
-			m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
-			m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
-			m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
-			m_tInfo.fCY,
-			RGB(255, 0, 255));		// 제거할 색상
+		GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+							iOutX,					// 복사받을 위치 X, Y좌표
+							iOutY,
+							m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+							m_tInfo.fCY,
+							hMemDC,					// 비트맵을 가지고 있는 DC
+							m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+							m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
+							m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
+							m_tInfo.fCY,
+							RGB(255, 0, 255));		// 제거할 색상
 
 
 	}
