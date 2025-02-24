@@ -320,6 +320,8 @@ void CUI::Render(HDC hDC)
 		{
 			//  250, 570 쯤에 글씨 출력.,>
 			RECT rect = { 250, 570, WINCX - 250, 800 };
+
+			// 배경 투명화, 글자 색 흰색으로
 			SetBkMode(hDC, TRANSPARENT);
 			SetTextColor(hDC, RGB(255, 255, 255));
 			

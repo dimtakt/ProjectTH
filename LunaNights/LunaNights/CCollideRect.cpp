@@ -30,7 +30,7 @@ void CCollideRect::Render(HDC hDC)
 {
 	// Edit 창에서만 콜라이더를 시각적으로 보여줌
 
-	//if (CSceneMgr::Get_Instance()->Get_CurScene() == CSceneMgr::SC_EDIT)
+	if (CSceneMgr::Get_Instance()->Get_CurScene() == CSceneMgr::SC_EDIT)
 	{
 		int iOutX = m_tRect.left;
 		int iOutY = m_tRect.top;

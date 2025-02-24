@@ -111,6 +111,7 @@ void CStage1_03::Update()
 				{
 					pPlayer->Set_Stat_isGetWatch(true);
 					pPlayer->Set_Gold(pPlayer->Get_Gold() - 500);
+					CSoundMgr::Get_Instance()->PlaySound(L"s1012_item_get_2.wav", SOUND_SKILLGET, 0.2f);
 				}
 				else
 					pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
