@@ -50,6 +50,8 @@ public:
 	int Get_Stat(PLAYERSTAT _statType);
 	bool Get_Stretch() { return m_isStretch; }
 
+	void Set_Stat_isGetWatch(bool _watch) { m_isGetWatch = _watch; }
+
 	
 
 private:

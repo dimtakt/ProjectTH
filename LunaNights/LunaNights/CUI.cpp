@@ -340,6 +340,7 @@ void CUI::Render(HDC hDC)
 					DrawText(hDC, TEXT("손님, 지금 자기 능력 제대로 못 쓰지? 강한 마력이 담긴 시계가 있는데, 관심 있어?"), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				else if (pPlayer->Get_MessageOrder() == 1)
 					DrawText(hDC, TEXT("500 골드만 모아와. 그럼 그 가격에 주도록 할 게."), -1, &rect, DT_LEFT | DT_WORDBREAK);
+
 				else
 				{
 					pPlayer->Set_MessageWith(0);

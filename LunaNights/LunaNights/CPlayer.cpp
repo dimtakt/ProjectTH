@@ -60,7 +60,7 @@ void CPlayer::Initialize()
 	m_iGold = 50;
 	m_fAtk = 5.2;
 	m_iKnife = 18;
-	m_isGetWatch = true;
+	m_isGetWatch = false;
 
 	m_iTimeMode = 0;	// 0 Idle, 1 Snail, 2 Stop
 
@@ -666,7 +666,7 @@ void CPlayer::Key_Input()
 	// ********************
 	// ** 시간 정지 키
 	// ********************
-	if (CKeyMgr::Get_Instance()->Key_Down('A'))
+	if (CKeyMgr::Get_Instance()->Key_Down('A') && m_isGetWatch)
 	{
 		if (m_iTimeMode == 0)
 		{

@@ -100,11 +100,22 @@ void CStage1_03::Update()
 		else if (pPlayer->Get_Info()->fX >= ptNitoriPos.x - 200 &&
 				pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200)
 		{
-			// 아큐 대화 이벤트
+			// 니토리 대화 이벤트
 			if (pPlayer->Get_MessageWith() != 4)
 				pPlayer->Set_MessageWith(4);
 			else // 다음 대화로 넘기기
-				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+			{
+				if (pPlayer->Get_Stat(CPlayer::ISGETWATCH) == false &&
+					pPlayer->Get_Stat(CPlayer::GOLD) >= 500 &&
+					pPlayer->Get_MessageOrder() == 1)
+				{
+					pPlayer->Set_Stat_isGetWatch(true);
+					pPlayer->Set_Gold(pPlayer->Get_Gold() - 500);
+				}
+				else
+					pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+
+			}
 
 			std::cout << "!!!!!!!!!!!!!!!!!!!!! 니토리 대화!" << std::endl;
 
