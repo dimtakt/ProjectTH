@@ -16,7 +16,6 @@ CSceneMgr::~CSceneMgr()
 
 void CSceneMgr::Scene_Change(SCENEID eScene)
 {
-
 	// 스테이지 들어갈 때 1회에 한하여 BGM 호출
 	if ((eScene != SC_LOGO && eScene != SC_EDIT) && m_isEnterStage == false)
 	{
@@ -24,8 +23,8 @@ void CSceneMgr::Scene_Change(SCENEID eScene)
 		m_isEnterStage = true;
 	}
 
-
 	m_eCurScene = eScene;
+
 
 	if (m_ePreScene != m_eCurScene)
 	{

@@ -105,6 +105,7 @@ void CStage1_03::Update()
 				pPlayer->Set_MessageWith(4);
 			else // 다음 대화로 넘기기
 				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+
 			std::cout << "!!!!!!!!!!!!!!!!!!!!! 니토리 대화!" << std::endl;
 
 		}

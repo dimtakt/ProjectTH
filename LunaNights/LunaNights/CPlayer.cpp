@@ -24,7 +24,7 @@ CPlayer::CPlayer() :
 	m_isMaxTP(true),
 	m_isMaxMP(true),
 	m_iMessageWith(0),
-	m_iMessageOrder(1)
+	m_iMessageOrder(0)
 
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
