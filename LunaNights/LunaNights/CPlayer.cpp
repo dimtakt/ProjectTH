@@ -461,7 +461,8 @@ void CPlayer::Key_Input()
 	// ********************
 	if (CKeyMgr::Get_Instance()->Key_Down('Z'))
 	{
-		if (m_iMp >= 3)
+		if ((m_iMp >= 3 && m_iTimeMode != 2) || 
+			(m_fTp >= 8 && m_iTimeMode == 2))
 		{
 			if (m_iTimeMode != 2)
 			{
@@ -619,10 +620,14 @@ void CPlayer::Key_Input()
 
 		else
 		{
+			if (m_iTimeMode != 2)
 			// nomp Ãâ·Â laterEdit
-			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
-				CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOMP, 1.5f));
-		}
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+					CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOMP, 1.5f));
+			else
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+					CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOTIME, 1.5f));
+}
 
 	}
 
