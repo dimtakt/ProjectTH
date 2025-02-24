@@ -27,6 +27,23 @@ void CStage1_Boss::Initialize()
 	m_iTileTimesX = 2;
 	m_iTileTimesY = 1;
 
+
+
+	// 보스전 임시 확인용.
+	// 나중에 완성 시 이 부분들 지우고 SceneMgr 초기 진입 부분도 스테이지 1-01로 바꾸기
+	if (CObjMgr::Get_Instance()->Get_Player() == nullptr)
+		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite.bmp", L"STAGE1_01_BG");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite_GRAY.bmp", L"STAGE1_01_BG_GRAY");
+	CObjMgr::Get_Instance()->Add_Object(OBJ_UI, CAbstractFactory<CUI>::Create());
+	// *****************************************
+
+
+
+
+
+
+
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapTiles/BG_Stage1/1-Boss_Merge.bmp", L"STAGE1_BOSS_FRONT");
 	FRAME_PROP tSTAGE1_BOSS_FRONT = { 2720, 816 };							// 타일의 가로세로 길이 정보
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tSTAGE1_BOSS_FRONT, L"STAGE1_BOSS_FRONT");
