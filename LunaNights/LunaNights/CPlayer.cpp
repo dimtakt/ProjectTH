@@ -256,21 +256,39 @@ void CPlayer::Render(HDC hDC)
 	// ** 여기서 좌표는 1배 기준으로 잡아놓고 렌더는 2배 크기로 하니까 안맞았지..
 	// 그래서 2배크기 렌더용 Update_Rect ... 2X 함수들을 새로 만듦.
 
-	GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
-						iOutX,					// 복사받을 위치 X, Y좌표
-						iOutY,
-						//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
-						//iOutY - m_tInfo.fCY,
-						m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
-						m_tInfo.fCY,
-						hMemDC,					// 비트맵을 가지고 있는 DC
-						m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
-						m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
-						m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
-						m_tInfo.fCY,
-						RGB(255, 0, 255));		// 제거할 색상
-
-
+	if (m_isGod)
+	{
+		if (GetTickCount() % 2)
+			GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+								iOutX,					// 복사받을 위치 X, Y좌표
+								iOutY,
+								//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
+								//iOutY - m_tInfo.fCY,
+								m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+								m_tInfo.fCY,
+								hMemDC,					// 비트맵을 가지고 있는 DC
+								m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+								m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
+								m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
+								m_tInfo.fCY,
+								RGB(255, 0, 255));		// 제거할 색상
+	}
+	else
+	{
+		GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
+							iOutX,					// 복사받을 위치 X, Y좌표
+							iOutY,
+							//iOutX - m_tInfo.fCX/2,					// 복사받을 위치 X, Y좌표
+							//iOutY - m_tInfo.fCY,
+							m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+							m_tInfo.fCY,
+							hMemDC,					// 비트맵을 가지고 있는 DC
+							m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+							m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
+							m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
+							m_tInfo.fCY,
+							RGB(255, 0, 255));		// 제거할 색상
+	}
 
 
 	// snail gauge
