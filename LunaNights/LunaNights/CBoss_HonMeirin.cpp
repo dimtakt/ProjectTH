@@ -89,7 +89,7 @@ int CBoss_HonMeirin::Update()
 	
 	//std::cout << "보스전 시작 단계" << std::endl;
 
-	std::cout << "m_dwPatternElapsedFrame : " << m_dwPatternElapsedFrame << std::endl;
+	//std::cout << "m_dwPatternElapsedFrame : " << m_dwPatternElapsedFrame << std::endl;
 
 	switch (m_iPattern)
 	{
@@ -102,6 +102,7 @@ int CBoss_HonMeirin::Update()
 	case 11:
 		
 		// 적정 거리를 유지하도록 2초간 이동 
+		// 단, case 5 또는 7 일때 (착지공격 패턴 전) 는 무조건 거리를 벌림
 
 		m_eCurState = OBJST_RUN; 
 		if (m_isStretch)	m_pFrameKey = L"Meirin_Run_R";
@@ -114,6 +115,11 @@ int CBoss_HonMeirin::Update()
 				m_isMoveDirStretch = true;
 			else
 				m_isMoveDirStretch = false;
+
+			// case 5 또는 7 일때는 무조건 거리를 벌림
+			if (m_iPattern == 5 ||
+				m_iPattern == 7)
+				m_isMoveDirStretch = (tPlayerInfo.fX < m_tInfo.fX) ? false : true;
 
 			m_isPatternPropCalced = true;	// 공격할 방향 확정.
 		}
@@ -184,7 +190,7 @@ int CBoss_HonMeirin::Update()
 				if (tPlayerInfo.fX < m_tInfo.fX)	m_isMoveDirStretch = true;
 				else								m_isMoveDirStretch = false;
 			}
-			std::cout << "m_isMoveDirStretch : " << m_isMoveDirStretch << std::endl;
+			//std::cout << "m_isMoveDirStretch : " << m_isMoveDirStretch << std::endl;
 
 			if (m_isStretch)	m_pFrameKey = L"Meirin_Dash_R";
 			else				m_pFrameKey = L"Meirin_Dash";
@@ -263,7 +269,7 @@ int CBoss_HonMeirin::Update()
 			}
 		}
 
-		m_dwPatternNeedFrame = 300;
+		m_dwPatternNeedFrame = 300; // 패턴 지속프레임
 
 		break;
 
@@ -272,9 +278,79 @@ int CBoss_HonMeirin::Update()
 	case 8:
 
 		m_eCurState = OBJST_ACTION3;
+		
+		// 점프
+		if (m_dwPatternElapsedFrame < 40)
+		{
+			if (m_dwPatternElapsedFrame == 1)
+			{
+				if (tPlayerInfo.fX < m_tInfo.fX)	m_isMoveDirStretch = true;
+				else								m_isMoveDirStretch = false;
+			}
+
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Rising_Ready_R";
+			else				m_pFrameKey = L"Meirin_Rising_Ready";
+
+			// 이따만큼 이동할거임
+			float fMoveDistance;
+
+			if (m_isMoveDirStretch)	// 왼쪽으로
+				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 700 : 700 - (tPlayerInfo.fX - m_tInfo.fX);
+			else					// 오른쪽으로
+				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 700 : 700 - (m_tInfo.fX - tPlayerInfo.fX);
 
 
-		m_dwPatternNeedFrame = 0;
+			float fMoveDistancePerFrame = fMoveDistance / (40 - m_dwPatternElapsedFrame);
+
+			if (m_isMoveDirStretch)		{ m_tInfo.fX -= fMoveDistancePerFrame; m_tInfo.fY -= m_fSpeed * 2.0; }
+			else						{ m_tInfo.fX += fMoveDistancePerFrame; m_tInfo.fY -= m_fSpeed * 2.0; }
+
+			m_fVelocityY = -GRAVITY * 0.1;
+		}
+		// 쿵!
+		else if (m_dwPatternElapsedFrame < 60)
+		{
+			if (m_dwPatternElapsedFrame == 40)
+			{
+				if (tPlayerInfo.fX < m_tInfo.fX)	m_isMoveDirStretch = true;
+				else								m_isMoveDirStretch = false;
+			}
+
+			if (!m_isStretch)	m_pFrameKey = L"Meirin_Rising_R";
+			else				m_pFrameKey = L"Meirin_Rising";
+
+			// 이따만큼 이동할거임
+			float fMoveDistance;
+
+			if (m_isMoveDirStretch)	// 왼쪽으로
+				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 350 : 350 - (tPlayerInfo.fX - m_tInfo.fX);
+			else					// 오른쪽으로
+				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 350 : 350 - (m_tInfo.fX - tPlayerInfo.fX);
+
+
+			float fMoveDistancePerFrame = fMoveDistance / (20 - (m_dwPatternElapsedFrame - 40));
+
+			
+			if (m_isMoveDirStretch)		m_tInfo.fX -= fMoveDistancePerFrame;
+			else						m_tInfo.fX += fMoveDistancePerFrame;
+
+			m_fVelocityY = 30;
+		}
+		else
+		{
+			if (m_dwPatternElapsedFrame == 60)
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+			if (m_dwPatternElapsedFrame >= 60)
+			{
+				if (!m_isStretch)	{ m_pFrameKey = L"Meirin_Landing_R"; }
+				else				{ m_pFrameKey = L"Meirin_Landing"; }
+			}
+		}
+
+		std::cout << "테스트 :: Y축 높이는 " << m_tInfo.fY << ", 현재 진행 프레임은 " << m_dwPatternElapsedFrame << "." << std::endl;
+
+
+		m_dwPatternNeedFrame = 100; // 패턴 지속프레임
 
 
 
@@ -283,6 +359,8 @@ int CBoss_HonMeirin::Update()
 
 	// [광폭] 패턴4 (차징 - 공격(강한 투사체))
 	case 12:
+		
+
 
 		break;
 
@@ -342,7 +420,7 @@ int CBoss_HonMeirin::Update()
 	m_tCollideInfo = {	m_tInfo.fX, 
 						m_tInfo.fY - 64,
 						48,
-						128 };
+						96 };
 
 	__super::Update_Rect_UpStand();
 	
@@ -474,10 +552,10 @@ void CBoss_HonMeirin::LoadImages()
 
 
 	// 패턴 3 : 공격 시 체공 진입하며 떠오르는 모션
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_rising/honmeirin_rising_first.bmp", L"Meirin_Rising_Ready");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_rising_first/honmeirin_rising_first.bmp", L"Meirin_Rising_Ready");
 	FRAME_PROP tMeirin_Rising_Ready = { 64 * 2, 64 * 2, 1, 2, 2 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Rising_Ready, L"Meirin_Rising_Ready");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_rising/honmeirin_rising_first_R.bmp", L"Meirin_Rising_Ready_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_rising_first/honmeirin_rising_first_R.bmp", L"Meirin_Rising_Ready_R");
 	FRAME_PROP tMeirin_Rising_Ready_R = { 64 * 2, 64 * 2, 1, 2, 2 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Rising_Ready, L"Meirin_Rising_Ready_R");
 

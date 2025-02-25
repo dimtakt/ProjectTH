@@ -321,6 +321,8 @@ void CObjMgr::Late_Update()
 	// 지상에 서 있어야 하는 객체와 충돌체의 충돌 확인, 충돌 시 해당 충돌체는 벽처럼 작용하여 객체의 이동을 막음 
 	CCollisionMgr::Collision_RectEx(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_COLLIDERECT]);
 	CCollisionMgr::Collision_RectEx(m_ObjList[OBJ_MONSTER_WOLF], m_ObjList[OBJ_COLLIDERECT]);
+	CCollisionMgr::Collision_RectEx(m_ObjList[OBJ_BOSS], m_ObjList[OBJ_COLLIDERECT]);
+
 
 }
 

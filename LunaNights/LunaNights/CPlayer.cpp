@@ -214,10 +214,17 @@ int CPlayer::Update()
 	Set_FrameProperty(m_tFramePropCur);	// 현재 프레임에 현 상태에 맞는 정보를 반영
 	Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
 
+
 	m_tCollideInfo = {	m_tInfo.fX, 
 						m_tInfo.fY - 64,
 						48,
 						128 };
+	
+	if (m_eCurState == OBJST_DOWN)
+		m_tCollideInfo = {	m_tInfo.fX,
+							m_tInfo.fY - 48,
+							48,
+							96 };
 
 	// 플레이어는 좌표로부터 위쪽 범위에 렌더시켜야 함 (서있으므로)
 	__super::Update_Rect_UpStand();	// 2배크기 렌더 기준 좌표보정
