@@ -235,6 +235,7 @@ void CUI::Render(HDC hDC)
 
 
 	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"UI_Number_Sprite");
+
 	// 남은 HP
 
 	int iHp = pPlayer->Get_Stat(CPlayer::HP);
@@ -298,6 +299,34 @@ void CUI::Render(HDC hDC)
 							tFrameNumber_Sprite.iCY,
 							RGB(255, 0, 255));								// 제거할 색상
 	}
+
+	// 남은 Boss의 HP
+
+	if (CObjMgr::Get_Instance()->Get_Boss() != nullptr && pPlayer->Get_isBossStart()) // 보스가 있을때만 띄움
+	{
+
+		int iBossHp = dynamic_cast<CBoss_HonMeirin*>(CObjMgr::Get_Instance()->Get_Boss())->Get_HP();
+
+		for (int i = 0; i < 5; i++)
+		{
+			int iBossHpChar = (iBossHp % (int)pow(10, 5 - i)) / (pow(10, 4 - i));							// 출력하려는 수
+
+			GdiTransparentBlt(hDC,											// 최종적으로 그릴 DC
+				716 + i * tFrameNumber_Sprite.iCX,				// 복사받을 위치 X, Y좌표
+				80,
+				tFrameNumber_Sprite.iCX,						// 복사 받을 가로, 세로 길이.
+				tFrameNumber_Sprite.iCY,
+				hMemDC,											// 비트맵을 가지고 있는 DC
+				tFrameNumber_Sprite.iCX * ((iBossHpChar) % 10),		// 출력하려는 스트라이트 이미지 내에서의 좌표
+				tFrameNumber_Sprite.iCY * ((iBossHpChar) / 10),
+				tFrameNumber_Sprite.iCX,						// 비트맵을 출력할 가로, 세로 길이
+				tFrameNumber_Sprite.iCY,
+				RGB(255, 0, 255));								// 제거할 색상
+		}
+
+	}
+
+
 
 
 	if (pPlayer->Get_MessageWith() != 0)

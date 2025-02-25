@@ -120,9 +120,9 @@ int CBoss_HonMeirin::Update()
 		else						m_tInfo.fX += m_fSpeed;
 
 
-		// 칼날이 앞에 감지되면 가드 자세 취함
-		
-
+		// 단, 도중에 칼날이 앞에 감지되면 가드 자세 취함
+		// 근데 어떻게?
+		//if ()
 
 
 
