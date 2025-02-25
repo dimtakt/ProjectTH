@@ -165,6 +165,26 @@ void CUI::Render(HDC hDC)
 		 				tFrameHPMP.iCY,
 		 				SRCCOPY);										// 복사 모드
 	
+	// 남은 Boss의 HP
+
+	if (CObjMgr::Get_Instance()->Get_Boss() != nullptr && pPlayer->Get_isBossStart()) // 보스가 있을때만 띄움
+	{
+		int iBossHp = dynamic_cast<CBoss_HonMeirin*>(CObjMgr::Get_Instance()->Get_Boss())->Get_HP();
+		DWORD dwTmp = GetTickCount() / 5;
+		DWORD dwTmpTime = (dwTmp % 255 > 127) ? 255 - (dwTmp % 255) : dwTmp % 255;
+
+		COLORREF tColor = RGB(127 + dwTmpTime, 255, 255);
+
+		HBRUSH myBrush = (HBRUSH)CreateSolidBrush(tColor);
+		HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
+
+		// 1094 90
+		Rectangle(hDC, (760 + 334) - (334 * iBossHp / 1000.f), 80, 760 + 334, 90);
+
+		SelectObject(hDC, oldBrush);
+		DeleteObject(myBrush);
+	}
+
 
 
 

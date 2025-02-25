@@ -62,7 +62,7 @@ void CPlayer::Initialize()
 	m_iGold = 50;
 	m_fAtk = 5.2;
 	m_iKnife = 18;
-	m_isGetWatch = false;
+	m_isGetWatch = true;
 
 	m_iTimeMode = 0;	// 0 Idle, 1 Snail, 2 Stop
 

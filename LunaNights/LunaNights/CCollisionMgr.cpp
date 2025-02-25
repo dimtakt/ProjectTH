@@ -88,7 +88,7 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 
 				Dst->Set_Dead();
 				
-				Src->Set_HP(Src->Get_HP() - pPlayer->Get_Atk());
+				Src->Set_HP(Src->Get_HP() - (int)pPlayer->Get_Atk());
 
 				if (Src->Get_HP() <= 0)
 				{

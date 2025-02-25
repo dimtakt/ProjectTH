@@ -38,7 +38,7 @@ void CBoss_HonMeirin::Initialize()
 	m_iGold = 2000;
 
 	m_fAtk = 25.f;
-
+	m_isStretch = true;
 
 	m_tFrame.iFrameCur = 0;
 
@@ -121,13 +121,15 @@ int CBoss_HonMeirin::Update()
 
 
 		// 단, 도중에 칼날이 앞에 감지되면 가드 자세 취함
-		// 근데 어떻게?
+		// 
 		//if ()
 
 
 
 
-		m_dwPatternElapsedTime = 2000;	// 패턴 지속시간
+		m_dwPatternElapsedTime = 2000;	// 패턴 지속시간.
+										// 이거 시간 기준으로 하면 안될거같은데..
+										// 매 프레임마다 오르는 변수를 따로 만들어서 그걸 기준으로 해야할 듯
 
 		break;
 
