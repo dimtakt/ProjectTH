@@ -7,6 +7,8 @@
 #include "CSceneMgr.h"
 #include "CPlayer.h"
 #include "CObjMgr.h"
+#include "SoundMgr.h"
+#include "CBoss_HonMeirin.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!	UI 하나 추가할 때 마다 해당 FRAME 변수 및
@@ -316,6 +318,8 @@ void CUI::Render(HDC hDC)
 		 				RGB(255, 0, 255));								// 제거할 색상
 
 		CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
+		CBoss_HonMeirin* pBoss = dynamic_cast<CBoss_HonMeirin*>(CObjMgr::Get_Instance()->Get_Boss());
+
 		if (pPlayer->Get_MessageWith() != 0)
 		{
 			//  250, 570 쯤에 글씨 출력.,>
@@ -354,46 +358,55 @@ void CUI::Render(HDC hDC)
 				break;
 
 			case 5: // 메이린
+
 				if (pPlayer->Get_MessageOrder() == 0)
-					DrawText(hDC, TEXT("거기까지입니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				{
+					CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
+					CSoundMgr::Get_Instance()->PlayBGM(L"ivent02.ogg", 0.1f);
+					pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+				}
 				else if (pPlayer->Get_MessageOrder() == 1)
-					DrawText(hDC, TEXT("이 이상은 한 발짝도 못 들어오십니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				{
+					DrawText(hDC, TEXT("거기까지입니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				}
 				else if (pPlayer->Get_MessageOrder() == 2)
+					DrawText(hDC, TEXT("이 이상은 한 발짝도 못 들어오십니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+				else if (pPlayer->Get_MessageOrder() == 3)
 				{
 					pPlayer->Set_MessagePic(2);
 					DrawText(hDC, TEXT("......뭘 하고 있는 거지, 메이링?"), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 3)
+				else if (pPlayer->Get_MessageOrder() == 4)
 				{
 					pPlayer->Set_MessagePic(5);
 					DrawText(hDC, TEXT("죄송합니다, 아가씨께서 내리신 명령이라......"), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 4)
+				else if (pPlayer->Get_MessageOrder() == 5)
 				{
 					pPlayer->Set_MessagePic(2);
 					DrawText(hDC, TEXT("아하 그렇군, 당신은 진짜인 모양이네."), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 5)
+				else if (pPlayer->Get_MessageOrder() == 6)
 				{
 					pPlayer->Set_MessagePic(5);
 					DrawText(hDC, TEXT("꼭 지나가야겠다면 저를 쓰러뜨리고 가세요!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 6)
+				else if (pPlayer->Get_MessageOrder() == 7)
 				{
 					pPlayer->Set_MessagePic(2);
 					DrawText(hDC, TEXT("평상시라면 당신한테 질 일은 없겠지만......"), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 7)
+				else if (pPlayer->Get_MessageOrder() == 8)
 				{
 					pPlayer->Set_MessagePic(2);
 					DrawText(hDC, TEXT("지금 상태라면 조금 힘겨운 싸움이 될 것 같네."), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 8)
+				else if (pPlayer->Get_MessageOrder() == 9)
 				{
 					pPlayer->Set_MessagePic(5);
 					DrawText(hDC, TEXT("아가씨께서 봐줄 필요 없다고 하셨으니, 각오하십시오!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
 				}
-				else if (pPlayer->Get_MessageOrder() == 9)
+				else if (pPlayer->Get_MessageOrder() == 10)
 				{
 					pPlayer->Set_MessagePic(2);
 					DrawText(hDC, TEXT("봐줄 것 없어. 자, 덤벼."), -1, &rect, DT_LEFT | DT_WORDBREAK);
@@ -404,6 +417,11 @@ void CUI::Render(HDC hDC)
 					pPlayer->Set_MessagePic(0);
 					pPlayer->Set_MessageOrder(0);
 					pPlayer->Set_isBossStart(true);
+					pBoss->Set_Pattern(1);
+					CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
+					CSoundMgr::Get_Instance()->PlayBGM(L"boss00.ogg", 0.1f);
+
+					// 여기에 시작 스프라이트 넣으면 될듯
 				}
 
 				break;

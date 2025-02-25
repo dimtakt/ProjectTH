@@ -8,10 +8,14 @@
 #include "CPlayer.h"
 #include "CObjMgr.h"
 
-CBoss_HonMeirin::CBoss_HonMeirin():
+CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_ePreState(OBJST_END),
 	m_isReady(false),
-	m_iPattern(0)
+	m_isMoveDirStretch(false),
+	m_isPatternPropCalced(false),
+	m_iPattern(0),
+	m_dwPatternStartTime(0),
+	m_dwPatternElapsedTime(0)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -48,6 +52,9 @@ void CBoss_HonMeirin::Initialize()
 	FRAME_PROP tMeirin_Stand_R = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Meirin_Stand_R");
 	Set_FrameProperty(tMeirin_Stand_R);
 	m_pFrameKey = L"Meirin_Stand_R";
+
+	
+
 }
 
 int CBoss_HonMeirin::Update()
@@ -55,20 +62,142 @@ int CBoss_HonMeirin::Update()
 	if (m_isDead)
 		return OBJ_DEAD;
 
-	// 플레이어의 위치를 받아옴
+	// 플레이어의 위치를 받아옴, 없으면 진행X
 	CPlayer* pPlayer = dynamic_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player());
 	if (pPlayer == nullptr)
 		return OBJ_NOEVENT;
 	INFO tPlayerInfo = *pPlayer->Get_Info();
+
+	__super::Update_Rect_UpStand();
+
 
 
 	// 패턴 진행
 
 	// 패턴 진행 순서
 	// 0. [준비] 대화 진행 중 준비 
+	if (m_iPattern == 0)
+	{
+		m_pFrameKey = L"Meirin_Stand_R";
+		m_eCurState = OBJST_IDLE;
+		return OBJ_NOEVENT;
+	}
+
 	
+	// (이후 플레이어의 m_isBossStart 변수가 true가 된다면 아래 패턴 진행)
 	
-	
+	//std::cout << "보스전 시작 단계" << std::endl;
+
+
+	switch (m_iPattern)
+	{
+	// 대기
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 9:
+	case 11:
+		
+		// 적정 거리를 유지하도록 2초간 이동 
+
+		m_eCurState = OBJST_RUN; 
+		if (m_isStretch)	m_pFrameKey = L"Meirin_Run_R";
+		else				m_pFrameKey = L"Meirin_Run";
+
+		if (!m_isPatternPropCalced)
+		{
+			if ((tPlayerInfo.fX < m_tInfo.fX && abs(tPlayerInfo.fX - m_tInfo.fX) > 400) ||
+				(tPlayerInfo.fX > m_tInfo.fX && abs(tPlayerInfo.fX - m_tInfo.fX) < 300))
+				m_isMoveDirStretch = true;
+			else
+				m_isMoveDirStretch = false;
+
+			m_isPatternPropCalced = true;	// 공격할 방향 확정.
+		}
+
+		if (m_isMoveDirStretch)		m_tInfo.fX -= m_fSpeed;
+		else						m_tInfo.fX += m_fSpeed;
+
+
+		// 칼날이 앞에 감지되면 가드 자세 취함
+		
+
+
+
+
+
+		m_dwPatternElapsedTime = 2000;	// 패턴 지속시간
+
+		break;
+
+	// 패턴1 (공격준비 - 공격(투사체 1))
+	case 2:
+
+
+
+
+
+		break;
+
+	// 패턴2 (점프 - 자리잡기 - 공격(45도 투사체*6) - 착지 
+	case 4:
+	case 10:
+
+
+
+
+
+		break;
+
+	// 패턴3(점프 - 공격(빠른착지))
+	case 6:
+	case 8:
+
+
+
+
+
+		break;
+
+
+	// [광폭] 패턴4 (차징 - 공격(강한 투사체))
+	case 12:
+
+		break;
+
+	default:
+		
+		std::cout << "[WARN][CBoss_HonMeirin::Update] 예외 발생 - 보스 패턴 변수가 1~12 가 아님" << std::endl;
+
+		break;
+	}
+
+
+	// 다음 패턴으로 넘어갈 조건(시간경과)이 됐다면.
+	// 다음 패턴으로 넘어감 및 바라보는 방향 전환
+	// m_dwPatternElapsedTime 은 switch문 각각의 부분에서 지정
+	if (m_dwPatternStartTime + m_dwPatternElapsedTime < GetTickCount())
+	{
+		// 바라보는 방향 전환
+		if (tPlayerInfo.fX > m_tInfo.fX)		m_isStretch = false;
+		else									m_isStretch = true;
+
+		// 다음 패턴으로 전환
+		if ((m_iPattern == 10 && m_iHp >= 500) ||
+			(m_iPattern == 12))
+			m_iPattern = 1;
+		else if ((m_iPattern >= 10 && m_iHp < 500) ||
+			(m_iPattern < 10))
+			m_iPattern++;
+
+		m_dwPatternStartTime = GetTickCount();
+		m_isPatternPropCalced = false;
+
+		std::cout << "[INFO][CBoss_HonMeirin::Update] m_iPattern changed to [" << m_iPattern << "]" << std::endl;
+	}
+
+
 	// 1. 대기
 	// 2. 패턴1 (공격준비 - 공격(투사체 1))
 	// 3. 대기
@@ -78,11 +207,21 @@ int CBoss_HonMeirin::Update()
 	// 7. 대기
 	// 8. 패턴3
 	// 9. 대기
-	// 10. 패턴2 (광폭이라면 ++, 아니라면 1로)
-	// 11. [광폭] 패턴4 (차징 - 공격(강한 투사체))
+	// 10. 패턴2
+	
+	// (HP 500 미만이라면 ++, 아니라면 1로)
+	
+	// 11. [광폭] 대기
+	// 12. [광폭] 패턴4 (차징 - 공격(강한 투사체))
 
+	m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+	Set_FrameProperty(m_tFramePropCur);
+	Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
 
-	__super::Update_Rect_UpStand();
+	m_tCollideInfo = {	m_tInfo.fX, 
+						m_tInfo.fY - 64,
+						48,
+						128 };
 
 	return 0;
 }
@@ -144,10 +283,10 @@ void CBoss_HonMeirin::LoadImages()
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Guard_R, L"Meirin_Guard_R");
 
 	// 패턴 공통 : 다른 패턴 진행중이지 않을 시 플레이어와 일정 거리를 유지하도록 이동 중의 모션
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/onmeirin_run/honmeirin_run.bmp", L"Meirin_Run");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_run/honmeirin_run.bmp", L"Meirin_Run");
 	FRAME_PROP tMeirin_Run = { 64 * 2, 80 * 2, 4, 3, 12 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Run, L"Meirin_Run");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/onmeirin_run/honmeirin_run_R.bmp", L"Meirin_Run_R");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_run/honmeirin_run_R.bmp", L"Meirin_Run_R");
 	FRAME_PROP tMeirin_Run_R = { 64 * 2, 80 * 2, 4, 3, 12 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Run_R, L"Meirin_Run_R");
 

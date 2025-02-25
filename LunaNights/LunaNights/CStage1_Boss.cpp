@@ -28,7 +28,6 @@ void CStage1_Boss::Initialize()
 	m_iTileTimesX = 2;
 	m_iTileTimesY = 1;
 
-	CObjMgr::Get_Instance()->Add_Object(OBJ_BOSS, CAbstractFactory<CBoss_HonMeirin>::Create(1480, 440));
 
 	// 보스전 임시 확인용.
 	// 나중에 완성 시 이 부분들 지우고 SceneMgr 초기 진입 부분도 스테이지 1-01로 바꾸기
@@ -55,6 +54,10 @@ void CStage1_Boss::Initialize()
 	CTileMgr::Get_Instance()->Load_Tile(nullptr, nullptr, true,
 		L"../Data/Tile_Collision_1-Boss.dat", L"Collision_Tile");
 	CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-Boss.dat");
+
+	// 보스를 Load_Data 보다 앞에 두면 Delete_ID(OBJ_BOSS); 로 인해 삭제되는 문제가 생김
+	CObjMgr::Get_Instance()->Add_Object(OBJ_BOSS, CAbstractFactory<CBoss_HonMeirin>::Create(1480, 440));
+
 }
 
 void CStage1_Boss::Update()
@@ -89,13 +92,15 @@ void CStage1_Boss::Update()
 			{
 				pPlayer->Set_MessageWith(5);
 				pPlayer->Set_MessagePic(5);
+
 			}
 			else
 				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
 
-
 		}
 	}
+
+
 }
 
 void CStage1_Boss::Late_Update()

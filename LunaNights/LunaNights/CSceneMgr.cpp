@@ -19,7 +19,7 @@ void CSceneMgr::Scene_Change(SCENEID eScene)
 	// 스테이지 들어갈 때 1회에 한하여 BGM 호출
 	if ((eScene != SC_LOGO && eScene != SC_EDIT) && m_isEnterStage == false)
 	{
-		CSoundMgr::Get_Instance()->PlayBGM(L"bgm00.ogg", 0.05f);
+		CSoundMgr::Get_Instance()->PlayBGM(L"bgm00.ogg", 0.1f);
 		m_isEnterStage = true;
 	}
 

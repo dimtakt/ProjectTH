@@ -61,6 +61,15 @@ public:
 		return *m_ObjList[OBJ_PLAYER].begin();
 	}
 
+	CObj* Get_Boss()
+	{
+		if (m_ObjList[OBJ_BOSS].size() == 0)
+			return nullptr;
+
+		return *m_ObjList[OBJ_BOSS].begin();
+	}		
+
+
 private:
 	static CObjMgr* m_pInstance;
 	bool m_bPlayer;
