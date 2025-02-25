@@ -34,8 +34,8 @@ private:
     bool m_isMoveDirStretch;    // 실제로 움직이는 방향. m_isStretch 는 바라보는 방향으로 별개임.
     bool m_isGuard; // 칼날이 가까이에 있는지, GetSet 만들어서 콜라이더매니저에서 할당해야할듯
 
-    DWORD m_dwPatternStartTime;
-    DWORD m_dwPatternElapsedTime;
+    DWORD m_dwPatternElapsedFrame;
+    DWORD m_dwPatternNeedFrame;
     //bool m_isPattern
     int m_iPattern;
 

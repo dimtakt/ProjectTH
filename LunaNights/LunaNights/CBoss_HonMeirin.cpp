@@ -14,8 +14,8 @@ CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_isMoveDirStretch(false),
 	m_isPatternPropCalced(false),
 	m_iPattern(0),
-	m_dwPatternStartTime(0),
-	m_dwPatternElapsedTime(0)
+	m_dwPatternElapsedFrame(0),
+	m_dwPatternNeedFrame(0)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -127,9 +127,7 @@ int CBoss_HonMeirin::Update()
 
 
 
-		m_dwPatternElapsedTime = 2000;	// 패턴 지속시간.
-										// 이거 시간 기준으로 하면 안될거같은데..
-										// 매 프레임마다 오르는 변수를 따로 만들어서 그걸 기준으로 해야할 듯
+		m_dwPatternNeedFrame = 200;	// 패턴 지속프레임
 
 		break;
 
@@ -178,8 +176,8 @@ int CBoss_HonMeirin::Update()
 
 	// 다음 패턴으로 넘어갈 조건(시간경과)이 됐다면.
 	// 다음 패턴으로 넘어감 및 바라보는 방향 전환
-	// m_dwPatternElapsedTime 은 switch문 각각의 부분에서 지정
-	if (m_dwPatternStartTime + m_dwPatternElapsedTime < GetTickCount())
+	// m_dwPatternElapsedFrame 은 switch문 각각의 부분에서 지정
+	if (m_dwPatternElapsedFrame >= m_dwPatternNeedFrame)
 	{
 		// 바라보는 방향 전환
 		if (tPlayerInfo.fX > m_tInfo.fX)		m_isStretch = false;
@@ -193,12 +191,13 @@ int CBoss_HonMeirin::Update()
 			(m_iPattern < 10))
 			m_iPattern++;
 
-		m_dwPatternStartTime = GetTickCount();
+		m_dwPatternElapsedFrame = 0;
 		m_isPatternPropCalced = false;
 
 		std::cout << "[INFO][CBoss_HonMeirin::Update] m_iPattern changed to [" << m_iPattern << "]" << std::endl;
 	}
 
+	m_dwPatternElapsedFrame++;
 
 	// 1. 대기
 	// 2. 패턴1 (공격준비 - 공격(투사체 1))
