@@ -383,13 +383,15 @@ int CBoss_HonMeirin::Update()
 		else
 		{
 			if (m_dwPatternElapsedFrame == 200)
+			{
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(30.f);
+				// 총알 3 생성
+
+			
+			}
 
 			if (m_isStretch)	m_pFrameKey = L"Meirin_Hadou_R";
 			else				m_pFrameKey = L"Meirin_Hadou";
-
-			// 총알 3 생성
-
 		}
 
 		m_dwPatternNeedFrame = 300; // 패턴 지속프레임
@@ -454,6 +456,7 @@ int CBoss_HonMeirin::Update()
 						48,
 						96 };
 
+	// 원작과 같게, 3번 패턴중에는 앉거나 이동으로 피할 수 있게 하기 위해 콜라이더 사이즈를 해당 패턴에 한해 줄임
 	if (m_eCurState == OBJST_ACTION3 &&
 		m_dwPatternElapsedFrame >= 50 &&
 		m_dwPatternElapsedFrame < 70)
@@ -761,19 +764,24 @@ void CBoss_HonMeirin::Motion_Change()
 		{
 		case OBJ_STATE::OBJST_IDLE:
 			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 100;
+			m_tFrame.dwSpeed = 80;
 			break;
 
 		case OBJ_STATE::OBJST_JUMP:
 			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 100;
+			m_tFrame.dwSpeed = 80;
 			break;
 
 		case OBJ_STATE::OBJST_RUN:
 			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 100;
+			m_tFrame.dwSpeed = 80;
 			break;
 		
+		case OBJ_STATE::OBJST_ACTION2:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 70;
+			break;
+			
 		case OBJ_STATE::OBJST_ACTION4:
 			m_tFrame.dwTime = GetTickCount();
 			m_tFrame.dwSpeed = 40;
