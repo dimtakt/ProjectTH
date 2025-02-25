@@ -200,15 +200,89 @@ void CObjMgr::Late_Update()
 {
 	for (unsigned int i = 0; i < OBJ_END; ++i)
 	{
-		for (auto& pObj : m_ObjList[i])
+		CPlayer* pPlayer = dynamic_cast<CPlayer*>(m_pInstance->Get_Player());
+
+		// 스테이지 내에서만.
+		if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_LOGO &&
+			CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT)
 		{
-			pObj->Late_Update();
 
-			if (m_ObjList[i].empty())
-				break;
+			// 스네일모드 : 플레이어/이펙트/UI 제외 2배 느리게.
+			if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI) &&
+				pPlayer->Get_Stat(CPlayer::TIMEMODE) == 1)
+			{
+				if (GetTickCount() % 2)
+				{
 
-			RENDERID eRender = pObj->Get_RenderID();
-			m_RenderList[eRender].push_back(pObj);
+					for (auto& pObj : m_ObjList[i])
+					{
+						pObj->Late_Update();
+
+						if (m_ObjList[i].empty())
+							break;
+
+						RENDERID eRender = pObj->Get_RenderID();
+						m_RenderList[eRender].push_back(pObj);
+					}
+				}
+				else
+				{
+					for (auto& pObj : m_ObjList[i])
+					{
+						//pObj->Late_Update();
+
+						if (m_ObjList[i].empty())
+							break;
+
+						RENDERID eRender = pObj->Get_RenderID();
+						m_RenderList[eRender].push_back(pObj);
+					}
+				}
+			}
+			// 시간정지모드 : 플레이어/이펙트/UI 제외 정지. 단 플레이어 칼날은 Rect만 업데이트 (안하면 렌더가 안됨)
+			else if ((i != OBJ_PLAYER && i != OBJ_EFFECT && i != OBJ_UI && i != OBJ_NPC) &&
+				pPlayer->Get_Stat(CPlayer::TIMEMODE) == 2)
+			{
+				// nothing.
+				for (auto& pObj : m_ObjList[i])
+				{
+					//pObj->Late_Update();
+
+					if (m_ObjList[i].empty())
+						break;
+
+					RENDERID eRender = pObj->Get_RenderID();
+					m_RenderList[eRender].push_back(pObj);
+				}
+			}
+			// 일반모드
+			else
+			{
+				// 원래대로.
+				for (auto& pObj : m_ObjList[i])
+				{
+					pObj->Late_Update();
+
+					if (m_ObjList[i].empty())
+						break;
+
+					RENDERID eRender = pObj->Get_RenderID();
+					m_RenderList[eRender].push_back(pObj);
+				}
+			}
+		}
+		else
+		{
+			for (auto& pObj : m_ObjList[i])
+			{
+				pObj->Late_Update();
+
+				if (m_ObjList[i].empty())
+					break;
+
+				RENDERID eRender = pObj->Get_RenderID();
+				m_RenderList[eRender].push_back(pObj);
+			}
 		}
 	}
 
@@ -230,7 +304,8 @@ void CObjMgr::Late_Update()
 	CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_MONSTER_WISP]);
 	CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_MONSTER_WOLF]);
 
-	if (dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
+	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
+		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
 		CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_BOSS]);
 
 
@@ -238,7 +313,8 @@ void CObjMgr::Late_Update()
 	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WISP]);
 	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WOLF]);
 
-	if (dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
+	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
+		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
 		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_BOSS]);
 
 

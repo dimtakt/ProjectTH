@@ -15,7 +15,8 @@ CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_isPatternPropCalced(false),
 	m_iPattern(0),
 	m_dwPatternElapsedFrame(0),
-	m_dwPatternNeedFrame(0)
+	m_dwPatternNeedFrame(0),
+	m_isChangeFrame(true)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -68,7 +69,6 @@ int CBoss_HonMeirin::Update()
 		return OBJ_NOEVENT;
 	INFO tPlayerInfo = *pPlayer->Get_Info();
 
-	__super::Update_Rect_UpStand();
 
 
 
@@ -80,14 +80,16 @@ int CBoss_HonMeirin::Update()
 	{
 		m_pFrameKey = L"Meirin_Stand_R";
 		m_eCurState = OBJST_IDLE;
+		
+		__super::Update_Rect_UpStand();
 		return OBJ_NOEVENT;
 	}
-
 	
 	// (이후 플레이어의 m_isBossStart 변수가 true가 된다면 아래 패턴 진행)
 	
 	//std::cout << "보스전 시작 단계" << std::endl;
 
+	std::cout << "m_dwPatternElapsedFrame : " << m_dwPatternElapsedFrame << std::endl;
 
 	switch (m_iPattern)
 	{
@@ -121,22 +123,40 @@ int CBoss_HonMeirin::Update()
 
 
 		// 단, 도중에 칼날이 앞에 감지되면 가드 자세 취함
-		// 
+		// 이건 일단 나중에 구현... 밑에꺼 다 만들고 건드리기
 		//if ()
 
 
 
 
-		m_dwPatternNeedFrame = 200;	// 패턴 지속프레임
+		m_dwPatternNeedFrame = 150;	// 패턴 지속프레임
 
 		break;
 
 	// 패턴1 (공격준비 - 공격(투사체 1))
 	case 2:
+		
+		m_eCurState = OBJST_ACTION1;	// m_tFrame.dwSpeed 조절용, 이건 
 
+		if (m_dwPatternElapsedFrame < 50)
+		{
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Attack_Ready_R";
+			else				m_pFrameKey = L"Meirin_Attack_Ready";
+		}
+		else if (m_dwPatternElapsedFrame < 100)
+		{
+			if (m_dwPatternElapsedFrame == 50)
+			{
+				// 총알 1 생성
 
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+			}
 
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Attack_R";
+			else				m_pFrameKey = L"Meirin_Attack";
+		}
 
+		m_dwPatternNeedFrame = 150;	// 패턴 지속프레임
 
 		break;
 
@@ -144,9 +164,106 @@ int CBoss_HonMeirin::Update()
 	case 4:
 	case 10:
 
+		m_eCurState = OBJST_ACTION2;
 
+		// 점프
+		if (m_dwPatternElapsedFrame < 50)
+		{
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Jump_R";
+			else				m_pFrameKey = L"Meirin_Jump";
+			
+			m_fVelocityY = -GRAVITY * 0.1;
+			m_tInfo.fY -= m_fSpeed * 2;
+		}
+		// 자리잡기
+		else if (m_dwPatternElapsedFrame < 100)
+		{
+			// 플레이어가 더 왼쪽에 있으면, 왼쪽으로 방향 고정. 아니면 반대
+			if (m_dwPatternElapsedFrame == 50)
+			{
+				if (tPlayerInfo.fX < m_tInfo.fX)	m_isMoveDirStretch = true;
+				else								m_isMoveDirStretch = false;
+			}
+			std::cout << "m_isMoveDirStretch : " << m_isMoveDirStretch << std::endl;
 
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Dash_R";
+			else				m_pFrameKey = L"Meirin_Dash";
 
+			// 이따만큼 이동할거임
+			float fMoveDistance;
+			
+			if (m_isMoveDirStretch)	// 왼쪽으로
+				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 400 : 400 - (tPlayerInfo.fX - m_tInfo.fX);
+			else					// 오른쪽으로
+				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 400 : 400 - (m_tInfo.fX - tPlayerInfo.fX);
+
+			
+			float fMoveDistancePerFrame = fMoveDistance / (100 - m_dwPatternElapsedFrame);
+
+			if (m_isMoveDirStretch)		m_tInfo.fX -= fMoveDistancePerFrame;
+			else						m_tInfo.fX += fMoveDistancePerFrame;
+
+			m_fVelocityY = -GRAVITY * 0.1;
+		}
+		else if (m_dwPatternElapsedFrame <= 200)
+		{
+			// 공격 시에는 방향을 반대로 틀으므로 조건도 반대
+			if (!m_isStretch)	m_pFrameKey = L"Meirin_Tenma_R";
+			else				m_pFrameKey = L"Meirin_Tenma";
+
+			if ((m_dwPatternElapsedFrame - 100) % 20 == 0)
+			{
+				// 총알 2 생성
+				// 생성 위치 조건은.. 이렇게 결과값이 짝이나 홀이냐에 따라 윗공격 아랫공격 나누면 될 듯
+				if (((m_dwPatternElapsedFrame - 100) / 20) % 2 == 1)
+				{
+
+				}
+				else
+				{
+
+				}
+
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+				std::cout << "[INFO][CBoss_HonMeirin::Update] Boss Bullet Generated on..  case :" << m_iPattern << std::endl;
+			}
+			
+			m_fVelocityY = 0;
+		}
+		else
+		{
+			if (m_dwPatternElapsedFrame == 201)
+				m_fVelocityY = -20;
+
+			if (!m_isStretch)	{ m_pFrameKey = L"Meirin_Falling_R";	m_tFrame.iFrameCur = 0; }
+			else				{ m_pFrameKey = L"Meirin_Falling";		m_tFrame.iFrameCur = 0; }
+			
+			if (m_isJumping)
+			{
+				m_tFrame.iFrameCur = 0;
+				m_isChangeFrame = false;
+				if (!m_isStretch)	m_tInfo.fX += m_fSpeed;
+				else				m_tInfo.fX -= m_fSpeed;
+			}
+			else
+			{
+				m_tFrame.iFrameCur = 1;
+				m_isChangeFrame = false;
+			}
+
+			//std::cout << "테스트 :: Y축 높이는 " << m_tInfo.fY << ", 현재 진행 프레임은 " << m_dwPatternElapsedFrame << "." << std::endl;
+			
+			if (m_dwPatternElapsedFrame == 274)
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+
+			if (m_dwPatternElapsedFrame >= 274)
+			{
+				if (!m_isStretch)	{ m_pFrameKey = L"Meirin_Landing_R"; }
+				else				{ m_pFrameKey = L"Meirin_Landing";	 }
+			}
+		}
+
+		m_dwPatternNeedFrame = 300;
 
 		break;
 
@@ -154,7 +271,10 @@ int CBoss_HonMeirin::Update()
 	case 6:
 	case 8:
 
+		m_eCurState = OBJST_ACTION3;
 
+
+		m_dwPatternNeedFrame = 0;
 
 
 
@@ -224,6 +344,8 @@ int CBoss_HonMeirin::Update()
 						48,
 						128 };
 
+	__super::Update_Rect_UpStand();
+	
 	return 0;
 }
 
@@ -231,7 +353,10 @@ void CBoss_HonMeirin::Late_Update()
 {
 	Jump();
 
-	Move_Frame();
+	if (m_isChangeFrame)
+		Move_Frame();
+	m_isChangeFrame = true;
+	
 	Motion_Change();
 }
 
@@ -296,18 +421,18 @@ void CBoss_HonMeirin::LoadImages()
 
 	// 패턴 1 : 투사체 발사 직전 모션
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_attack_tame/honmeirin_attack_tame.bmp", L"Meirin_Attack_Ready");
-	FRAME_PROP tMeirin_Attack_Ready = { 128 * 2, 80 * 2, 1, 3, 3 };
+	FRAME_PROP tMeirin_Attack_Ready = { 128 * 2, 80 * 2, 1, 3, 3, 2 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Attack_Ready, L"Meirin_Attack_Ready");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_attack_tame/honmeirin_attack_tame_R.bmp", L"Meirin_Attack_Ready_R");
-	FRAME_PROP tMeirin_Attack_Ready_R = { 128 * 2, 80 * 2, 1, 3, 3 };
+	FRAME_PROP tMeirin_Attack_Ready_R = { 128 * 2, 80 * 2, 1, 3, 3, 2 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Attack_Ready_R, L"Meirin_Attack_Ready_R");
 
 	// 패턴 1 : 투사체 발사 시 모션
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_attack/honmeirin_attack.bmp", L"Meirin_Attack");
-	FRAME_PROP tMeirin_Attack = { 128 * 2, 80 * 2, 1, 6, 6 };
+	FRAME_PROP tMeirin_Attack = { 128 * 2, 80 * 2, 1, 6, 6, 5 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Attack, L"Meirin_Attack");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_attack/honmeirin_attack_R.bmp", L"Meirin_Attack_R");
-	FRAME_PROP tMeirin_Attack_R = { 128 * 2, 80 * 2, 1, 6, 6 };
+	FRAME_PROP tMeirin_Attack_R = { 128 * 2, 80 * 2, 1, 6, 6, 5 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Attack_R, L"Meirin_Attack_R");
 
 
@@ -364,12 +489,12 @@ void CBoss_HonMeirin::LoadImages()
 	FRAME_PROP tMeirin_Rising_R = { 96 * 2, 64 * 2, 1, 6, 6, 4 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Rising_R, L"Meirin_Rising_R");
 
-	// 패턴 3 : 공격 시 착지 모션
+	// 패턴 2, 3 : 공격 시 착지 모션
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_landing/honmeirin_landing.bmp", L"Meirin_Landing");
-	FRAME_PROP tMeirin_Landing = { 64 * 2, 64 * 2, 3, 3, 9 };
+	FRAME_PROP tMeirin_Landing = { 64 * 2, 64 * 2, 3, 3, 9, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Landing, L"Meirin_Landing");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_landing/honmeirin_landing_R.bmp", L"Meirin_Landing_R");
-	FRAME_PROP tMeirin_Landing_R = { 64 * 2, 64 * 2, 3, 3, 9 };
+	FRAME_PROP tMeirin_Landing_R = { 64 * 2, 64 * 2, 3, 3, 9, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Landing_R, L"Meirin_Landing_R");
 
 
@@ -422,8 +547,8 @@ void CBoss_HonMeirin::Jump()
 	float fPlayerPosY = m_tInfo.fY;			// 플레이어의 Y축 높이
 	float fMargin = 20.f;					// 자연스러운 착지를 위한 마진값
 
-	float fMaxVelocityY = 20;				// 최대 낙하속도 제한
-	float fGravityConst = GRAVITY * 0.12;	// 대충 자연스러운 중력가속도 및 계수
+	float fMaxVelocityY = 12;				// 최대 낙하속도 제한
+	float fGravityConst = GRAVITY * 0.08;	// 대충 자연스러운 중력가속도 및 계수
 
 	// 플레이어 Y축 속도. 20 안넘게 조절
 	m_fVelocityY = ((m_fVelocityY + fGravityConst) >= fMaxVelocityY) ?
@@ -463,7 +588,7 @@ void CBoss_HonMeirin::Jump()
 			m_isJumping = true;
 			m_eCurState = OBJST_JUMP;
 			m_tInfo.fY += m_fVelocityY;
-			std::cout << "[INFO][CWolf::Jump] Wolf Pos : (X : " << m_tInfo.fX << ", Y : " << m_tInfo.fY << ")" << std::endl;
+			
 
 		}
 		else
