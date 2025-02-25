@@ -30,8 +30,8 @@ void CPlayerBullet::Initialize()
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tPlayer_Bullet, L"Player_Bullet");
 		
 
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/PlayerBullet/bullet_sprite/bullet_Reset.bmp", L"Player_Bullet_Reset");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/PlayerBullet/bullet_sprite/bullet_Plg.bmp", L"Player_Bullet_Plg");
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/PlayerBullet/bullet_sprite/bullet_Reset.bmp", L"Player_Bullet_Reset");
+	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/PlayerBullet/bullet_sprite/bullet_Plg.bmp", L"Player_Bullet_Plg");
 
 	m_isStretch = pPlayer->Get_Stretch();
 	m_eRender = RENDER_GAMEOBJECT;
@@ -84,8 +84,8 @@ void CPlayerBullet::Render(HDC hDC)
 		hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet");
 		//RotatePoints(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY / 2, tmpPoint, 30);
 	}
-	HDC	hPlgDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_Plg");
-	HDC	hResetDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_Reset");
+	//HDC	hPlgDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_Plg");
+	//HDC	hResetDC = CBmpMgr::Get_Instance()->Find_Image(L"Player_Bullet_Reset");
 
 	GdiTransparentBlt(
 			hDC,					// ´ë»ó DC

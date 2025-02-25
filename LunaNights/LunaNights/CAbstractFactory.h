@@ -45,6 +45,8 @@ public:
 
 		pObj->Set_WorldFix(_isWorldFix);
 
+		pObj->Update();
+
 		return pObj;
 	}
 

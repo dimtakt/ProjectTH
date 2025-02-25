@@ -21,6 +21,5 @@ public:
 
 private:
     CPlayer* pPlayer;
-    POINT m_tPoint[3];
 };
 

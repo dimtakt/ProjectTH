@@ -8,6 +8,8 @@
 #include "CPlayer.h"
 #include "CObjMgr.h"
 #include "SoundMgr.h"
+#include "CAbstractFactory.h"
+#include "CBossBullet.h"
 
 CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_ePreState(OBJST_END),
@@ -39,7 +41,7 @@ void CBoss_HonMeirin::Initialize()
 	m_iMp = 5;
 	m_iGold = 2000;
 
-	m_fAtk = 25.f;
+	m_fAtk = 12.f;
 	m_isStretch = true;
 
 	m_tFrame.iFrameCur = 0;
@@ -137,7 +139,7 @@ int CBoss_HonMeirin::Update()
 
 
 
-		m_dwPatternNeedFrame = 150;	// 패턴 지속프레임
+		m_dwPatternNeedFrame = 100;	// 패턴 지속프레임
 
 		break;
 
@@ -156,6 +158,11 @@ int CBoss_HonMeirin::Update()
 			if (m_dwPatternElapsedFrame == 50)
 			{
 				// 총알 1 생성
+				if (m_isStretch)
+					CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 180, L"Meirin_Bullet_R"));
+				else
+					CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0, L"Meirin_Bullet"));
+
 
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
 			}
@@ -221,14 +228,23 @@ int CBoss_HonMeirin::Update()
 
 			if ((m_dwPatternElapsedFrame - 100) % 20 == 0)
 			{
+				int iSpace = 30;
+
 				// 총알 2 생성
 				// 생성 위치 조건은.. 이렇게 결과값이 짝이나 홀이냐에 따라 윗공격 아랫공격 나누면 될 듯
 				if (((m_dwPatternElapsedFrame - 100) / 20) % 2 == 1)
 				{
-
+					if (!m_isStretch)
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX + iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 + iSpace, 225, L"Meirin_Bullet45_R"));
+					else
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX - iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 + iSpace, 315, L"Meirin_Bullet45"));
 				}
 				else
 				{
+					if (!m_isStretch)
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX - iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 - iSpace, 225, L"Meirin_Bullet45_R"));
+					else
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX + iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 - iSpace, 315, L"Meirin_Bullet45"));
 
 				}
 
@@ -297,9 +313,9 @@ int CBoss_HonMeirin::Update()
 			float fMoveDistance;
 
 			if (m_isMoveDirStretch)	// 왼쪽으로
-				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 700 : 700 - (tPlayerInfo.fX - m_tInfo.fX);
+				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 600 : 600 - (tPlayerInfo.fX - m_tInfo.fX);
 			else					// 오른쪽으로
-				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 700 : 700 - (m_tInfo.fX - tPlayerInfo.fX);
+				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 600 : 600 - (m_tInfo.fX - tPlayerInfo.fX);
 
 
 			float fMoveDistancePerFrame = fMoveDistance / (40 - m_dwPatternElapsedFrame);
@@ -328,9 +344,9 @@ int CBoss_HonMeirin::Update()
 			float fMoveDistance;
 
 			if (m_isMoveDirStretch)	// 왼쪽으로
-				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 350 : 350 - (tPlayerInfo.fX - m_tInfo.fX);
+				fMoveDistance = (tPlayerInfo.fX < m_tInfo.fX) ? m_tInfo.fX - tPlayerInfo.fX + 250 : 250 - (tPlayerInfo.fX - m_tInfo.fX);
 			else					// 오른쪽으로
-				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 350 : 350 - (m_tInfo.fX - tPlayerInfo.fX);
+				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 250 : 250 - (m_tInfo.fX - tPlayerInfo.fX);
 
 
 			float fMoveDistancePerFrame = fMoveDistance / (20 - (m_dwPatternElapsedFrame - 50));
@@ -387,6 +403,10 @@ int CBoss_HonMeirin::Update()
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(30.f);
 				// 총알 3 생성
 
+				if (m_isStretch)
+					CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 1.1, -180, L"Meirin_Bullet_Big_R"));
+				else
+					CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 1.1, 0, L"Meirin_Bullet_Big"));
 			
 			}
 

@@ -216,15 +216,27 @@ int CPlayer::Update()
 
 
 	m_tCollideInfo = {	m_tInfo.fX, 
-						m_tInfo.fY - 64,
+						m_tInfo.fY - 56,
 						48,
-						128 };
+						112 };
 	
 	if (m_eCurState == OBJST_DOWN)
 		m_tCollideInfo = {	m_tInfo.fX,
 							m_tInfo.fY - 48,
 							48,
 							96 };
+	else if (m_eCurState == OBJST_JUMP ||
+		m_eCurState == OBJST_JUMPACTION ||
+		m_eCurState == OBJST_JUMP_ATTACK1 ||
+		m_eCurState == OBJST_JUMP_ATTACK2 ||
+		m_eCurState == OBJST_JUMP_ATTACK3 ||
+		m_eCurState == OBJST_JUMP_ATTACK4 ||
+		m_eCurState == OBJST_FALL ||
+		m_eCurState == OBJST_GLIDE)
+		m_tCollideInfo = {	m_tInfo.fX,
+							m_tInfo.fY - 64,
+							48,
+							64 };
 
 	// 플레이어는 좌표로부터 위쪽 범위에 렌더시켜야 함 (서있으므로)
 	__super::Update_Rect_UpStand();	// 2배크기 렌더 기준 좌표보정
@@ -339,43 +351,27 @@ void CPlayer::Render(HDC hDC)
 
 
 
-	// 충돌 기준 확인용
-	// 빨간 색은 Rect 기준, 초록색은 Info 기준 위치.
 
-	//int iTestOutX = 0, iTestOutY = 0;
-	//CCameraMgr::Get_Instance()->Get_RenderPos(iTestOutX, iTestOutY);
-	//
-	//HPEN hGreenPen = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
-	//HPEN hOldPen = (HPEN)SelectObject(hDC, hGreenPen);
-	//
-	//int infoLeft	= (int)(m_tCollideInfo.fX - m_tCollideInfo.fCX * 0.5f) + iTestOutX;
-	//int infoTop		= (int)(m_tCollideInfo.fY - m_tCollideInfo.fCY * 0.5f) + iTestOutY;
-	//int infoRight	= (int)(m_tCollideInfo.fX + m_tCollideInfo.fCX * 0.5f) + iTestOutX;
-	//int infoBottom	= (int)(m_tCollideInfo.fY + m_tCollideInfo.fCY * 0.5f) + iTestOutY;
-	//
-	//MoveToEx(hDC, infoLeft, infoTop, nullptr);
-	//LineTo(hDC, infoRight, infoTop);
-	//LineTo(hDC, infoRight, infoBottom);
-	//LineTo(hDC, infoLeft, infoBottom);
-	//LineTo(hDC, infoLeft, infoTop);
-	//
-	//HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-	//hOldPen = (HPEN)SelectObject(hDC, hRedPen);
-	//
-	//int rectLeft	= m_tRect.left + iTestOutX;
-	//int rectTop		= m_tRect.top + iTestOutY;
-	//int rectRight	= m_tRect.right + iTestOutX;
-	//int rectBottom	= m_tRect.bottom + iTestOutY;
-	//
-	//MoveToEx(hDC, rectLeft, rectTop, nullptr);
-	//LineTo(hDC, rectRight, rectTop);
-	//LineTo(hDC, rectRight, rectBottom);
-	//LineTo(hDC, rectLeft, rectBottom);
-	//LineTo(hDC, rectLeft, rectTop);
-	//
-	//SelectObject(hDC, hOldPen);
-	//DeleteObject(hGreenPen);
-	//DeleteObject(hRedPen);
+	// 테스트용
+
+	int iTmpX = 0;
+	int iTmpY = 0;
+	CCameraMgr::Get_Instance()->Get_RenderPos(iTmpX, iTmpY); // 최종적으로 렌더시킬 좌표.
+
+	FRAME_PROP tProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+	Set_FrameProperty(tProp);
+
+	HPEN hPen = CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
+	HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
+	MoveToEx(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY  - m_tCollideInfo.fCY / 2 + iTmpY, nullptr);
+	LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
+	LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
+	LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
+	LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
+
+	SelectObject(hDC, hOldPen);
+	DeleteObject(hPen);
+
 
 
 	if ( true )// GetTickCount() % 2 == 1)
@@ -700,11 +696,12 @@ void CPlayer::Key_Input()
 	// ********************
 	if (CKeyMgr::Get_Instance()->Key_Down('A') && m_isGetWatch)
 	{
-		if (m_iTimeMode == 0)
+		if (m_iTimeMode == 0 || m_iTimeMode == 1)
 		{
 			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SKILL);
 			CSoundMgr::Get_Instance()->PlaySound(L"s06_skill.wav", SOUND_TIME_SKILL, 0.2f);
 			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
+			if (m_iTimeMode == 1)		m_dwSnailTime = 0;
 			m_iTimeMode = 2;
 		}
 		else if (m_iTimeMode == 2)

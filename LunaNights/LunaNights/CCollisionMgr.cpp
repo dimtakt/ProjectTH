@@ -39,6 +39,8 @@ void CCollisionMgr::Collision_Rect_PlayerMonster(std::list<CObj*> DstList, std::
 					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
 					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
 					
+					CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+
 					// 데미지 출력
 					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::CreateNumEffect(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY, 0.f, true, CEffect::DMG_ATK_MONSTER, Src->Get_Atk()));
 				}
@@ -119,6 +121,86 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 					CCameraMgr::Get_Instance()->Set_ShakeStrength(20);
 
 				}
+			}
+		}
+	}
+
+}
+
+
+
+void CCollisionMgr::Collision_Rect_BulletPlayer(std::list<CObj*> DstList, std::list<CObj*> SrcList)
+{
+	RECT		rc{};
+
+	for (auto& Dst : DstList)
+	{
+		for (auto& Src : SrcList)
+		{
+			INFO tDstInfo = *Dst->Get_CollideInfo();
+			INFO tSrcInfo = *Src->Get_CollideInfo();
+
+			RECT tDstRect = { tDstInfo.fX - tDstInfo.fCX / 2, tDstInfo.fY - tDstInfo.fCY / 2,
+							tDstInfo.fX + tDstInfo.fCX / 2, tDstInfo.fY + tDstInfo.fCY / 2 };
+			RECT tSrcRect = { tSrcInfo.fX - tSrcInfo.fCX / 2, tSrcInfo.fY - tSrcInfo.fCY / 2,
+							tSrcInfo.fX + tSrcInfo.fCX / 2, tSrcInfo.fY + tSrcInfo.fCY / 2 };
+
+
+			if (IntersectRect(&rc, &tDstRect, &tSrcRect))
+			{
+				if (Src->Get_State() != OBJST_DAMAGED && !Src->Get_God())
+				{
+
+					Dst->Set_Dead();
+
+					INFO tPlayerInfo = *Src->Get_Info();
+
+					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY / 2, 0.f, L"Effect_Damage"));
+
+					Src->Set_HP(Src->Get_HP() - Dst->Get_Atk());
+					Src->Set_State(OBJST_DAMAGED);
+					Src->Set_God();
+					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+
+					CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+
+					// 데미지 출력
+					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::CreateNumEffect(tPlayerInfo.fX, tPlayerInfo.fY - tPlayerInfo.fCY, 0.f, true, CEffect::DMG_ATK_MONSTER, Dst->Get_Atk()));
+				
+				}
+				// 일단 죽지 않게
+				if (Src->Get_HP() < 0)
+					Src->Set_HP(0);
+				//if (Src->Get_HP() <= 0)
+				//{
+				//	// 몬스터가 플레이어에 의해 죽었을 때
+				//	Src->Set_Dead();
+
+				//	// 파괴 이펙트 출력
+				//	srand((unsigned int)time(NULL));
+				//	for (int i = 0; i < 5; i++)
+				//	{
+				//		int iTmpX = (rand() % 64 - 64);
+				//		int iTmpY = (rand() % 64 - 64);
+				//		CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+				//			CAbstractFactory<CEffect>::Create(tMonsterInfo.fX + iTmpX, (tMonsterInfo.fY) + iTmpY, 0.f, L"Effect_Bomb"));
+				//	}
+
+				//	// 파괴 시 처리 (골드 획득, 사운드 재생, 카메라 셰이크)
+
+				//	CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+				//		CAbstractFactory<CEffect>::CreateStatusEffect(tMonsterInfo.fX, tMonsterInfo.fY - tMonsterInfo.fCY / 2, 0.f, true, CEffect::STT_DESTROY, 1.5f));
+
+
+				//	pPlayer->Set_Gold(pPlayer->Get_Gold() + Src->Get_Gold());
+
+				//	CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+				//	CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+
+				//	CCameraMgr::Get_Instance()->Set_ShakeStrength(20);
+
+				//}
 			}
 		}
 	}

@@ -16,8 +16,11 @@ public:
 
 
 public:
+    bool Get_Stretch()                  { return m_isStretch; }
     void Set_Pattern (int _pattern)     { m_iPattern = _pattern;}
     int Get_Pattern ()                  { return m_iPattern; }
+
+
 
 private:
     void LoadImages();

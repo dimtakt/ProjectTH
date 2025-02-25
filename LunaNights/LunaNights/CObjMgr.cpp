@@ -304,6 +304,10 @@ void CObjMgr::Late_Update()
 	CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_MONSTER_WISP]);
 	CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_MONSTER_WOLF]);
 
+	CCollisionMgr::Collision_Rect_BulletPlayer(m_ObjList[OBJ_BOSSBULLET], m_ObjList[OBJ_PLAYER]);
+
+
+
 	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
 		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
 		CCollisionMgr::Collision_Rect_PlayerMonster(m_ObjList[OBJ_PLAYER], m_ObjList[OBJ_BOSS]);
@@ -314,7 +318,8 @@ void CObjMgr::Late_Update()
 	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WOLF]);
 
 	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
-		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
+		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart() &&
+		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) != 2)
 		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_BOSS]);
 
 
