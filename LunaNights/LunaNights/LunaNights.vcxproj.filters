@@ -234,6 +234,9 @@
     <ClInclude Include="CBoss_HonMeirin.h">
       <Filter>01. Obj\08. Boss_HonMeirin</Filter>
     </ClInclude>
+    <ClInclude Include="CBossBullet.h">
+      <Filter>01. Obj\01. Bullet\01. EnemyBullet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LunaNights.cpp">
@@ -331,6 +334,9 @@
     </ClCompile>
     <ClCompile Include="CBoss_HonMeirin.cpp">
       <Filter>01. Obj\08. Boss_HonMeirin</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossBullet.cpp">
+      <Filter>01. Obj\01. Bullet\01. EnemyBullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

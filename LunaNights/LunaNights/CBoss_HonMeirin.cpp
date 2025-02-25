@@ -7,6 +7,7 @@
 #include "CCameraMgr.h"
 #include "CPlayer.h"
 #include "CObjMgr.h"
+#include "SoundMgr.h"
 
 CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_ePreState(OBJST_END),
@@ -102,7 +103,7 @@ int CBoss_HonMeirin::Update()
 	case 11:
 		
 		// 적정 거리를 유지하도록 2초간 이동 
-		// 단, case 5 또는 7 일때 (착지공격 패턴 전) 는 무조건 거리를 벌림
+		// 단, case 5 또는 7 일때 (착지공격 패턴 전), 11 일때 (궁) 는 무조건 거리를 벌림
 
 		m_eCurState = OBJST_RUN; 
 		if (m_isStretch)	m_pFrameKey = L"Meirin_Run_R";
@@ -116,9 +117,10 @@ int CBoss_HonMeirin::Update()
 			else
 				m_isMoveDirStretch = false;
 
-			// case 5 또는 7 일때는 무조건 거리를 벌림
+			// case 5 또는 7, 11일때는 무조건 거리를 벌림
 			if (m_iPattern == 5 ||
-				m_iPattern == 7)
+				m_iPattern == 7 ||
+				m_iPattern == 11 )
 				m_isMoveDirStretch = (tPlayerInfo.fX < m_tInfo.fX) ? false : true;
 
 			m_isPatternPropCalced = true;	// 공격할 방향 확정.
@@ -307,10 +309,13 @@ int CBoss_HonMeirin::Update()
 
 			m_fVelocityY = -GRAVITY * 0.1;
 		}
-		// 쿵!
-		else if (m_dwPatternElapsedFrame < 60)
+		else if (m_dwPatternElapsedFrame < 50)
 		{
-			if (m_dwPatternElapsedFrame == 40)
+			m_tInfo.fY -= m_fSpeed;
+		}
+		else if (m_dwPatternElapsedFrame < 70)
+		{
+			if (m_dwPatternElapsedFrame == 50)
 			{
 				if (tPlayerInfo.fX < m_tInfo.fX)	m_isMoveDirStretch = true;
 				else								m_isMoveDirStretch = false;
@@ -328,7 +333,7 @@ int CBoss_HonMeirin::Update()
 				fMoveDistance = (tPlayerInfo.fX > m_tInfo.fX) ? tPlayerInfo.fX - m_tInfo.fX + 350 : 350 - (m_tInfo.fX - tPlayerInfo.fX);
 
 
-			float fMoveDistancePerFrame = fMoveDistance / (20 - (m_dwPatternElapsedFrame - 40));
+			float fMoveDistancePerFrame = fMoveDistance / (20 - (m_dwPatternElapsedFrame - 50));
 
 			
 			if (m_isMoveDirStretch)		m_tInfo.fX -= fMoveDistancePerFrame;
@@ -338,9 +343,9 @@ int CBoss_HonMeirin::Update()
 		}
 		else
 		{
-			if (m_dwPatternElapsedFrame == 60)
+			if (m_dwPatternElapsedFrame == 70)
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
-			if (m_dwPatternElapsedFrame >= 60)
+			if (m_dwPatternElapsedFrame >= 70)
 			{
 				if (!m_isStretch)	{ m_pFrameKey = L"Meirin_Landing_R"; }
 				else				{ m_pFrameKey = L"Meirin_Landing"; }
@@ -359,8 +364,35 @@ int CBoss_HonMeirin::Update()
 
 	// [광폭] 패턴4 (차징 - 공격(강한 투사체))
 	case 12:
-		
+		m_eCurState = OBJST_ACTION4;
 
+		// 차지
+		if (m_dwPatternElapsedFrame < 200)
+		{
+			CCameraMgr::Get_Instance()->Set_ShakeStrength(15.f);
+
+			if (m_dwPatternElapsedFrame == 1)
+			{
+				CSoundMgr::Get_Instance()->StopSound(SOUND_BOSS_SKILL);
+				CSoundMgr::Get_Instance()->PlaySound(L"s06_skill.wav", SOUND_BOSS_SKILL, 0.2f);
+			}
+
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Hadou_Ready_R";
+			else				m_pFrameKey = L"Meirin_Hadou_Ready";
+		}
+		else
+		{
+			if (m_dwPatternElapsedFrame == 200)
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(30.f);
+
+			if (m_isStretch)	m_pFrameKey = L"Meirin_Hadou_R";
+			else				m_pFrameKey = L"Meirin_Hadou";
+
+			// 총알 3 생성
+
+		}
+
+		m_dwPatternNeedFrame = 300; // 패턴 지속프레임
 
 		break;
 
@@ -418,9 +450,17 @@ int CBoss_HonMeirin::Update()
 	Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
 
 	m_tCollideInfo = {	m_tInfo.fX, 
-						m_tInfo.fY - 64,
+						m_tInfo.fY - 48,
 						48,
 						96 };
+
+	if (m_eCurState == OBJST_ACTION3 &&
+		m_dwPatternElapsedFrame >= 50 &&
+		m_dwPatternElapsedFrame < 70)
+		m_tCollideInfo = { m_tInfo.fX,
+					m_tInfo.fY - 64,
+					48,
+					32 };
 
 	__super::Update_Rect_UpStand();
 	
@@ -588,10 +628,10 @@ void CBoss_HonMeirin::LoadImages()
 
 	// 광폭화 패턴 : 강력한 투사체 발사 모션
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_hadou/honmeirin_hadou.bmp", L"Meirin_Hadou");
-	FRAME_PROP tMeirin_Hadou = { 128 * 2, 64 * 2, 1, 7, 7 };
+	FRAME_PROP tMeirin_Hadou = { 128 * 2, 64 * 2, 1, 7, 7, 4 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Hadou, L"Meirin_Hadou");
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_hadou/honmeirin_hadou_R.bmp", L"Meirin_Hadou_R");
-	FRAME_PROP tMeirin_Hadou_R = { 128 * 2, 64 * 2, 1, 7, 7 };
+	FRAME_PROP tMeirin_Hadou_R = { 128 * 2, 64 * 2, 1, 7, 7, 4 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Hadou_R, L"Meirin_Hadou_R");
 
 
@@ -726,13 +766,21 @@ void CBoss_HonMeirin::Motion_Change()
 
 		case OBJ_STATE::OBJST_JUMP:
 			m_tFrame.dwTime = GetTickCount();
-			m_tFrame.dwSpeed = 200;
+			m_tFrame.dwSpeed = 100;
 			break;
 
 		case OBJ_STATE::OBJST_RUN:
 			m_tFrame.dwTime = GetTickCount();
 			m_tFrame.dwSpeed = 100;
 			break;
+		
+		case OBJ_STATE::OBJST_ACTION4:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 40;
+			break;
+
+		default:
+			m_tFrame.dwSpeed = 100;
 		}
 
 		m_ePreState = m_eCurState;
