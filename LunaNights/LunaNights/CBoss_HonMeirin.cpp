@@ -20,7 +20,9 @@ CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_dwPatternElapsedFrame(0),
 	m_dwPatternNeedFrame(0),
 	m_isChangeFrame(true),
-	m_iEndPattern(0)
+	m_iEndPattern(0),
+	m_isShown(false),
+	m_isShownTrigger(false)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -74,9 +76,63 @@ int CBoss_HonMeirin::Update()
 	INFO tPlayerInfo = *pPlayer->Get_Info();
 
 
+
+	// 플레이어가 가까이 오면 첫 등장. 1480, 440 로 이동.
+	if (m_iPattern == 0 && !m_isShown)
+	{
+		if (tPlayerInfo.fX >= 1200)
+			m_isShownTrigger = true;
+		if (m_isShownTrigger && !m_isShown)
+		{
+			if (m_dwPatternElapsedFrame < 30)
+			{
+				float fDistX = (1480 - m_tInfo.fX) / (30 - m_dwPatternElapsedFrame);
+				float fDistY = (544 - m_tInfo.fY) / (30 - m_dwPatternElapsedFrame);
+
+				m_tInfo.fX += fDistX;
+				m_tInfo.fY += fDistY;
+
+				m_pFrameKey = L"Meirin_Landing_R";
+				std::cout << "메이링 위치  : X " << m_tInfo.fX << ", " << m_tInfo.fY << std::endl;
+
+			}
+
+			else if (m_dwPatternElapsedFrame < 50)
+			{
+				m_pFrameKey = L"Meirin_Landing_R";
+
+				if (m_dwPatternElapsedFrame == 30)
+				{
+					CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.1f);
+				}
+
+			}
+
+			else
+			{
+				m_isShown = true;
+				m_dwPatternElapsedFrame = 0;
+				
+			}
+
+			m_dwPatternElapsedFrame++;
+		}
+
+		//m_pFrameKey = L"Meirin_Stand_R";
+		__super::Update_Rect_UpStand();
+		m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+		Set_FrameProperty(m_tFramePropCur);
+		Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
+
+		return OBJ_NOEVENT;
+	}
+
+
+	// 보스전 종료
 	if (m_iHp == 0)
 	{
-		// 보스전 종료
 		pPlayer->Set_isBossStart(false);
 
 		
@@ -191,7 +247,6 @@ int CBoss_HonMeirin::Update()
 	}
 
 
-
 	// 패턴 진행
 
 	// 패턴 진행 순서
@@ -202,15 +257,14 @@ int CBoss_HonMeirin::Update()
 		m_eCurState = OBJST_IDLE;
 		
 		__super::Update_Rect_UpStand();
+		m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+		Set_FrameProperty(m_tFramePropCur);
+		Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
+
 		return OBJ_NOEVENT;
 	}
 	
 	// (이후 플레이어의 m_isBossStart 변수가 true가 된다면 아래 패턴 진행)
-	
-	//std::cout << "보스전 시작 단계" << std::endl;
-
-	//std::cout << "m_dwPatternElapsedFrame : " << m_dwPatternElapsedFrame << std::endl;
-
 	switch (m_iPattern)
 	{
 	// 대기
@@ -279,6 +333,11 @@ int CBoss_HonMeirin::Update()
 					CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 180, L"Meirin_Bullet_R"));
 				else
 					CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0, L"Meirin_Bullet"));
+
+				//if (m_isStretch)
+				//	CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::CreateEffect(m_tInfo.fX + 80, m_tInfo.fY - 64, 0, L"Effect_DustSmoke"));
+				//else
+				//	CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::CreateEffect(m_tInfo.fX - 80, m_tInfo.fY - 64, 0, L"Effect_DustSmoke_R"));
 
 
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
@@ -395,7 +454,12 @@ int CBoss_HonMeirin::Update()
 			//std::cout << "테스트 :: Y축 높이는 " << m_tInfo.fY << ", 현재 진행 프레임은 " << m_dwPatternElapsedFrame << "." << std::endl;
 			
 			if (m_dwPatternElapsedFrame == 274)
+			{
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+				
+				CSoundMgr::Get_Instance()->StopSound(SOUND_LAND2);
+				CSoundMgr::Get_Instance()->PlaySound(L"s13_absorber.wav", SOUND_LAND2, 0.2f);
+			}
 
 			if (m_dwPatternElapsedFrame >= 274)
 			{
@@ -477,7 +541,11 @@ int CBoss_HonMeirin::Update()
 		else
 		{
 			if (m_dwPatternElapsedFrame == 70)
+			{
 				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+				CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+				CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.1f);
+			}
 			if (m_dwPatternElapsedFrame >= 70)
 			{
 				if (!m_isStretch)	{ m_pFrameKey = L"Meirin_Landing_R"; }
@@ -611,7 +679,8 @@ int CBoss_HonMeirin::Update()
 void CBoss_HonMeirin::Late_Update()
 {
 	if (!(	m_iEndPattern == 1 ||
-			m_iEndPattern == 5)	)
+			m_iEndPattern == 5 || 
+			(m_iPattern == 0 && !m_isShown)))
 		Jump();
 
 	if (m_isChangeFrame)
@@ -803,7 +872,7 @@ void CBoss_HonMeirin::LoadImages()
 
 
 
-	// 클리어 이후 : 폭발
+	// 클리어 이후 : 폭발 (방향 왼쪽 고정임 주의)
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_des_merged/honmeirin_des.bmp", L"Meirin_DesStart");
 	FRAME_PROP tMeirin_DesStart = { 96 * 2, 96 * 2, 1, 1, 1 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_DesStart, L"Meirin_DesStart");
@@ -963,6 +1032,7 @@ void CBoss_HonMeirin::Motion_Change()
 
 		default:
 			m_tFrame.dwSpeed = 100;
+			break;
 		}
 
 		m_ePreState = m_eCurState;

@@ -62,6 +62,16 @@ void CEffect::Initialize()
 	FRAME_PROP tEffect_AtkRing = { 48 * 2, 96 * 2, 8, 1, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_AtkRing, L"Effect_AtkRing");
 
+
+
+	// 모래먼지 이펙트
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirinBullet/honmeirin_bullet_smoke/honmeirin_bullet_smoke.bmp", L"Effect_DustSmoke");
+	FRAME_PROP tEffect_DustSmoke = { 64 * 2, 64 * 2, 4, 4, 14, 7 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_DustSmoke, L"Effect_DustSmoke");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirinBullet/honmeirin_bullet_smoke/honmeirin_bullet_smoke_R.bmp", L"Effect_DustSmoke_R");
+	FRAME_PROP tEffect_DustSmoke_R = { 64 * 2, 64 * 2, 4, 4, 14, 7 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_DustSmoke_R, L"Effect_DustSmoke_R");
+
 	
 
 	// 숫자 폰트
@@ -72,8 +82,6 @@ void CEffect::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/UI/status_vision_sprite/status_vision_sprite.bmp", L"Effect_Status");
 	FRAME_PROP tEffect_Status = { 81 * 2, 8 * 2, 1, 14, 14 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tEffect_Status, L"Effect_Status");
-
-
 
 
 
@@ -137,7 +145,8 @@ void CEffect::Late_Update()
 	// 이펙트 출력이 끝까지 되면 삭제
 
 	if (m_pFrameKey == L"Effect_Number" ||
-		m_pFrameKey == L"Effect_Status")
+		m_pFrameKey == L"Effect_Status" ||
+		(isLoop && fLoopTimes != 0))
 	{
 		if (dwStartTime + fLoopTimes * 1000 < GetTickCount())
 			m_isDead = true;
@@ -224,7 +233,7 @@ void CEffect::Render(HDC hDC)
 							m_tFrame.iCX,	// 비트맵을 출력할 가로, 세로 길이
 							m_tFrame.iCY,
 							RGB(255, 0, 255));		// 제거할 색상
-		return;	// 숫자 이펙트였다면 종료
+		return;
 	}
 
 

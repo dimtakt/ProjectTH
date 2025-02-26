@@ -50,6 +50,28 @@ public:
 		return pObj;
 	}
 
+	// 시간이 유효한 일반 이펙트 생성 시에 사용
+	static CObj* CreateEffect(float _fX, float _fY, float _fAngle = 0.f, const TCHAR* _pFrameKey = nullptr, bool _isWorldFix = true, bool _isLoop = false, float _loopTimes = 0 )
+	{
+		CObj* pObj = new T;
+
+		pObj->Initialize();
+		pObj->Set_Pos(_fX, _fY);
+		pObj->Set_Angle(_fAngle);
+
+		dynamic_cast<CEffect*>(pObj)->Set_isLoop(_isLoop);
+		dynamic_cast<CEffect*>(pObj)->Set_LoopTimes(_loopTimes);
+
+		if (_pFrameKey != nullptr)
+			pObj->Set_FrameKey(_pFrameKey);
+
+		pObj->Set_WorldFix(_isWorldFix);
+
+		pObj->Update();
+
+		return pObj;
+	}
+
 	// 콜라이더 객체 생성 전용. 다른 객체 생성할 땐 사용 X
 	// 좌상, 우하 좌표 정보를 받아와 해당 정보 기반으로 Info 정보를 갖는 객체 생성
 	static CObj* CreateRectCollider(float _fX, float _fY, float _fX2, float _fY2)

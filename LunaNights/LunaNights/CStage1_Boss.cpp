@@ -31,11 +31,11 @@ void CStage1_Boss::Initialize()
 
 	// 보스전 임시 확인용.
 	// 나중에 완성 시 이 부분들 지우고 SceneMgr 초기 진입 부분도 스테이지 1-01로 바꾸기
-	//if (CObjMgr::Get_Instance()->Get_Player() == nullptr)
-	//	CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
-	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite.bmp", L"STAGE1_01_BG");
-	//CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite_GRAY.bmp", L"STAGE1_01_BG_GRAY");
-	//CObjMgr::Get_Instance()->Add_Object(OBJ_UI, CAbstractFactory<CUI>::Create());
+	if (CObjMgr::Get_Instance()->Get_Player() == nullptr)
+		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite.bmp", L"STAGE1_01_BG");
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/MapBG/background_sprite_GRAY.bmp", L"STAGE1_01_BG_GRAY");
+	CObjMgr::Get_Instance()->Add_Object(OBJ_UI, CAbstractFactory<CUI>::Create());
 	// *****************************************
 
 
@@ -56,7 +56,7 @@ void CStage1_Boss::Initialize()
 	CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-Boss.dat");
 
 	// 보스를 Load_Data 보다 앞에 두면 Delete_ID(OBJ_BOSS); 로 인해 삭제되는 문제가 생김
-	CObjMgr::Get_Instance()->Add_Object(OBJ_BOSS, CAbstractFactory<CBoss_HonMeirin>::Create(1480, 440));
+	CObjMgr::Get_Instance()->Add_Object(OBJ_BOSS, CAbstractFactory<CBoss_HonMeirin>::Create(4000, 0)); // 1480, 440
 
 }
 

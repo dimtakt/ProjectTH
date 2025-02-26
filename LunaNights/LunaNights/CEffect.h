@@ -18,6 +18,7 @@ public:
     void Set_DamageType(int _dmgType)       { iDamageType = _dmgType; }
     void Set_StatusType(int _statusType)    { iStatusType = _statusType; }
     void Set_LoopTimes(float _loopTime)     { fLoopTimes = _loopTime; }
+    void Set_isLoop(bool _loop)             { isLoop = _loop; }
 
     enum DMGTYPE {
         DMG_ATK_PLAYER,
@@ -46,7 +47,7 @@ public:
 
 private:
     bool isLoop;
-    int fLoopTimes;
+    float fLoopTimes;
 
     int iDamageType;        // 자세한 건 DMGTYPE enum    참고
     int iStatusType;        // 자세한 건 STATUSTYPE enum 참고

@@ -24,7 +24,7 @@ void CLogo::Update()
 {
 	if (CKeyMgr::Get_Instance()->Key_Down(VK_RETURN))
 	{
-		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_01);
+		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_BOSS);
 		return;
 	}
 	else if (CKeyMgr::Get_Instance()->Key_Down('E'))
