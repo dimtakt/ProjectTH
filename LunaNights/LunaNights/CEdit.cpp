@@ -163,6 +163,33 @@ void CEdit::Render(HDC _DC)
 	{
 		Rectangle(_DC, m_ptPressedRectStart.x + iOutX, m_ptPressedRectStart.y + iOutY, ptMouse.x, ptMouse.y); // ´ë½Å LineTo·Î?
 	}
+
+
+
+	RECT rect;
+	std::wstring text;
+
+	rect = { 10, 10, 500, 30 };
+	text = L"Current Stage : " + std::to_wstring(iEditStage);
+	DrawText(_DC, text.c_str(), -1, &rect, DT_LEFT | DT_SINGLELINE);
+
+	rect = { 10, 50, 500, 70 };
+	DrawText(_DC, TEXT("[Tile]"), -1, &rect, DT_LEFT | DT_SINGLELINE);
+
+	rect = { 10, 70, 500, 90 };
+	text = L"Selected Tile Index : " + std::to_wstring(iSelectedTileIndex);
+	DrawText(_DC, text.c_str(), -1, &rect, DT_LEFT | DT_SINGLELINE);
+
+
+	rect = { 10, 110, 500, 130 };
+	DrawText(_DC, TEXT("[Monster]"), -1, &rect, DT_LEFT | DT_SINGLELINE);
+
+	rect = { 10, 130, 500, 150 };
+	text = L"Selected Monster Index : " + std::to_wstring(iSelectedMonsterIndex);
+	DrawText(_DC, text.c_str(), -1, &rect, DT_LEFT | DT_SINGLELINE);
+
+
+
 }
 
 void CEdit::Release()

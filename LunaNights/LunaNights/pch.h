@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 
 // 이거 영상용아님?
