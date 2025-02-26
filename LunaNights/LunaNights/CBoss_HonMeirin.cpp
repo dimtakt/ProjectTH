@@ -94,7 +94,7 @@ int CBoss_HonMeirin::Update()
 
 				m_pFrameKey = L"Meirin_Landing_R";
 				std::cout << "메이링 위치  : X " << m_tInfo.fX << ", " << m_tInfo.fY << std::endl;
-
+				CSoundMgr::Get_Instance()->SetChannelVolume(SOUND_BGM, 0.1f - ((m_dwPatternElapsedFrame + 1) * 0.002f));
 			}
 
 			else if (m_dwPatternElapsedFrame < 50)
@@ -107,7 +107,7 @@ int CBoss_HonMeirin::Update()
 					CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
 					CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.1f);
 				}
-
+				CSoundMgr::Get_Instance()->SetChannelVolume(SOUND_BGM, 0.1f - ((m_dwPatternElapsedFrame + 1) * 0.002f));
 			}
 
 			else
@@ -117,6 +117,7 @@ int CBoss_HonMeirin::Update()
 				
 			}
 
+	
 			m_dwPatternElapsedFrame++;
 		}
 
