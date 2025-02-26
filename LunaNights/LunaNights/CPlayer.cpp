@@ -26,8 +26,11 @@ CPlayer::CPlayer() :
 	m_iMessageWith(0),
 	m_iMessagePic(0),
 	m_iMessageOrder(0),
-	m_isBossStart(false)
-
+	m_isBossStart(false),
+	m_isTalkedAkyuu(false),
+	m_isTalkedMeirin(false),
+	m_isTalkedNitori(false),
+	m_isClearedMeirin(false)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -354,23 +357,23 @@ void CPlayer::Render(HDC hDC)
 
 	// 테스트용
 
-	int iTmpX = 0;
-	int iTmpY = 0;
-	CCameraMgr::Get_Instance()->Get_RenderPos(iTmpX, iTmpY); // 최종적으로 렌더시킬 좌표.
-
-	FRAME_PROP tProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
-	Set_FrameProperty(tProp);
-
-	HPEN hPen = CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
-	HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
-	MoveToEx(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY  - m_tCollideInfo.fCY / 2 + iTmpY, nullptr);
-	LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
-	LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
-	LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
-	LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
-
-	SelectObject(hDC, hOldPen);
-	DeleteObject(hPen);
+	//int iTmpX = 0;
+	//int iTmpY = 0;
+	//CCameraMgr::Get_Instance()->Get_RenderPos(iTmpX, iTmpY); // 최종적으로 렌더시킬 좌표.
+	//
+	//FRAME_PROP tProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+	//Set_FrameProperty(tProp);
+	//
+	//HPEN hPen = CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
+	//HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
+	//MoveToEx(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY  - m_tCollideInfo.fCY / 2 + iTmpY, nullptr);
+	//LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
+	//LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
+	//LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
+	//LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX , m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
+	//
+	//SelectObject(hDC, hOldPen);
+	//DeleteObject(hPen);
 
 
 
@@ -694,30 +697,37 @@ void CPlayer::Key_Input()
 	// ********************
 	// ** 시간 정지 키
 	// ********************
-	if (CKeyMgr::Get_Instance()->Key_Down('A') && m_isGetWatch)
+	if (CKeyMgr::Get_Instance()->Key_Down('A'))
 	{
-		if (m_iTimeMode == 0 || m_iTimeMode == 1)
+		if (m_isGetWatch)
 		{
-			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SKILL);
-			CSoundMgr::Get_Instance()->PlaySound(L"s06_skill.wav", SOUND_TIME_SKILL, 0.2f);
-			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
-			if (m_iTimeMode == 1)		m_dwSnailTime = 0;
-			m_iTimeMode = 2;
-		}
-		else if (m_iTimeMode == 2)
-		{
+			if (m_iTimeMode == 0 || m_iTimeMode == 1)
+			{
+				CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_SKILL);
+				CSoundMgr::Get_Instance()->PlaySound(L"s06_skill.wav", SOUND_TIME_SKILL, 0.2f);
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
+				if (m_iTimeMode == 1)		m_dwSnailTime = 0;
+				m_iTimeMode = 2;
+			}
+			else if (m_iTimeMode == 2)
+			{
 
-			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END);
-			CSoundMgr::Get_Instance()->PlaySound(L"s21_magicout.wav", SOUND_TIME_END, 0.2f);
-			CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END2);
-			CSoundMgr::Get_Instance()->PlaySound(L"time_stop_end.wav", SOUND_TIME_END2, 0.2f);
+				CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END);
+				CSoundMgr::Get_Instance()->PlaySound(L"s21_magicout.wav", SOUND_TIME_END, 0.2f);
+				CSoundMgr::Get_Instance()->StopSound(SOUND_TIME_END2);
+				CSoundMgr::Get_Instance()->PlaySound(L"time_stop_end.wav", SOUND_TIME_END2, 0.2f);
 			
-			m_iTimeMode = 0;
-			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
+				m_iTimeMode = 0;
+				CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT, CAbstractFactory<CEffect>::Create(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY / 2, 0.f, L"Effect_SkillUse", true));
+			}
 		}
+		else if (!m_isGetWatch)
+		{
+			CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+				CAbstractFactory<CEffect>::CreateStatusEffect(m_tInfo.fX, m_tInfo.fY - m_tInfo.fCY * 1.2, 0.f, true, CEffect::STT_NOTIME, 1.5f));
+		}
+
 	}
-
-
 
 
 
@@ -1280,5 +1290,10 @@ int CPlayer::Get_Stat(PLAYERSTAT _statType)
 	case CPlayer::KNIFE:			return m_iKnife;
 	case CPlayer::ISGETWATCH:		return (int)m_isGetWatch;
 	case CPlayer::TIMEMODE:			return m_iTimeMode;
+
+	case CPlayer::ISTALKED_AKYUU:	return m_isTalkedAkyuu;
+	case CPlayer::ISTALKED_NITORI:	return m_isTalkedNitori;
+	case CPlayer::ISTALKED_MEIRIN:	return m_isTalkedMeirin;
+
 	}
 }

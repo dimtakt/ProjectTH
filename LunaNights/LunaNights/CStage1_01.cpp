@@ -12,10 +12,12 @@
 #include "CObjMgr.h"
 #include "CAbstractFactory.h"
 #include "CUI.h"
+#include "CNpc.h"
 
 
 CStage1_01::CStage1_01()
 {
+	ZeroMemory(&ptNitoriPos, sizeof(FPOINT));
 }
 
 CStage1_01::~CStage1_01()
@@ -32,6 +34,8 @@ void CStage1_01::Initialize()
 	if (CObjMgr::Get_Instance()->Get_Player() == nullptr)
 		CObjMgr::Get_Instance()->Add_Object(OBJ_PLAYER, CAbstractFactory<CPlayer>::Create());
 
+	// Npc 위치
+	ptNitoriPos = { 2350, 544 };
 
 	// 이후 몬스터나 타일 등의 생성 및 이미지 불러오기는 여기에..
 	//..
@@ -63,7 +67,7 @@ void CStage1_01::Initialize()
 	CObjMgr::Get_Instance()->Load_Data(L"../Data/Monster_Info_1-1.dat");
 	CObjMgr::Get_Instance()->Update();		// ㅋㅋ;
 	
-	
+	CObjMgr::Get_Instance()->Add_Object(OBJ_NPC, CAbstractFactory<CNpc>::Create(ptNitoriPos.x, ptNitoriPos.y, 0, L"STAGEOBJ_NITORI"));
 }
 
 void CStage1_01::Update()
@@ -78,6 +82,75 @@ void CStage1_01::Update()
 		pPlayer->Set_Pos(20, pPlayer->Get_Info()->fY);
 		CSceneMgr::Get_Instance()->Scene_Change(CSceneMgr::SC_STAGE1_02);
 	}
+
+
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_UP))
+	{
+		// ** 니토리
+
+		if (pPlayer->Get_Info()->fX >= ptNitoriPos.x - 200 &&
+			pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200)
+		{
+			// 니토리 대화 이벤트
+			if (pPlayer->Get_MessageWith() != 4)
+			{
+				pPlayer->Set_MessagePic(4);
+				pPlayer->Set_MessageWith(4);
+			}
+			else // 다음 대화로 넘기기
+			{
+				if (pPlayer->Get_Stat(CPlayer::ISGETWATCH) == false &&
+					pPlayer->Get_Stat(CPlayer::GOLD) >= 500 &&
+					pPlayer->Get_MessageOrder() == 1)
+				{
+					pPlayer->Set_Stat_isGetWatch(true);
+					pPlayer->Set_Gold(pPlayer->Get_Gold() - 500);
+					CSoundMgr::Get_Instance()->PlaySound(L"s1012_item_get_2.wav", SOUND_SKILLGET, 0.2f);
+					pPlayer->Set_MessageOrder(0);
+				}
+				else
+					pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+
+			}
+
+			std::cout << "!!!!!!!!!!!!!!!!!!!!! 니토리 대화!" << std::endl;
+
+		}
+
+		// ** 도움말 1
+		
+		//if (pPlayer->Get_Info()->fX >= 768 &&
+		//	pPlayer->Get_Info()->fX <= 832)
+		//{
+		//	if (pPlayer->Get_MessageWith() != 1)
+		//	{
+		//		pPlayer->Set_MessagePic(1);
+		//		pPlayer->Set_MessageWith(1);
+		//	}
+		//	else
+		//	{
+
+		//	}
+
+
+		//}
+	}
+	else
+	{
+		if (pPlayer->Get_MessageWith() == 4)
+		{
+			if (not (pPlayer->Get_Info()->fX >= ptNitoriPos.x - 200 &&
+				pPlayer->Get_Info()->fX <= ptNitoriPos.x + 200))
+			{
+				pPlayer->Set_MessageWith(0);
+				pPlayer->Set_MessagePic(0);
+				pPlayer->Set_MessageOrder(0);
+			}
+		}
+	}
+
+
+
 }
 
 void CStage1_01::Late_Update()

@@ -16,5 +16,7 @@ public:
     void Release()          override;
 
 private:
+
+    FPOINT ptNitoriPos;
 };
 

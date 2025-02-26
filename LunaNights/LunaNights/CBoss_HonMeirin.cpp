@@ -19,7 +19,8 @@ CBoss_HonMeirin::CBoss_HonMeirin() :
 	m_iPattern(0),
 	m_dwPatternElapsedFrame(0),
 	m_dwPatternNeedFrame(0),
-	m_isChangeFrame(true)
+	m_isChangeFrame(true),
+	m_iEndPattern(0)
 {
 	ZeroMemory(&m_tPrePos, sizeof(FPOINT));
 }
@@ -72,6 +73,119 @@ int CBoss_HonMeirin::Update()
 		return OBJ_NOEVENT;
 	INFO tPlayerInfo = *pPlayer->Get_Info();
 
+
+	if (m_iHp == 0)
+	{
+		// 보스전 종료
+		pPlayer->Set_isBossStart(false);
+
+		
+		switch (m_iEndPattern)
+		{
+		case 0:
+			m_iEndPattern++;
+			break;
+
+
+		case 1:
+			m_eCurState = OBJST_DAMAGED;
+			m_pFrameKey = L"Meirin_DesStart";
+			
+			// 매 40프레임마다 폭발 사운드 재생 및 이펙트 출력
+			if (m_dwPatternElapsedFrame % 15 == 0)
+			{
+				srand(m_dwPatternElapsedFrame);
+				for (int i = 0; i < 2; i++)
+				{
+					int iTmpX = (rand() % 128 - 128);
+					int iTmpY = (rand() % 128 - 128);
+					CObjMgr::Get_Instance()->Add_Object(OBJ_EFFECT,
+						CAbstractFactory<CEffect>::Create(m_tInfo.fX + m_tInfo.fCX / 4 + iTmpX, m_tInfo.fY  + iTmpY, 0.f, L"Effect_Bomb"));
+				}
+
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(10.f);
+				CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+				CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f);
+			}
+
+			m_tInfo.fY -= 0.2f;
+			m_fVelocityY = 0;
+
+			m_dwPatternNeedFrame = 300;	// 패턴 지속시간
+
+			break;
+
+		case 2:
+			m_iEndPattern++;
+			m_fVelocityY = -10.f;
+			break;
+
+		case 3:
+			m_pFrameKey = L"Meirin_Des";
+
+			m_dwPatternNeedFrame = 50;
+			break;
+
+		case 4:
+			m_pFrameKey = L"Meirin_Dying";
+
+			if (pPlayer->Get_isClearedBoss(1))
+			{
+				m_iEndPattern++;
+				m_dwPatternElapsedFrame = 0;
+			}
+
+			m_dwPatternNeedFrame = 999999999;
+			break;
+
+		// 수동으로 넘기면
+		case 5:
+			std::cout << "메이린 도망가는 이벤트" << std::endl;
+
+			if (m_dwPatternElapsedFrame == 1)
+			{
+				CSoundMgr::Get_Instance()->StopSound(SOUND_DESTROY);
+				CSoundMgr::Get_Instance()->PlaySound(L"s15_destroy.wav", SOUND_DESTROY, 0.2f); // 발소리로 바꾸는 게 나을듯
+				CCameraMgr::Get_Instance()->Set_ShakeStrength(20.f);
+			}
+
+			m_pFrameKey = L"Meirin_Rising_Ready_R";
+			m_tInfo.fX += 20.f;
+			m_tInfo.fY -= 20.f;
+						
+			if (m_dwPatternElapsedFrame >= 200)
+			{
+				Set_Dead();
+			}
+
+			break;
+			
+
+		default:
+			break;
+		}
+		
+
+
+
+		if (m_dwPatternElapsedFrame >= m_dwPatternNeedFrame)
+		{
+			m_iEndPattern++;
+			m_dwPatternElapsedFrame = 0;
+
+			std::cout << "[INFO][CBoss_HonMeirin::Update] m_iEndPattern changed to [" << m_iEndPattern << "]" << std::endl;
+		}
+
+		m_dwPatternElapsedFrame++;
+
+
+		m_tFramePropCur = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+		Set_FrameProperty(m_tFramePropCur);
+		Set_Scale(m_tFramePropCur.iCX, m_tFramePropCur.iCY);
+		__super::Update_Rect_UpStand();
+
+		return OBJ_NOEVENT;
+	}
 
 
 
@@ -306,7 +420,7 @@ int CBoss_HonMeirin::Update()
 				else								m_isMoveDirStretch = false;
 			}
 
-			if (m_isStretch)	m_pFrameKey = L"Meirin_Rising_Ready_R";
+			if (!m_isStretch)	m_pFrameKey = L"Meirin_Rising_Ready_R";
 			else				m_pFrameKey = L"Meirin_Rising_Ready";
 
 			// 이따만큼 이동할거임
@@ -493,7 +607,9 @@ int CBoss_HonMeirin::Update()
 
 void CBoss_HonMeirin::Late_Update()
 {
-	Jump();
+	if (!(	m_iEndPattern == 1 ||
+			m_iEndPattern == 5)	)
+		Jump();
 
 	if (m_isChangeFrame)
 		Move_Frame();
@@ -510,18 +626,42 @@ void CBoss_HonMeirin::Render(HDC hDC)
 
 	HDC	hMemDC = CBmpMgr::Get_Instance()->Find_Image(m_pFrameKey);
 
-	GdiTransparentBlt(	hDC,					// 최종적으로 그릴 DC
-						iOutX,					// 복사받을 위치 X, Y좌표
-						iOutY,
-						m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
-						m_tInfo.fCY,
-						hMemDC,					// 비트맵을 가지고 있는 DC
-						m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
-						m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
-						m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
-						m_tInfo.fCY,
-						RGB(255, 0, 255));		// 제거할 색상
 
+	if (m_iEndPattern == 1)
+	{
+		if (GetTickCount() % 2)
+		{
+			GdiTransparentBlt(hDC,					// 최종적으로 그릴 DC
+				iOutX,					// 복사받을 위치 X, Y좌표
+				iOutY,
+				m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+				m_tInfo.fCY,
+				hMemDC,					// 비트맵을 가지고 있는 DC
+				m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+				m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
+				m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
+				m_tInfo.fCY,
+				RGB(255, 0, 255));		// 제거할 색상
+		}
+
+	}
+	else
+	{
+		GdiTransparentBlt(hDC,					// 최종적으로 그릴 DC
+			iOutX,					// 복사받을 위치 X, Y좌표
+			iOutY,
+			m_tInfo.fCX,	// 복사 받을 가로, 세로 길이.
+			m_tInfo.fCY,
+			hMemDC,					// 비트맵을 가지고 있는 DC
+			m_tInfo.fCX * ((m_tFrame.iFrameCur) % (m_tFrame.iFrameMaxX)),	// 출력하려는 스트라이트 이미지 내에서의 좌표
+			m_tInfo.fCY * ((m_tFrame.iFrameCur) / (m_tFrame.iFrameMaxX)),
+			m_tInfo.fCX,	// 비트맵을 출력할 가로, 세로 길이
+			m_tInfo.fCY,
+			RGB(255, 0, 255));		// 제거할 색상
+
+	}
+
+	
 }
 
 void CBoss_HonMeirin::Release()
@@ -660,10 +800,15 @@ void CBoss_HonMeirin::LoadImages()
 
 
 
+	// 클리어 이후 : 폭발
+	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_des_merged/honmeirin_des.bmp", L"Meirin_DesStart");
+	FRAME_PROP tMeirin_DesStart = { 96 * 2, 96 * 2, 1, 1, 1 };
+	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_DesStart, L"Meirin_DesStart");
+
 
 	// 클리어 이후 : 대기로 넘어가기까지의 모션 (방향 왼쪽 고정임 주의)
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Resources/HonMeirin/honmeirin_des_merged/honmeirin_des_merged_R.bmp", L"Meirin_Des");
-	FRAME_PROP tMeirin_Des = { 96 * 2, 96 * 2, 5, 2, 10 };
+	FRAME_PROP tMeirin_Des = { 96 * 2, 96 * 2, 5, 2, 10, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Des, L"Meirin_Des");
 
 	// 클리어 이후 : 대기 모션 (방향 왼쪽 고정임 주의)
@@ -806,6 +951,11 @@ void CBoss_HonMeirin::Motion_Change()
 		case OBJ_STATE::OBJST_ACTION4:
 			m_tFrame.dwTime = GetTickCount();
 			m_tFrame.dwSpeed = 40;
+			break;
+
+		case OBJ_STATE::OBJST_DAMAGED:
+			m_tFrame.dwTime = GetTickCount();
+			m_tFrame.dwSpeed = 100;
 			break;
 
 		default:

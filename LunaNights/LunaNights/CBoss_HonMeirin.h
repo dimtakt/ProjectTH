@@ -43,6 +43,7 @@ private:
     DWORD m_dwPatternNeedFrame;
     //bool m_isPattern
     int m_iPattern;
+    int m_iEndPattern;
 
     OBJ_STATE m_ePreState;
 

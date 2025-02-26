@@ -84,9 +84,31 @@ void CStage1_Boss::Update()
 	// 보스전 시작 판정
 
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_UP) && !pPlayer->Get_isBossStart())
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_UP))
 	{
-		if (pPlayer->Get_Info()->fX >= 1200)
+		// 메이린과 대화한 적이 없고, 보스전 중이 아니라면
+		if (!pPlayer->Get_isBossStart() &&
+			pPlayer->Get_Stat(CPlayer::ISTALKED_MEIRIN) == false &&
+			!pPlayer->Get_isClearedBoss(1))
+		{
+			// 대화를 통해 보스전 진입
+			if (pPlayer->Get_Info()->fX >= 1200)
+			{
+				if (pPlayer->Get_MessageWith() != 5)
+				{
+					pPlayer->Set_MessageWith(5);
+					pPlayer->Set_MessagePic(5);
+
+				}
+				else
+					pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+			}
+		}
+
+		// 메이린과 대화를 했으며(클리어완), 보스전 중이 아니라면
+		else if (!pPlayer->Get_isBossStart() &&
+			pPlayer->Get_Stat(CPlayer::ISTALKED_MEIRIN) == true &&
+			!pPlayer->Get_isClearedBoss(1))
 		{
 			if (pPlayer->Get_MessageWith() != 5)
 			{
@@ -98,8 +120,10 @@ void CStage1_Boss::Update()
 				pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
 
 		}
-	}
 
+
+	}
+	
 
 }
 

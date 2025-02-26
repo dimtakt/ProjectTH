@@ -371,8 +371,12 @@ void CUI::Render(HDC hDC)
 
 		if (pPlayer->Get_MessageWith() != 0)
 		{
-			//  250, 570 쯤에 글씨 출력.,>
-			RECT rect = { 250, 570, WINCX - 250, 800 };
+
+			//  250, 570 쯤에 글씨 출력..
+			RECT rect;
+
+			if (pPlayer->Get_MessagePic() == 1)	rect = { 150, 570, WINCX - 150, 800 };
+			else								rect = { 250, 570, WINCX - 150, 800 };
 
 			// 배경 투명화, 글자 색 흰색으로
 			SetBkMode(hDC, TRANSPARENT);
@@ -380,97 +384,274 @@ void CUI::Render(HDC hDC)
 			
 			switch (pPlayer->Get_MessageWith())
 			{
-			case 3:	// 아큐
-				if (pPlayer->Get_MessageOrder() == 0)
-					DrawText(hDC, TEXT("대화 테스트 (아큐)"), -1, &rect, DT_LEFT | DT_WORDBREAK);
+			case 3:	// 아큐 첫 대화
+				if (pPlayer->Get_Stat(CPlayer::ISTALKED_AKYUU) == false)
+				{
+					if (pPlayer->Get_MessageOrder() == 0)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("어… 당신은, 히에다노 아큐 맞죠?"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 1)
+					{
+						pPlayer->Set_MessagePic(3);
+						DrawText(hDC, TEXT("어머, 안녕하세요."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 2)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("안녕하세요...... 가 아니라, 이런 데서 뭘 하고 있는거야?"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 3)
+					{
+						pPlayer->Set_MessagePic(3);
+						DrawText(hDC, TEXT("딱히 뭘 하고 있는 건 아니에요. 좀 지쳐서 쉬는 중이지요."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 4)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("(분위기가 묘한데… 아가씨의 공간이 만들어낸 가짜가 분명해.)"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 5)
+					{
+						pPlayer->Set_MessagePic(3);
+						DrawText(hDC, TEXT("그건 그렇고, 여기서 만난 것도 인연인데.."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 6)
+					{
+						pPlayer->Set_MessagePic(3);
+						DrawText(hDC, TEXT("괜찮으시면, 필요하실 때 보스 스테이지로 보내드릴게요."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 7)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("그래.. 그럼 나중에 부탁할 게."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else
+					{
+						pPlayer->Set_isTalkedNpc(1);
+						pPlayer->Set_MessageWith(0);
+						pPlayer->Set_MessagePic(0);
+						pPlayer->Set_MessageOrder(0);
+					}
+				}
 				else
 				{
-					pPlayer->Set_MessageWith(0);
-					pPlayer->Set_MessagePic(0);
-					pPlayer->Set_MessageOrder(0);
+					if (pPlayer->Get_MessageOrder() == 0)
+					{
+						pPlayer->Set_MessagePic(3);
+						DrawText(hDC, TEXT("또 만나네요. 지금 보스 스테이지로 가시겠어요?"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 1)
+					{
+						pPlayer->Set_MessagePic(1);
+						DrawText(hDC, TEXT("보스 스테이지로 가시겠다면 윗 방향키를 눌러주세요."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else
+					{
+						//pPlayer->Set_MessageWith(0);
+						//pPlayer->Set_MessagePic(0);
+						//pPlayer->Set_MessageOrder(0);
+					}
+
 				}
+					break;
+			case 4: // 니토리 첫 대화
+				if (pPlayer->Get_Stat(CPlayer::ISTALKED_NITORI) == false)
+				{
+					if (pPlayer->Get_Stat(CPlayer::ISGETWATCH) == false)
+					{
+						if (pPlayer->Get_MessageOrder() == 0)
+							DrawText(hDC, TEXT("손님, 지금 자기 능력 제대로 못 쓰지? 강한 마력이 담긴 시계가 있는데, 관심 있어?"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else if (pPlayer->Get_MessageOrder() == 1)
+							DrawText(hDC, TEXT("500 골드만 모아와. 그럼 그 가격에 주도록 할 게."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else
+						{
+							pPlayer->Set_isTalkedNpc(2);
+							pPlayer->Set_MessageWith(0);
+							pPlayer->Set_MessagePic(0);
+							pPlayer->Set_MessageOrder(0);
+						}
+					}
+					else // 시계를 얻은 뒤 대화
+					{
+						if (pPlayer->Get_MessageOrder() == 0)
+							DrawText(hDC, TEXT("어차피 이거, 너 밖에 제대로 못 쓸 것 같단 말이지."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else if (pPlayer->Get_MessageOrder() == 1)
+							DrawText(hDC, TEXT("하여튼 잘 쓰라고."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else
+						{
+							pPlayer->Set_MessageWith(0);
+							pPlayer->Set_MessagePic(0);
+							pPlayer->Set_MessageOrder(0);
+						}
+					}
+				}
+				else
+				{
+					if (pPlayer->Get_Stat(CPlayer::ISGETWATCH) == false &&
+						pPlayer->Get_Stat(CPlayer::GOLD) < 500)
+					{
+						if (pPlayer->Get_MessageOrder() == 0)
+							DrawText(hDC, TEXT("돈은 가져왔어? 어디 확인해보자."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else if (pPlayer->Get_MessageOrder() == 1)
+							DrawText(hDC, TEXT("부족한 것 같은데? 500골드라구."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else
+						{
+							pPlayer->Set_MessageWith(0);
+							pPlayer->Set_MessagePic(0);
+							pPlayer->Set_MessageOrder(0);
+						}
+					}
+					else if (pPlayer->Get_Stat(CPlayer::ISGETWATCH) == false &&
+						pPlayer->Get_Stat(CPlayer::GOLD) >= 500)
+					{
+						if (pPlayer->Get_MessageOrder() == 0)
+							DrawText(hDC, TEXT("돈은 가져왔어? 어디 확인해보자."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else if (pPlayer->Get_MessageOrder() == 1)
+							DrawText(hDC, TEXT("충분하네. 그럼 약속대로 받아가."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else
+						{
+							pPlayer->Set_MessageWith(0);
+							pPlayer->Set_MessagePic(0);
+							pPlayer->Set_MessageOrder(0);
+						}
+					}
+					else
+					{
+						if (pPlayer->Get_MessageOrder() == 0)
+							DrawText(hDC, TEXT("어차피 이거, 너 밖에 제대로 못 쓸 것 같단 말이지."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else if (pPlayer->Get_MessageOrder() == 1)
+							DrawText(hDC, TEXT("하여튼 잘 쓰라고."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+						else
+						{
+							pPlayer->Set_MessageWith(0);
+							pPlayer->Set_MessagePic(0);
+							pPlayer->Set_MessageOrder(0);
+						}
+					}
+				}
+
+
 				break;
 
-			case 4: // 니토리
-				if (pPlayer->Get_MessageOrder() == 0)
-					DrawText(hDC, TEXT("손님, 지금 자기 능력 제대로 못 쓰지? 강한 마력이 담긴 시계가 있는데, 관심 있어?"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				else if (pPlayer->Get_MessageOrder() == 1)
-					DrawText(hDC, TEXT("500 골드만 모아와. 그럼 그 가격에 주도록 할 게."), -1, &rect, DT_LEFT | DT_WORDBREAK);
+			case 5: // 메이린 첫 대화
+				if (pPlayer->Get_Stat(CPlayer::ISTALKED_MEIRIN) == false)
+				{
+					if (pPlayer->Get_MessageOrder() == 0)
+					{
+						CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
+						CSoundMgr::Get_Instance()->PlayBGM(L"ivent02.ogg", 0.1f);
+						pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
+					}
+					else if (pPlayer->Get_MessageOrder() == 1)
+					{
+						DrawText(hDC, TEXT("거기까지입니다!"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 2)
+						DrawText(hDC, TEXT("이 이상은 한 발짝도 못 들어오십니다!"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					else if (pPlayer->Get_MessageOrder() == 3)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("......뭘 하고 있는 거지, 메이링?"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 4)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("죄송합니다, 아가씨께서 내리신 명령이라......"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 5)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("아하 그렇군, 당신은 진짜인 모양이네."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 6)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("꼭 지나가야겠다면 저를 쓰러뜨리고 가세요!"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 7)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("평상시라면 당신한테 질 일은 없겠지만......"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 8)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("지금 상태라면 조금 힘겨운 싸움이 될 것 같네."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 9)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("아가씨께서 봐줄 필요 없다고 하셨으니, 각오하십시오!"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 10)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("봐줄 것 없어. 자, 덤벼."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else // 대화 종료, 보스전 시작
+					{
+						pPlayer->Set_MessageWith(0);
+						pPlayer->Set_MessagePic(0);
+						pPlayer->Set_MessageOrder(0);
+						pPlayer->Set_isBossStart(true);
+						pPlayer->Set_isTalkedNpc(3);
+						pBoss->Set_Pattern(1);
+						CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
+						CSoundMgr::Get_Instance()->PlayBGM(L"boss00.ogg", 0.1f);
+
+						// 여기에 시작 스프라이트 넣으면 될듯
+					}
+				}
 
 				else
 				{
-					pPlayer->Set_MessageWith(0);
-					pPlayer->Set_MessagePic(0);
-					pPlayer->Set_MessageOrder(0);
-				}
-
-				break;
-
-			case 5: // 메이린
-
-				if (pPlayer->Get_MessageOrder() == 0)
-				{
-					CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
-					CSoundMgr::Get_Instance()->PlayBGM(L"ivent02.ogg", 0.1f);
-					pPlayer->Set_MessageOrder(pPlayer->Get_MessageOrder() + 1);
-				}
-				else if (pPlayer->Get_MessageOrder() == 1)
-				{
-					DrawText(hDC, TEXT("거기까지입니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 2)
-					DrawText(hDC, TEXT("이 이상은 한 발짝도 못 들어오십니다!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				else if (pPlayer->Get_MessageOrder() == 3)
-				{
-					pPlayer->Set_MessagePic(2);
-					DrawText(hDC, TEXT("......뭘 하고 있는 거지, 메이링?"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 4)
-				{
-					pPlayer->Set_MessagePic(5);
-					DrawText(hDC, TEXT("죄송합니다, 아가씨께서 내리신 명령이라......"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 5)
-				{
-					pPlayer->Set_MessagePic(2);
-					DrawText(hDC, TEXT("아하 그렇군, 당신은 진짜인 모양이네."), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 6)
-				{
-					pPlayer->Set_MessagePic(5);
-					DrawText(hDC, TEXT("꼭 지나가야겠다면 저를 쓰러뜨리고 가세요!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 7)
-				{
-					pPlayer->Set_MessagePic(2);
-					DrawText(hDC, TEXT("평상시라면 당신한테 질 일은 없겠지만......"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 8)
-				{
-					pPlayer->Set_MessagePic(2);
-					DrawText(hDC, TEXT("지금 상태라면 조금 힘겨운 싸움이 될 것 같네."), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 9)
-				{
-					pPlayer->Set_MessagePic(5);
-					DrawText(hDC, TEXT("아가씨께서 봐줄 필요 없다고 하셨으니, 각오하십시오!"), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else if (pPlayer->Get_MessageOrder() == 10)
-				{
-					pPlayer->Set_MessagePic(2);
-					DrawText(hDC, TEXT("봐줄 것 없어. 자, 덤벼."), -1, &rect, DT_LEFT | DT_WORDBREAK);
-				}
-				else // 대화 종료, 보스전 시작
-				{
-					pPlayer->Set_MessageWith(0);
-					pPlayer->Set_MessagePic(0);
-					pPlayer->Set_MessageOrder(0);
-					pPlayer->Set_isBossStart(true);
-					pBoss->Set_Pattern(1);
-					CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
-					CSoundMgr::Get_Instance()->PlayBGM(L"boss00.ogg", 0.1f);
-
-					// 여기에 시작 스프라이트 넣으면 될듯
+					// 클리어 후
+					if (pPlayer->Get_MessageOrder() == 0)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("네가 졌어, 메이링."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 1)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("으으...... 분합니다. 어쩔 수 없군요."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 2)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("하지만, 사쿠야님"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 3)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("뭐지?"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 4)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("도움이 될지는 모르겠지만, 적은 저 하나만이 아닙니다."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 5)
+					{
+						pPlayer->Set_MessagePic(5);
+						DrawText(hDC, TEXT("그러니까...... 그...... 조심하세요......"), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else if (pPlayer->Get_MessageOrder() == 6)
+					{
+						pPlayer->Set_MessagePic(2);
+						DrawText(hDC, TEXT("...기억해 둘게."), -1, &rect, DT_CENTER | DT_WORDBREAK);
+					}
+					else
+					{
+						pPlayer->Set_isClearedBoss(1);
+						pPlayer->Set_MessageWith(0);
+						pPlayer->Set_MessagePic(0);
+						pPlayer->Set_MessageOrder(0);
+						CSoundMgr::Get_Instance()->StopSound(SOUND_BGM);
+						CSoundMgr::Get_Instance()->PlayBGM(L"bgm00.ogg", 0.1f);
+					}
 				}
 
 				break;

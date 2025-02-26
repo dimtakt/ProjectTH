@@ -314,7 +314,9 @@ void CObjMgr::Late_Update()
 
 
 	// 플레이어 총알과 몬스터의 충돌 확인, 충돌 시 총알은 삭제 및 몬스터는 데미지를 입음
-	if (dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) != 2)
+	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_LOGO &&
+		CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
+		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) != 2)
 	{
 		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WISP]);
 		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WOLF]);

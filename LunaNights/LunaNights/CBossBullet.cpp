@@ -140,24 +140,24 @@ void CBossBullet::Render(HDC hDC)
 
 	// 테스트용
 
-	int iTmpX = 0;
-	int iTmpY = 0;
-	CCameraMgr::Get_Instance()->Get_RenderPos(iTmpX, iTmpY); // 최종적으로 렌더시킬 좌표.
-
-	FRAME_PROP tProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
-	Set_FrameProperty(tProp);
-
-	HPEN hPen = CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
-	HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
-
-	MoveToEx(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY, nullptr);
-	LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
-	LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
-	LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
-	LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
-
-	SelectObject(hDC, hOldPen);
-	DeleteObject(hPen);
+	//int iTmpX = 0;
+	//int iTmpY = 0;
+	//CCameraMgr::Get_Instance()->Get_RenderPos(iTmpX, iTmpY); // 최종적으로 렌더시킬 좌표.
+	//
+	//FRAME_PROP tProp = CSpritePropertyMgr::Get_Instance()->Find_Property(m_pFrameKey);
+	//Set_FrameProperty(tProp);
+	//
+	//HPEN hPen = CreatePen(PS_SOLID, 2, RGB(0, 255, 0));
+	//HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
+	//
+	//MoveToEx(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY, nullptr);
+	//LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
+	//LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY + m_tCollideInfo.fCY / 2 + iTmpY);
+	//LineTo	(hDC, m_tCollideInfo.fX + m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
+	//LineTo	(hDC, m_tCollideInfo.fX - m_tCollideInfo.fCX / 2 + iTmpX, m_tCollideInfo.fY - m_tCollideInfo.fCY / 2 + iTmpY);
+	//
+	//SelectObject(hDC, hOldPen);
+	//DeleteObject(hPen);
 
 
 }

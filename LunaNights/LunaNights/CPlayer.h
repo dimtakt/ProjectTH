@@ -35,6 +35,7 @@ public:
 
 	void Set_MessageOrder(int _order)	{ m_iMessageOrder = _order; }
 	int Get_MessageOrder()				{ return m_iMessageOrder; }
+	
 
 public:
 	enum PLAYERSTAT
@@ -48,6 +49,11 @@ public:
 		ISGETWATCH,
 
 		TIMEMODE,
+
+		ISTALKED_AKYUU,
+		ISTALKED_NITORI,
+		ISTALKED_MEIRIN,
+
 		STAT_END
 	};
 
@@ -57,6 +63,42 @@ public:
 	void Set_Stat_isGetWatch(bool _watch) { m_isGetWatch = _watch; }
 	bool Get_isBossStart() { return m_isBossStart; }
 	void Set_isBossStart(bool _start) { m_isBossStart = _start; }
+	
+	// 1. 메이린
+	bool Get_isClearedBoss(int _index) {
+		switch (_index)
+		{
+		case 1:		return m_isClearedMeirin;
+
+		default:
+			break;
+		}
+	}
+	// 1. 메이린
+	void Set_isClearedBoss(int _index) {
+		switch (_index)
+		{
+		case 1:		m_isClearedMeirin = true;		break;
+
+		default:
+			break;
+		}
+	}
+
+
+	// 1 아큐, 2 니토리, 3 메이린
+	void Set_isTalkedNpc(int _index) {
+		switch (_index)
+		{
+		case 1:		m_isTalkedAkyuu = true;		break;
+		case 2:		m_isTalkedNitori = true;	break;
+		case 3:		m_isTalkedMeirin = true;	break;
+
+		default:
+			break;
+		}
+	}
+
 
 private:
 	float m_fPosinLength;
@@ -102,5 +144,14 @@ private:
 	int m_iTimeMode;	// 0 Idle, 1 Snail, 2 Stop
 
 	bool m_isBossStart;
+
+
+
+
+	bool m_isTalkedAkyuu;
+	bool m_isTalkedNitori;
+	bool m_isTalkedMeirin;
+
+	bool m_isClearedMeirin;
 
 };

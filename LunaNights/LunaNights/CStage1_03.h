@@ -18,6 +18,5 @@ public:
 private:
 
     FPOINT ptAkyuuPos;
-    FPOINT ptNitoriPos;
 };
 

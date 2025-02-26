@@ -95,7 +95,11 @@ void CCollisionMgr::Collision_Rect_BulletMonster(std::list<CObj*> DstList, std::
 				if (Src->Get_HP() <= 0)
 				{
 					// 몬스터가 플레이어에 의해 죽었을 때
-					Src->Set_Dead();
+					if (!(Src == CObjMgr::Get_Instance()->Get_Boss()))
+						Src->Set_Dead();
+					else
+						Src->Set_HP(0);
+
 
 					// 파괴 이펙트 출력
 					srand((unsigned int)time(NULL));
