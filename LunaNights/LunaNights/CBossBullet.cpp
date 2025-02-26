@@ -6,7 +6,7 @@
 #include "CCameraMgr.h"
 #include "CBoss_HonMeirin.h"
 
-CBossBullet::CBossBullet() : pBoss(nullptr)
+CBossBullet::CBossBullet() : pBoss(nullptr), dwStartFrame(0)
 {
 	ZeroMemory(&tFrameBullet, sizeof(FRAME));
 	ZeroMemory(&tFrameBullet45, sizeof(FRAME));
@@ -53,7 +53,7 @@ void CBossBullet::Initialize()
 	FRAME_PROP tMeirin_Bullet_Big_R = { 96 * 2, 96 * 2, 4, 2, 8 };
 	CSpritePropertyMgr::Get_Instance()->Insert_Property(tMeirin_Bullet_Big_R, L"Meirin_Bullet_Big_R");
 	
-
+	
 
 	m_isStretch = pBoss->Get_Stretch();
 	m_eRender = RENDER_GAMEOBJECT;
@@ -67,6 +67,8 @@ int CBossBullet::Update()
 {
 	if (m_isDead)
 		return OBJ_DEAD;
+
+	dwStartFrame++;
 
 	m_tInfo.fX += m_fSpeed * cosf(m_fAngle * DEG2RAD);
 	m_tInfo.fY -= m_fSpeed * sinf(m_fAngle * DEG2RAD);
@@ -111,6 +113,8 @@ int CBossBullet::Update()
 
 void CBossBullet::Late_Update()
 {
+	if (dwStartFrame >= 500)
+		m_isDead = true;
 }
 
 void CBossBullet::Render(HDC hDC)

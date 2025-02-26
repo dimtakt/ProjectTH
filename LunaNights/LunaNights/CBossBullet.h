@@ -23,5 +23,7 @@ private:
     FRAME tFrameBullet;
     FRAME tFrameBullet45;
     FRAME tFrameBulletBig;
+    
+    DWORD dwStartFrame;
 };
 
