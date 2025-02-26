@@ -135,6 +135,9 @@ int CBoss_HonMeirin::Update()
 				m_dwPatternElapsedFrame = 0;
 			}
 
+			CSoundMgr::Get_Instance()->SetChannelVolume(SOUND_BGM, 0.1f - (m_dwPatternElapsedFrame * 0.0005f));
+			
+
 			m_dwPatternNeedFrame = 999999999;
 			break;
 
