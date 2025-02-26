@@ -228,23 +228,23 @@ int CBoss_HonMeirin::Update()
 
 			if ((m_dwPatternElapsedFrame - 100) % 20 == 0)
 			{
-				int iSpace = 30;
+				int iSpace = 10;
 
 				// 총알 2 생성
 				// 생성 위치 조건은.. 이렇게 결과값이 짝이나 홀이냐에 따라 윗공격 아랫공격 나누면 될 듯
 				if (((m_dwPatternElapsedFrame - 100) / 20) % 2 == 1)
 				{
 					if (!m_isStretch)
-						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX + iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 + iSpace, 225, L"Meirin_Bullet45_R"));
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX + iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 + iSpace, 220, L"Meirin_Bullet45_R"));
 					else
-						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX - iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 + iSpace, 315, L"Meirin_Bullet45"));
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX - iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 + iSpace, 310, L"Meirin_Bullet45"));
 				}
 				else
 				{
 					if (!m_isStretch)
-						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX - iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 - iSpace, 225, L"Meirin_Bullet45_R"));
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX - iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 - iSpace, 230, L"Meirin_Bullet45_R"));
 					else
-						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX + iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 - iSpace, 315, L"Meirin_Bullet45"));
+						CObjMgr::Get_Instance()->Add_Object(OBJ_BOSSBULLET, CAbstractFactory<CBossBullet>::Create(m_tInfo.fX + iSpace, m_tInfo.fY - m_tInfo.fCY / 1.5 - iSpace, 320, L"Meirin_Bullet45"));
 
 				}
 
@@ -385,7 +385,8 @@ int CBoss_HonMeirin::Update()
 		// 차지
 		if (m_dwPatternElapsedFrame < 200)
 		{
-			CCameraMgr::Get_Instance()->Set_ShakeStrength(15.f);
+			CCameraMgr::Get_Instance()->Set_ShakeStrength(10.f);
+			std::cout << "차지 준비" << std::endl;
 
 			if (m_dwPatternElapsedFrame == 1)
 			{

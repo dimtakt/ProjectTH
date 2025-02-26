@@ -314,13 +314,15 @@ void CObjMgr::Late_Update()
 
 
 	// 플레이어 총알과 몬스터의 충돌 확인, 충돌 시 총알은 삭제 및 몬스터는 데미지를 입음
-	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WISP]);
-	CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WOLF]);
+	if (dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) != 2)
+	{
+		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WISP]);
+		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_MONSTER_WOLF]);
 
-	if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
-		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart() &&
-		dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_Stat(CPlayer::TIMEMODE) != 2)
-		CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_BOSS]);
+		if (CSceneMgr::Get_Instance()->Get_CurScene() != CSceneMgr::SC_EDIT &&
+			dynamic_cast<CPlayer*>(Get_Instance()->Get_Player())->Get_isBossStart())
+			CCollisionMgr::Collision_Rect_BulletMonster(m_ObjList[OBJ_PLAYERBULLET], m_ObjList[OBJ_BOSS]);
+	}
 
 
 	// 지상에 서 있어야 하는 객체와 충돌체의 충돌 확인, 충돌 시 해당 충돌체는 벽처럼 작용하여 객체의 이동을 막음 
