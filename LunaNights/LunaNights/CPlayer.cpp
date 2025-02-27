@@ -129,8 +129,8 @@ int CPlayer::Update()
 	if (m_dwTpRegenTime + 200 <= GetTickCount() && (m_fTp <= 85))
 	{
 
-		if		(m_iTimeMode == 0 && m_fTp < 85)		{ m_fTp += 1.f; }
-		else if (m_iTimeMode == 2)						{ m_fTp -= 1.f; }
+		if		(m_iTimeMode == 0 || m_iTimeMode == 1 && m_fTp < 85)		{ m_fTp += 1.f; }
+		else if (m_iTimeMode == 2)											{ m_fTp -= 1.f; }
 
 		m_dwTpRegenTime = GetTickCount();
 
