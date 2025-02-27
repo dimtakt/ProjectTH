@@ -188,8 +188,17 @@ void CEdit::Render(HDC _DC)
 	text = L"Selected Monster Index : " + std::to_wstring(iSelectedMonsterIndex);
 	DrawText(_DC, text.c_str(), -1, &rect, DT_LEFT | DT_SINGLELINE);
 
+	rect = { 10, WINCY - 100, 500, WINCY - 80 };
+	text = L"[ Current Selected Tile ]";
+	DrawText(_DC, text.c_str(), -1, &rect, DT_LEFT | DT_SINGLELINE);
 
-
+	Rectangle(_DC, 10, WINCY - 84, 82, WINCY - 12);
+	hMemDC = CBmpMgr::Get_Instance()->Find_Image(L"Collision_Tile");
+	FRAME_PROP tCollision_Tile = CSpritePropertyMgr::Get_Instance()->Find_Property(L"Collision_Tile");
+	BitBlt(_DC, 12, WINCY - 82, TILECX, TILECY, hMemDC, 
+		TILECX* ((iSelectedTileIndex) % (tCollision_Tile.iFrameMaxX)),
+		TILECY* ((iSelectedTileIndex) / (tCollision_Tile.iFrameMaxX)),
+		SRCCOPY);
 }
 
 void CEdit::Release()

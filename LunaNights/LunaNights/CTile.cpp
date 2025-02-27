@@ -63,6 +63,7 @@ void CTile::Render(HDC hDC)
 							TILECY,
 							hMemDC,
 							tOriginProp.iCX * ((m_iDrawID) % (m_tFrame.iFrameMaxX)),
+							//WINCX * ((iSelectedTileIndex) % (tCollision_Tile.iFrameMaxX)),
 							tOriginProp.iCY * ((m_iDrawID) / (m_tFrame.iFrameMaxX)),
 							tOriginProp.iCX,
 							tOriginProp.iCY,
